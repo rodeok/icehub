@@ -1,9 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
 @import "tailwindcss";
-
+*{
+  font-family: "Geist", sans-serif;
+}
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
+.nav-link {
+  @apply text-sm font-medium text-gray-700 hover:text-gray-900 transition;
+}
+
 
 @theme inline {
   --color-background: var(--background);
