@@ -24,25 +24,25 @@ const courses = [
         title: "Mobile-App Development",
         description: "Learn to create functional and engaging mobile apps for Android and iOS using modern frameworks and real-world projects.",
         image: "/images/mobile.png",
-        link: "#"
+        link: "/courses/mobile-dev"
     },
     {
         title: "Data Analytics",
         description: "Master the art of turning data into insights using tools like Excel, SQL, and Power BI to make smarter business decisions.",
         image: "/images/data.png",
-        link: "#"
+        link: "/courses/data-analytics"
     },
     {
         title: "Graphic Design",
         description: "Learn to create stunning visuals and brand identities using tools like Photoshop, Illustrator, and Canva.",
         image: "/images/graphics.png", // Fallback reuse due to rate limit
-        link: "#"
+        link: "/courses/graphics-design"
     },
     {
         title: "Cybersecurity",
         description: "Learn to protect systems and networks using modern cybersecurity tools, techniques, and real-world security projects.",
         image: "/images/cyber.png", // Fallback reuse due to rate limit
-        link: "#"
+        link: "/courses/cyber-security"
     }
 ];
 
