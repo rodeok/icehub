@@ -6,19 +6,19 @@ const courses = [
         title: "Front-End Web Development",
         description: "Build responsive, user-friendly websites using HTML, CSS, JavaScript, and modern frameworks to kickstart your tech career.",
         image: "/images/frontend.png",
-        link: "#"
+        link: "/courses/frontend"
     },
     {
         title: "Back-End Development",
         description: "Learn to build powerful, scalable server-side applications using Python, Node.js, and databases that drive modern web platforms.",
         image: "/images/backend.png",
-        link: "#"
+        link: "/courses/backend"
     },
     {
         title: "Product (UI/UX) Design",
         description: "Learn to design intuitive, user-centered digital products using tools like Figma and design principles that make great user experiences.",
         image: "/images/product.png",
-        link: "#"
+        link: "/courses/product-design"
     },
     {
         title: "Mobile-App Development",
@@ -52,10 +52,10 @@ const Explore = () => {
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-16 space-y-4">
-                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+                    <h2 className="text-3xl md:text-4xl font-bold !text-black">
                         Explore Our <span className="text-[#0052CC]">Courses</span>
                     </h2>
-                    <p className="text-gray-600 max-w-3xl mx-auto text-sm md:text-base leading-relaxed">
+                    <p className="!text-black max-w-3xl mx-auto text-sm md:text-base leading-relaxed">
                         Join our specialized programs crafted to make you job-ready. Each course combines real-world projects,
                         hands-on exercises, and expert mentorship to help you build the confidence and skills needed to excel in your career.
                     </p>
@@ -74,8 +74,8 @@ const Explore = () => {
                                 />
                             </div>
                             <div className="p-6 flex flex-col flex-grow">
-                                <h3 className="text-xl font-bold text-gray-900 mb-3">{course.title}</h3>
-                                <p className="text-gray-600 text-sm leading-relaxed mb-6 flex-grow">
+                                <h3 className="text-xl font-bold !text-black mb-3">{course.title}</h3>
+                                <p className="!text-black text-sm leading-relaxed mb-6 flex-grow">
                                     {course.description}
                                 </p>
                                 <a href={course.link} className="inline-flex items-center text-[#0052CC] text-sm font-semibold hover:underline mt-auto">

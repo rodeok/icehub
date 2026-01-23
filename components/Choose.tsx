@@ -40,10 +40,10 @@ export default function Choose() {
     return (
         <section className="bg-white py-20 px-4 md:px-8 max-w-7xl mx-auto">
             <div className="text-center mb-16 space-y-4">
-                <h2 className="text-4xl md:text-5xl font-bold text-black">
+                <h2 className="text-4xl md:text-5xl font-bold !text-black">
                     Why Choose <span className="text-blue-600">Ice Hub</span>
                 </h2>
-                <p className="text-gray-600 max-w-xl mx-auto text-sm md:text-base leading-relaxed">
+                <p className="!text-black max-w-xl mx-auto text-sm md:text-base leading-relaxed">
                     8 compelling reasons why Ice Hub is the right place to kick
                     <br className="hidden md:block" /> start your tech journey.
                 </p>
@@ -67,9 +67,9 @@ export default function Choose() {
                                 <card.icon className="w-8 h-8" strokeWidth={2} />
                             </div>
 
-                            <h3 className="text-2xl font-bold text-black">{card.title}</h3>
+                            <h3 className="text-2xl font-bold !text-black">{card.title}</h3>
 
-                            <p className="text-gray-600 text-sm md:text-base leading-relaxed max-w-sm">
+                            <p className="!text-black text-sm md:text-base leading-relaxed max-w-sm">
                                 {card.description}
                             </p>
                         </div>

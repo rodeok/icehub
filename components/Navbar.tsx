@@ -3,10 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
 
 export default function Navbar() {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleMenu = (menu: string) => {
     setOpenMenu(openMenu === menu ? null : menu);
@@ -17,13 +18,15 @@ export default function Navbar() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <Image
-            src="/images/icehub.png"
-            alt="ICE HUB"
-                width={51}
-                height={51}
-                priority
-          />
+          <Link href="/" className="nav-link">
+            <Image
+              src="/images/icehub.png"
+              alt="ICE HUB"
+              width={51}
+              height={51}
+              priority
+            />
+          </Link>
         </div>
 
         {/* Desktop Menu */}
@@ -98,14 +101,86 @@ export default function Navbar() {
           </li>
         </ul>
 
-        {/* CTA Button */}
-        <Link
-          href="/get-started"
-          className="rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
+        {/* CTA Button - Desktop */}
+        <div className="hidden md:block">
+          <Link
+            href="/get-started"
+            className="rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
+          >
+            Get Started
+          </Link>
+        </div>
+
+        {/* Mobile Menu Button */}
+        <button
+          className="md:hidden text-gray-700"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
-          Get Started
-        </Link>
+          {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+        </button>
       </nav>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-white border-t border-gray-100 shadow-lg absolute w-full left-0 top-[83px] z-50 py-6 px-6 flex flex-col gap-6 h-screen overflow-y-auto pb-24">
+          <ul className="flex flex-col gap-6 text-lg font-medium text-gray-800">
+            <li>
+              <Link href="/about" onClick={() => setMobileMenuOpen(false)}>About Us</Link>
+            </li>
+            <li>
+              <Link href="/courses" onClick={() => setMobileMenuOpen(false)}>Courses</Link>
+            </li>
+
+            {/* Mobile Programmes Dropdown */}
+            <li>
+              <button
+                onClick={() => toggleMenu("programmes")}
+                className="flex items-center justify-between w-full"
+              >
+                Programmes <ChevronDown size={16} className={`transition-transform ${openMenu === "programmes" ? "rotate-180" : ""}`} />
+              </button>
+              {openMenu === "programmes" && (
+                <ul className="mt-3 ml-4 flex flex-col gap-3 text-base text-gray-600">
+                  <li><Link href="/programmes/next-gen" onClick={() => setMobileMenuOpen(false)}>Next Gen Prep</Link></li>
+                  <li><Link href="/programmes/skit" onClick={() => setMobileMenuOpen(false)}>SKIT Program</Link></li>
+                  <li><Link href="/programmes/digital-literacy" onClick={() => setMobileMenuOpen(false)}>Digital Literacy</Link></li>
+                </ul>
+              )}
+            </li>
+
+            {/* Mobile Services Dropdown */}
+            <li>
+              <button
+                onClick={() => toggleMenu("services")}
+                className="flex items-center justify-between w-full"
+              >
+                Services <ChevronDown size={16} className={`transition-transform ${openMenu === "services" ? "rotate-180" : ""}`} />
+              </button>
+              {openMenu === "services" && (
+                <ul className="mt-3 ml-4 flex flex-col gap-3 text-base text-gray-600">
+                  <li><Link href="/services/web-software" onClick={() => setMobileMenuOpen(false)}>Web & Software Solution</Link></li>
+                  <li><Link href="/services/workspace" onClick={() => setMobileMenuOpen(false)}>Workspace</Link></li>
+                </ul>
+              )}
+            </li>
+
+            <li>
+              <Link href="/projects" onClick={() => setMobileMenuOpen(false)}>Projects</Link>
+            </li>
+            <li>
+              <Link href="/blogs" onClick={() => setMobileMenuOpen(false)}>Blogs & Activities</Link>
+            </li>
+          </ul>
+
+          <Link
+            href="/get-started"
+            onClick={() => setMobileMenuOpen(false)}
+            className="w-full text-center rounded-full bg-blue-600 px-6 py-3 text-white font-semibold hover:bg-blue-700"
+          >
+            Get Started
+          </Link>
+        </div>
+      )}
     </header>
   );
 }

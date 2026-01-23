@@ -8,13 +8,13 @@ const Skit = () => {
 
         {/* LEFT CONTENT */}
         <div className="space-y-6">
-          <h2 className="text-3xl md:text-5xl font-bold leading-tight text-gray-900">
+          <h2 className="text-3xl md:text-5xl font-bold leading-tight !text-black">
             <span className="text-[#0052CC]">SKIT Program</span>: specialized
             <br />
             Knowledge & Innovation Training
           </h2>
 
-          <p className="text-gray-600 text-sm md:text-base leading-relaxed max-w-lg">
+          <p className="!text-black text-sm md:text-base leading-relaxed max-w-lg">
             SKIT is a specialized summer bootcamp program designed for children
             with unique learning needs. Kids will be introduced to the foundations
             of computer basics, coding, design, and robotics in a supportive and
