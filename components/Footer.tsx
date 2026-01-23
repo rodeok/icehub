@@ -11,8 +11,8 @@ export default function NewsletterFooter() {
                 <div className="bg-[#0B3470] rounded-2xl px-8 md:px-16 py-14 flex flex-col md:flex-row md:items-center md:justify-between gap-10 !text-white">
                     {/* Left */}
                     <div className="max-w-lg">
-                        <h3 className="text-3xl font-bold" style={{ color: 'white !important' }}>Subscribe our newsletter</h3>
-                        <p className="mt-4 text-sm text-blue-100 leading-relaxed" style={{ color: 'white !important' }}>
+                        <h3 className="text-3xl font-bold !text-white">Subscribe our newsletter</h3>
+                        <p className="mt-4 text-sm !text-white leading-relaxed">
                             Subscribe to our newsletter and be the first to receive insights,
                             update and expert tips on our courses
                         </p>
@@ -20,18 +20,18 @@ export default function NewsletterFooter() {
 
                     {/* Right */}
                     <div className="w-full md:max-w-md">
-                        <p className="text-sm mb-3" style={{ color: 'white !important' }}>Stay up to date</p>
+                        <p className="text-sm mb-3 !text-white">Stay up to date</p>
                         <div className="flex bg-[#123F80] rounded-full p-1">
                             <input
                                 type="email"
                                 placeholder="Enter your mail"
-                                className="flex-1 bg-transparent px-5 text-sm placeholder-blue-200 focus:outline-none"
+                                className="flex-1 bg-transparent px-5 text-sm !text-white placeholder-white placeholder:opacity-70 focus:outline-none"
                             />
                             <button className="bg-blue-500 hover:bg-blue-600 transition text-sm font-medium px-6 py-3 rounded-full">
                                 Subscribe
                             </button>
                         </div>
-                        <p className="mt-3 text-xs text-blue-200" style={{ color: 'white !important' }}>
+                        <p className="mt-3 text-xs !text-white">
                             By subscribing you are agreeing to privacy policy
                         </p>
                     </div>
