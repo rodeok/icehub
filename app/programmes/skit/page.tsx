@@ -1,17 +1,28 @@
 import Navbar from "@/components/Navbar";
-
+import SkitProgram from "@/components/SkitProgram";
+import KidsPerfect from "@/components/KidsPerfect";
+import SkitHero from "@/components/SkitHero";
+import LearnWhat from "@/components/LearnWhat";
+import ProgramHighlight from "@/components/ProgramHighlight";
+import SkitProgramWhat from "@/components/SkitProgramWhat";
+import SkitDuration from "@/components/SkitDuration";
+import SkitReady from "@/components/SkitReady";
+import Footer from "@/components/Footer";
 export default function SCITPage() {
     return (
         <div className="relative">
             <div className="absolute top-0 left-0 right-0 z-50">
                 <Navbar />
             </div>
-            <main className="pt-24 px-6 max-w-7xl mx-auto">
-                <h1 className="text-4xl font-bold mb-6">SKIT Program</h1>
-                <p className="text-lg text-gray-600">
-                    Skill Creation and Innovation Training program details.
-                </p>
-            </main>
+            <SkitHero />
+            <SkitProgram />
+            <KidsPerfect />
+            <LearnWhat />
+            <ProgramHighlight />
+            <SkitProgramWhat />
+            <SkitDuration />
+            <SkitReady />
+            <Footer />
         </div>
     );
 }

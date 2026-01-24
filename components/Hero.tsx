@@ -1,12 +1,12 @@
-'use client';
 
-import Image from 'next/image';
+import Image from "next/image";
+import { ArrowRight } from "lucide-react";
 
 export default function HeroSection() {
     return (
-        <section className="relative h-screen w-full overflow-hidden bg-white">
-            {/* Right Image */}
-            <div className="absolute right-0 top-0 h-full w-1/2">
+        <section className="relative w-full h-[600px] lg:h-[700px] overflow-hidden bg-white">
+            {/* Background Image */}
+            <div className="absolute inset-0">
                 <Image
                     src="/images/icehubhero.jpg"
                     alt="Tech talents"
@@ -16,30 +16,41 @@ export default function HeroSection() {
                 />
             </div>
 
-            {/* Left Blue Shape */}
-            <div className="absolute left-0 top-0 h-full w-[65%] rounded-r-[120px] bg-gradient-to-br from-[#0b4fb3] via-[#0d5bd1] to-[#0a4aa3]" />
+            {/* Solid blue base layer for mobile/fallback */}
+            <div className="absolute inset-y-0 left-0 w-full sm:w-[60%] lg:w-[50%] bg-[#0D55BA] z-[1] sm:hidden" />
 
-            {/* Content */}
-            <div className="relative z-10 flex h-full items-center">
-                <div className="max-w-xl pl-20 text-white">
-                    <h1 className="mb-6 text-5xl font-bold leading-tight">
+            {/* Blue Curved Overlay (EXACT SMOOTH CURVE FOR DESKTOP) */}
+            <div
+                className="hidden sm:block absolute inset-0 bg-[#0D55BA] z-[1]"
+                style={{
+                    clipPath: "ellipse(85% 150% at -30% 50%)",
+                }}
+            />
+
+            {/* Content Container */}
+            <div className="relative z-10 h-full max-w-7xl mx-auto px-6 md:px-12 flex items-center">
+                <div className="max-w-2xl text-white">
+                    <h1 className="!text-white text-[40px] md:text-[56px] leading-[1.1] font-bold tracking-tight">
                         Become a World-class
                         <br />
                         Tech Talent
                     </h1>
 
-                    <p className="mb-10 max-w-md text-lg leading-relaxed text-white/90">
-                        Learn tech from top industry experts and explore global and funding
-                        opportunities in a thriving tech community
+                    <p className="!text-white mt-8 text-base md:text-lg leading-relaxed max-w-md font-medium">
+                        Learn tech from top Industry experts and explore global
+                        and funding opportunities in a thriving tech community
                     </p>
 
-                    <div className="flex gap-4">
-                        <button className="rounded-full bg-[#0a3f8f] px-8 py-3 font-medium text-white transition hover:bg-[#083777]">
-                            Learn More →
+                    {/* Buttons */}
+                    <div className="mt-12 flex flex-wrap gap-5">
+                        <button className="group flex items-center justify-center gap-3 px-10 py-4 rounded-full bg-[#0A3F8F] hover:bg-[#08357a] transition-all text-sm font-bold shadow-xl transform hover:-translate-y-1">
+                            Learn More
+                            <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
                         </button>
 
-                        <button className="rounded-full bg-[#062f6e] px-8 py-3 font-medium text-white transition hover:bg-[#05275c]">
-                            Start Now →
+                        <button className="group flex items-center justify-center gap-3 px-10 py-4 rounded-full bg-[#0A3F8F] hover:bg-[#08357a] transition-all text-sm font-bold shadow-xl transform hover:-translate-y-1">
+                            Start Now
+                            <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
                         </button>
                     </div>
                 </div>

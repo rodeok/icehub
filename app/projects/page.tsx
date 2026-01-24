@@ -1,4 +1,7 @@
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import ProjectHead from "@/components/ProjectHead";
+import ProjectContent from "@/components/ProjectContent";
 
 export default function ProjectsPage() {
     return (
@@ -6,12 +9,9 @@ export default function ProjectsPage() {
             <div className="absolute top-0 left-0 right-0 z-50">
                 <Navbar />
             </div>
-            <main className="pt-24 px-6 max-w-7xl mx-auto">
-                <h1 className="text-4xl font-bold mb-6">Projects</h1>
-                <p className="text-lg text-gray-600">
-                    Showcase of our student projects and success stories.
-                </p>
-            </main>
+            <ProjectHead />
+            <ProjectContent />
+            <Footer />
         </div>
     );
 }
