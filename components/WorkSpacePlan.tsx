@@ -3,8 +3,12 @@
 
 import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
-import BookingModal from "./BookingModal";
+import dynamic from "next/dynamic";
 import { downloadReceiptPDF } from "@/utils/pdfGenerator";
+
+const BookingModal = dynamic(() => import("./BookingModal"), {
+    ssr: false,
+});
 
 // Define Plan interface
 interface Plan {

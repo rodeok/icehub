@@ -1,15 +1,18 @@
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 
 export const downloadReceiptPDF = async (reference: string, userData: any) => {
-    const element = document.createElement("div");
-    element.style.padding = "40px";
-    element.style.width = "600px";
-    element.style.background = "white";
-    element.style.color = "black";
-    element.style.fontFamily = "sans-serif";
+  // Dynamic imports to prevent SSR execution
+  const jsPDF = (await import("jspdf")).default;
+  const html2canvas = (await import("html2canvas")).default;
 
-    element.innerHTML = `
+  const element = document.createElement("div");
+  // ... rest of the function remains the same ...
+  element.style.padding = "40px";
+  element.style.width = "600px";
+  element.style.background = "white";
+  element.style.color = "black";
+  element.style.fontFamily = "sans-serif";
+
+  element.innerHTML = `
     <div style="border: 2px solid #1a73e8; padding: 30px; border-radius: 20px;">
       <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 40px;">
         <div>
@@ -48,21 +51,21 @@ export const downloadReceiptPDF = async (reference: string, userData: any) => {
     </div>
   `;
 
-    document.body.appendChild(element);
+  document.body.appendChild(element);
 
-    try {
-        const canvas = await html2canvas(element, { scale: 2 });
-        const imgData = canvas.toDataURL("image/png");
-        const pdf = new jsPDF("p", "mm", "a4");
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+  try {
+    const canvas = await html2canvas(element, { scale: 2 });
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("p", "mm", "a4");
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-        pdf.save(`ICEHUB_Receipt_${reference}.pdf`);
-    } catch (error) {
-        console.error("PDF generation failed:", error);
-    } finally {
-        document.body.removeChild(element);
-    }
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.save(`ICEHUB_Receipt_${reference}.pdf`);
+  } catch (error) {
+    console.error("PDF generation failed:", error);
+  } finally {
+    document.body.removeChild(element);
+  }
 };
