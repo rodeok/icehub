@@ -3,6 +3,11 @@ export const downloadReceiptPDF = async (reference: string, userData: any) => {
   // Dynamic imports to prevent SSR execution
   const jsPDF = (await import("jspdf")).default;
   const html2canvas = (await import("html2canvas")).default;
+  const QRCode = (await import("qrcode")).default;
+
+  // Generate QR code data URL
+  const qrData = `ICE HUB Verification\nRef: ${reference}\nUser: ${userData.name}\nPlan: ${userData.planTitle}\nAmount: ${userData.selectedPrice}`;
+  const qrCodeDataUrl = await QRCode.toDataURL(qrData);
 
   const element = document.createElement("div");
   // ... rest of the function remains the same ...
@@ -25,11 +30,17 @@ export const downloadReceiptPDF = async (reference: string, userData: any) => {
         </div>
       </div>
       
-      <div style="margin-bottom: 40px;">
-        <h3 style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">Customer Details</h3>
-        <p style="margin: 5px 0;"><strong>Name:</strong> ${userData.name}</p>
-        <p style="margin: 5px 0;"><strong>Email:</strong> ${userData.email}</p>
-        <p style="margin: 5px 0;"><strong>Phone:</strong> ${userData.phone}</p>
+      <div style="display: flex; justify-content: space-between; gap: 20px; margin-bottom: 40px;">
+        <div style="flex: 1;">
+          <h3 style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">Customer Details</h3>
+          <p style="margin: 5px 0;"><strong>Name:</strong> ${userData.name}</p>
+          <p style="margin: 5px 0;"><strong>Email:</strong> ${userData.email}</p>
+          <p style="margin: 5px 0;"><strong>Phone:</strong> ${userData.phone}</p>
+        </div>
+        <div style="text-align: center;">
+          <img src="${qrCodeDataUrl}" style="width: 100px; height: 100px; border: 1px solid #eee; padding: 5px; border-radius: 10px;" />
+          <p style="font-size: 8px; color: #999; margin-top: 5px;">Admin Verification QR</p>
+        </div>
       </div>
       
       <div style="background-color: #f8faff; padding: 25px; border-radius: 15px; margin-bottom: 40px;">

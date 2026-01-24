@@ -79,11 +79,11 @@ export default function WhatLearnPrep() {
                                 <item.icon className="w-6 h-6 text-white" strokeWidth={2.5} />
                             </div>
 
-                            <h3 className="text-lg font-bold mb-3 leading-tight min-h-[3rem] flex items-end">
+                            <h3 className="text-lg font-bold mb-3 leading-tight min-h-[3rem] flex items-end !text-white">
                                 {item.title}
                             </h3>
 
-                            <p className="text-white/90 text-sm leading-relaxed">
+                            <p className="!text-white text-sm leading-relaxed">
                                 {item.description}
                             </p>
                         </div>
