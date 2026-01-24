@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function NextGenHero() {
     return (
-        <section className="relative w-full overflow-hidden bg-[#f8faff] py-12 lg:py-24">
+        <section className="relative w-full overflow-hidden bg-[#f8faff] pt-32 pb-12 lg:py-24">
             {/* Background Decorative Elements */}
             <div className="absolute left-[-5%] top-[10%] h-[500px] w-[500px] rounded-full bg-blue-100/40 blur-3xl" />
 

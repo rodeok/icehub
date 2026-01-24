@@ -1,50 +1,57 @@
 import React from 'react';
+import Image from 'next/image';
 
-export default function BlueprintHero() {
+export default function AboutHero() {
     return (
-        <div className="relative min-h-screen w-full overflow-hidden">
-            {/* Background Image */}
-            <div
-                className="absolute inset-0 bg-cover bg-center"
-                style={{
-                    backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), url("/images/icehubhero.jpg")',
-                }}
-            >
-                {/* Yellow/Warm overlay effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-yellow-100/40 via-orange-50/30 to-yellow-100/40"></div>
+        <section className="relative w-full h-[600px] lg:h-[800px] overflow-hidden bg-white pt-24 md:pt-0 flex items-center justify-center">
+            {/* Background Image with Fade to White at Bottom */}
+            <div className="absolute inset-0">
+                <Image
+                    src="/images/icehubhero.jpg"
+                    alt="Ice Hub Tech Students"
+                    fill
+                    priority
+                    className="object-cover object-center opacity-90"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent"></div>
             </div>
 
-            {/* Decorative Dots */}
-            <div className="absolute top-1/4 right-1/4 w-3 h-3 bg-blue-600 rounded-full"></div>
-            <div className="absolute top-1/3 right-1/3 w-2 h-2 bg-green-500 rounded-full"></div>
-            <div className="absolute top-1/2 right-1/4 w-2 h-2 bg-orange-400 rounded-full"></div>
-            <div className="absolute bottom-1/3 right-1/3 w-2 h-2 bg-purple-400 rounded-full"></div>
-            <div className="absolute bottom-1/4 right-1/4 w-3 h-3 bg-blue-500 rounded-full"></div>
-
             {/* Content Container */}
-            <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
-                <div className="max-w-4xl mx-auto text-center">
+            <div className="relative z-10 w-full max-w-7xl mx-auto px-6 text-center">
+                <div className="max-w-4xl mx-auto">
                     {/* Main Heading */}
-                    <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
-                        <span className="text-black">Our Story is </span>
-                        <span className="text-blue-600">Blueprint for</span>
-                        <br />
-                        <span className="text-blue-600">Your Future</span>
+                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-8 leading-[1.1] text-slate-900">
+                        Our Story is <span className="text-[#1a73e8]">Blueprint for Your Future</span>
                     </h1>
 
                     {/* Subheading */}
-                    <p className="text-gray-700 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-                        We're not just a tech hub, we're a launchpad for careers. Discover the passion,
-                        <br className="hidden md:block" />
+                    <p className="text-gray-600 text-sm md:text-base lg:text-lg max-w-2xl mx-auto leading-relaxed font-medium">
+                        we&apos;re not just a tech hub, we&apos;re a launchpad for careers. Discover the passion,
                         purpose, and people powering the next generation of innovators
                     </p>
                 </div>
             </div>
 
-            {/* Background people image overlay effect */}
-            <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute right-0 top-0 bottom-0 w-1/2 bg-gradient-to-l from-transparent via-white/20 to-white/60"></div>
+            {/* Decorative Floating Dots (Right Side) */}
+            <div className="absolute bottom-20 right-[15%] flex flex-col items-center gap-12 z-20 pointer-events-none hidden md:flex">
+                <div className="flex gap-16 items-center">
+                    <div className="w-2.5 h-2.5 bg-purple-500 rounded-full shadow-lg animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                    <div className="w-5 h-5 bg-[#00D166] rounded-full shadow-xl"></div>
+                </div>
+                <div className="flex gap-10 items-center mr-16">
+                    <div className="w-2 h-2 bg-orange-400 rounded-full shadow-lg"></div>
+                    <div className="w-2.5 h-2.5 bg-[#4B40FF] rounded-full shadow-lg"></div>
+                </div>
+                <div className="flex gap-24 items-center mr-8">
+                    <div className="w-1.5 h-1.5 bg-purple-400 rounded-full shadow-lg"></div>
+                    <div className="w-2.5 h-2.5 bg-[#1400FF] rounded-full shadow-lg"></div>
+                </div>
             </div>
-        </div>
+
+            {/* Background Warmth Overlays */}
+            <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-yellow-50/20 to-transparent"></div>
+            </div>
+        </section>
     );
 }

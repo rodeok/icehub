@@ -28,7 +28,7 @@ export default function HeroSection() {
             />
 
             {/* Content Container */}
-            <div className="relative z-10 h-full max-w-7xl mx-auto px-6 md:px-12 flex items-center">
+            <div className="relative z-10 h-full max-w-7xl mx-auto px-6 md:px-12 flex items-center pt-24 md:pt-0">
                 <div className="max-w-2xl text-white">
                     <h1 className="!text-white text-[40px] md:text-[56px] leading-[1.1] font-bold tracking-tight">
                         Become a World-class

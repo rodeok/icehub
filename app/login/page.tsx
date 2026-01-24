@@ -2,37 +2,20 @@
 
 import Link from "next/link";
 import AuthLayout from "@/components/AuthLayout";
-import { User, Mail, BookOpen, Lock, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 
-export default function SignupPage() {
+export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
 
     return (
         <AuthLayout
-            welcomeTitle="Hello! Welcome to Ice Hub"
-            welcomeSubtitle="Join our community of digital innovators"
-            formTitle="Create an Account"
+            welcomeTitle="Hello! Welcome back to Ice Hub"
+            welcomeSubtitle="Great Innovator. Your journey of excellence continues!"
+            formTitle="Login"
             formSubtitle="Become a part of great innovators"
         >
             <form className="space-y-6">
-                {/* Full Name */}
-                <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Full Name
-                    </label>
-                    <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <User className="h-5 w-5 text-gray-400" />
-                        </div>
-                        <input
-                            type="text"
-                            placeholder="Enter your full name"
-                            className="block w-full pl-11 pr-4 py-3 bg-gray-50 border border-transparent rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none text-gray-900"
-                        />
-                    </div>
-                </div>
-
                 {/* Email Address */}
                 <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -47,29 +30,6 @@ export default function SignupPage() {
                             placeholder="Enter your email address"
                             className="block w-full pl-11 pr-4 py-3 bg-gray-50 border border-transparent rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none text-gray-900"
                         />
-                    </div>
-                </div>
-
-                {/* Course */}
-                <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Course
-                    </label>
-                    <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <BookOpen className="h-5 w-5 text-gray-400" />
-                        </div>
-                        <select
-                            className="block w-full pl-11 pr-4 py-3 bg-gray-50 border border-transparent rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none text-gray-900 appearance-none"
-                            defaultValue=""
-                        >
-                            <option value="" disabled>Enter your course of interest</option>
-                            <option value="frontend">Front-End Development</option>
-                            <option value="backend">Back-End Development</option>
-                            <option value="uiux">UI/UX Design</option>
-                            <option value="cyber">Cybersecurity</option>
-                            <option value="data">Data Analytics</option>
-                        </select>
                     </div>
                 </div>
 
@@ -102,14 +62,14 @@ export default function SignupPage() {
                     type="submit"
                     className="w-full bg-[#0D55BA] hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-200 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
                 >
-                    Create Account
+                    Log In
                 </button>
 
-                {/* Already have an account? */}
+                {/* Don't have an account? */}
                 <p className="text-center text-sm font-medium text-gray-600 mt-8">
-                    Already have an account?{" "}
-                    <Link href="/login" className="text-blue-600 hover:underline font-bold">
-                        Log In
+                    Don't have an account?{" "}
+                    <Link href="/get-started" className="text-blue-600 hover:underline font-bold">
+                        Sign Up
                     </Link>
                 </p>
             </form>

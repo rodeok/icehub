@@ -4,7 +4,7 @@ import { ArrowRight, Coffee, Wifi, Zap, Users } from "lucide-react";
 
 export default function WorkHero() {
     return (
-        <section className="bg-white py-16 lg:py-24 px-4 md:px-8 lg:px-20 overflow-hidden">
+        <section className="bg-white pt-32 pb-16 lg:py-24 px-4 md:px-8 lg:px-20 overflow-hidden">
             <div className="max-w-7xl mx-auto">
                 <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center">
 

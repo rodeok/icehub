@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 
 export default function DigitalHero() {
     return (
-        <section className="relative w-full overflow-hidden bg-[#f8faff] py-16 lg:py-24">
+        <section className="relative w-full overflow-hidden bg-[#f8faff] pt-32 pb-16 lg:py-24">
             <div className="container mx-auto px-4 md:px-6 relative z-10">
                 <div className="grid gap-12 lg:grid-cols-2 items-center">
 

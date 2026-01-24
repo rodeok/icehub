@@ -1,7 +1,21 @@
 
-import { CheckCircle2 } from "lucide-react";
+"use client";
 
-const plans = [
+import { useState } from "react";
+import { CheckCircle2 } from "lucide-react";
+import BookingModal from "./BookingModal";
+import { downloadReceiptPDF } from "@/utils/pdfGenerator";
+
+// Define Plan interface
+interface Plan {
+    title: string;
+    price: string;
+    subPrices?: string[];
+    features: string[];
+    popular?: boolean;
+}
+
+const plans: Plan[] = [
     {
         title: "Open Workspace",
         price: "N4,000/day",
@@ -71,6 +85,35 @@ const plans = [
 ];
 
 export default function WorkSpacePlan() {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+
+    const handleBookNow = (plan: Plan) => {
+        setSelectedPlan(plan);
+        setIsModalOpen(true);
+    };
+
+    const handlePaymentSuccess = async (reference: string, userData: any) => {
+        setIsModalOpen(false);
+
+        // 1. Generate and Download PDF Receipt immediately
+        await downloadReceiptPDF(reference, userData);
+
+        alert(`Payment Successful! Your receipt has been downloaded and an email copy will be sent to ${userData.email}.`);
+
+        // 2. Trigger Email via API
+        try {
+            const response = await fetch('/api/send-receipt', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reference, userData }),
+            });
+            if (!response.ok) throw new Error("Failed to send receipt");
+        } catch (error) {
+            console.error("Receipt error:", error);
+        }
+    };
+
     return (
         <section className="bg-white py-20 px-4 md:px-8 lg:px-20">
             <div className="max-w-7xl mx-auto">
@@ -124,13 +167,24 @@ export default function WorkSpacePlan() {
                                 </ul>
                             </div>
 
-                            <button className="w-full bg-[#1a73e8] text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors mt-auto">
+                            <button
+                                onClick={() => handleBookNow(plan)}
+                                className="w-full bg-[#1a73e8] text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors mt-auto"
+                            >
                                 Book Now
                             </button>
                         </div>
                     ))}
                 </div>
             </div>
+
+            {isModalOpen && selectedPlan && (
+                <BookingModal
+                    plan={selectedPlan}
+                    onClose={() => setIsModalOpen(false)}
+                    onSuccess={handlePaymentSuccess}
+                />
+            )}
         </section>
     );
 }

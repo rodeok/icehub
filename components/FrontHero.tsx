@@ -5,7 +5,7 @@ export default function FrontHero() {
     return (
         <div className="bg-white">
             {/* Hero Section */}
-            <section className="mx-auto max-w-7xl px-6 lg:px-8 pt-24 pb-16">
+            <section className="mx-auto max-w-7xl px-6 lg:px-8 pt-32 pb-16">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <div>
                         <h1 className="text-4xl font-bold tracking-tight !text-black sm:text-5xl md:text-6xl" style={{ color: '#000' }}>

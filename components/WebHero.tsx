@@ -33,7 +33,7 @@ export default function WebHero() {
     return (
         <div className="bg-white">
             {/* Hero Section */}
-            <section className="mx-auto max-w-7xl px-6 py-16 lg:px-8 lg:py-24">
+            <section className="mx-auto max-w-7xl px-6 pt-28 pb-16 lg:px-8 lg:py-24">
                 <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center">
                     <div>
                         <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl md:text-6xl leading-[1.1]">

@@ -102,7 +102,10 @@ export default function Navbar() {
         </ul>
 
         {/* CTA Button - Desktop */}
-        <div className="hidden md:block">
+        <div className="hidden md:flex items-center gap-4">
+          <Link href="/login" className="text-sm font-semibold text-gray-700 hover:text-blue-600 transition">
+            Login
+          </Link>
           <Link
             href="/get-started"
             className="rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
@@ -172,13 +175,22 @@ export default function Navbar() {
             </li>
           </ul>
 
-          <Link
-            href="/get-started"
-            onClick={() => setMobileMenuOpen(false)}
-            className="w-full text-center rounded-full bg-blue-600 px-6 py-3 text-white font-semibold hover:bg-blue-700"
-          >
-            Get Started
-          </Link>
+          <div className="flex flex-col gap-3">
+            <Link
+              href="/login"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full text-center rounded-full border-2 border-blue-600 px-6 py-3 text-blue-600 font-semibold hover:bg-blue-50"
+            >
+              Login
+            </Link>
+            <Link
+              href="/get-started"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full text-center rounded-full bg-blue-600 px-6 py-3 text-white font-semibold hover:bg-blue-700"
+            >
+              Get Started
+            </Link>
+          </div>
         </div>
       )}
     </header>
