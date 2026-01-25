@@ -42,7 +42,7 @@ export default function BackHero() {
                     <div className="relative">
                         <div className="aspect-[4/3] rounded-3xl overflow-hidden shadow-xl">
                             <Image
-                                src="/images/frontend1.png" // Placeholder path, user may need to provide actual image
+                                src="/images/cyber1.png" // Placeholder path, user may need to provide actual image
                                 alt="Developers working"
                                 width={800}
                                 height={600}
