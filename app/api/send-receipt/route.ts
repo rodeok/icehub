@@ -25,6 +25,7 @@ export async function POST(req: Request) {
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <img src="https://icehub11.vercel.app/images/icehub.png" style="height: 40px; object-fit: contain;" alt="ICE HUB Logo" />
             <h2 style="color: #1a73e8; margin: 0;">Payment Received!</h2>
           </div>
           <p>Hello <strong>${userData.name}</strong>,</p>

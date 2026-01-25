@@ -21,7 +21,7 @@ export const downloadReceiptPDF = async (reference: string, userData: any) => {
     <div style="border: 2px solid #1a73e8; padding: 30px; border-radius: 20px;">
       <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 40px;">
         <div>
-          <h1 style="color: #1a73e8; margin: 0; font-size: 28px;">ICE HUB</h1>
+          <img src="/images/icehub.png" style="height: 50px; margin-bottom: 5px; object-fit: contain;" alt="ICE HUB Logo" />
           <p style="margin: 5px 0; color: #666; font-size: 12px;">Official Payment Receipt</p>
         </div>
         <div style="text-align: right;">
