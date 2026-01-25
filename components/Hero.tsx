@@ -1,56 +1,62 @@
 
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import { IoPlay } from "react-icons/io5";
+import { HiArrowNarrowRight } from "react-icons/hi";
 
 export default function HeroSection() {
     return (
-        <section className="relative w-full h-[600px] lg:h-[700px] overflow-hidden bg-white">
-            {/* Background Image */}
-            <div className="absolute inset-0">
+        <section className="relative w-full h-[600px] lg:h-[750px] overflow-hidden bg-white">
+            {/* Background Image Container */}
+            <div className="absolute inset-0 z-0">
                 <Image
                     src="/images/icehubhero.jpg"
-                    alt="Tech talents"
+                    alt="Ice Hub Tech Talents"
                     fill
                     priority
-                    className="object-cover"
+                    className="object-cover object-center translate-x-[15%]"
                 />
             </div>
 
-            {/* Solid blue base layer for mobile/fallback */}
-            <div className="absolute inset-y-0 left-0 w-full sm:w-[60%] lg:w-[50%] bg-[#0D55BA] z-[1] sm:hidden" />
-
-            {/* Blue Curved Overlay (EXACT SMOOTH CURVE FOR DESKTOP) */}
+            {/* Blue Curved Overlay with Soft Edge */}
             <div
-                className="hidden sm:block absolute inset-0 bg-[#0D55BA] z-[1]"
+                className="absolute inset-0 z-10"
                 style={{
-                    clipPath: "ellipse(85% 150% at -30% 50%)",
+                    background: "radial-gradient(circle at -10% 50%, #0D55BA 0%, #0D55BA 45%, rgba(13, 85, 186, 0.9) 55%, transparent 75%)",
+                }}
+            />
+
+            {/* Alternative Curve for precise mobile/desktop handling if needed */}
+            <div
+                className="absolute inset-0 z-10 sm:hidden bg-[#0D55BA]"
+                style={{
+                    clipPath: "ellipse(150% 100% at 0% 50%)",
                 }}
             />
 
             {/* Content Container */}
-            <div className="relative z-10 h-full max-w-7xl mx-auto px-6 md:px-12 flex items-center pt-24 md:pt-0">
+            <div className="relative z-20 h-full max-w-7xl mx-auto px-6 md:px-16 flex items-center">
                 <div className="max-w-2xl text-white">
-                    <h1 className="!text-white text-[40px] md:text-[56px] leading-[1.1] font-bold tracking-tight">
-                        Become a World-class
+                    <h1 className="!text-white text-[44px] md:text-[64px] leading-[1.1] font-bold tracking-tight">
+                        Become a World Class
                         <br />
                         Tech Talent
                     </h1>
 
-                    <p className="!text-white mt-8 text-base md:text-lg leading-relaxed max-w-md font-medium">
+                    <p className="!text-white mt-8 text-lg md:text-xl leading-relaxed max-w-lg font-normal opacity-90">
                         Learn tech from top Industry experts and explore global
                         and funding opportunities in a thriving tech community
                     </p>
 
                     {/* Buttons */}
-                    <div className="mt-12 flex flex-wrap gap-5">
-                        <button className="group flex items-center justify-center gap-3 px-10 py-4 rounded-full bg-[#0A3F8F] hover:bg-[#08357a] transition-all text-sm font-bold shadow-xl transform hover:-translate-y-1">
+                    <div className="mt-12 flex flex-wrap gap-6">
+                        <button className="group flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-[#07357A] hover:bg-[#05285d] transition-all text-[15px] font-bold shadow-lg">
                             Learn More
-                            <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+                            <IoPlay className="text-[12px] mt-[1px]" />
                         </button>
 
-                        <button className="group flex items-center justify-center gap-3 px-10 py-4 rounded-full bg-[#0A3F8F] hover:bg-[#08357a] transition-all text-sm font-bold shadow-xl transform hover:-translate-y-1">
+                        <button className="group flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-[#07357A] hover:bg-[#05285d] transition-all text-[15px] font-bold shadow-lg">
                             Start Now
-                            <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+                            <HiArrowNarrowRight className="text-[20px]" />
                         </button>
                     </div>
                 </div>
