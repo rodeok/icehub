@@ -24,13 +24,13 @@ export default function WorkHero() {
 
                         <div className="mt-10 flex flex-wrap gap-4">
                             <Link
-                                href="/book"
+                                href="#"
                                 className="inline-flex items-center rounded-lg bg-[#1a73e8] px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-700"
                             >
                                 Book Workspace
                             </Link>
                             <Link
-                                href="/plans"
+                                href="#"
                                 className="inline-flex items-center rounded-lg border-2 border-[#1a73e8] bg-white px-8 py-3.5 text-base font-bold text-[#1a73e8] transition hover:bg-blue-50"
                             >
                                 Explore our Plans

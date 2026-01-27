@@ -1,66 +1,62 @@
+import React from 'react';
 
-import Image from "next/image";
-import { IoPlay } from "react-icons/io5";
-import { HiArrowNarrowRight } from "react-icons/hi";
-
-export default function HeroSection() {
+const HeroSection = () => {
     return (
-        <section className="relative w-full h-[600px] lg:h-[750px] overflow-hidden bg-white">
-            {/* Background Image Container */}
+        <section className="relative w-full min-h-[600px] flex items-center bg-black overflow-hidden">
+
+            {/* 1. The Main Image (Background) */}
             <div className="absolute inset-0 z-0">
-                <Image
+                <img
                     src="/images/icehubhero.jpg"
-                    alt="Ice Hub Tech Talents"
-                    fill
-                    priority
-                    className="object-cover object-center translate-x-[15%]"
+                    alt="Tech Talent"
+                    className="w-full h-full object-cover object-center opacity-80" // Slightly dimmed to help text pop
                 />
             </div>
 
-            {/* Blue Curved Overlay with Soft Edge */}
+            {/* 2. The Blue Curve Overlay */}
             <div
                 className="absolute inset-0 z-10"
                 style={{
-                    background: "radial-gradient(circle at -10% 50%, #0D55BA 0%, #0D55BA 45%, rgba(13, 85, 186, 0.9) 55%, transparent 75%)",
+                    background: `
+                        radial-gradient(
+                          circle at -10% 50%, 
+                          #083370 0%, 
+                          #1066DF 40%, 
+                          transparent 70%
+                        ),
+                        linear-gradient(155.25deg, #083370 7.57%, #1066DF 71.81%)
+                    `,
+                    maskImage: 'radial-gradient(circle at 0% 50%, black 40%, transparent 75%)',
+                    WebkitMaskImage: 'radial-gradient(circle at 0% 50%, black 40%, transparent 75%)',
                 }}
             />
 
-            {/* Alternative Curve for precise mobile/desktop handling if needed */}
-            <div
-                className="absolute inset-0 z-10 sm:hidden bg-[#0D55BA]"
-                style={{
-                    clipPath: "ellipse(150% 100% at 0% 50%)",
-                }}
-            />
-
-            {/* Content Container */}
-            <div className="relative z-20 h-full max-w-7xl mx-auto px-6 md:px-16 flex items-center">
-                <div className="max-w-2xl text-white">
-                    <h1 className="!text-white text-[44px] md:text-[64px] leading-[1.1] font-bold tracking-tight">
-                        Become a World Class
-                        <br />
-                        Tech Talent
+            {/* 3. Content Layer */}
+            <div className="container mx-auto px-6 md:px-12 relative z-20">
+                <div className="max-w-2xl">
+                    {/* Added !text-white to force override any global styles */}
+                    <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-4 !text-white">
+                        Become a World Class <br />
+                        <span className="text-white">Tech Talent</span>
                     </h1>
 
-                    <p className="!text-white mt-8 text-lg md:text-xl leading-relaxed max-w-lg font-normal opacity-90">
-                        Learn tech from top Industry experts and explore global
-                        and funding opportunities in a thriving tech community
+                    <p className="text-lg md:text-xl mb-10 max-w-lg font-light !text-white opacity-95">
+                        Learn tech from top industry experts and explore global and
+                        funding opportunities in a thriving tech community.
                     </p>
 
-                    {/* Buttons */}
-                    <div className="mt-12 flex flex-wrap gap-6">
-                        <button className="group flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-[#07357A] hover:bg-[#05285d] transition-all text-[15px] font-bold shadow-lg">
-                            Learn More
-                            <IoPlay className="text-[12px] mt-[1px]" />
+                    <div className="flex flex-wrap gap-4">
+                        <button className="px-8 py-3 bg-[#0a254d] text-white border border-white/20 rounded-lg hover:bg-[#0d3166] transition-colors flex items-center gap-2">
+                            Learn More <span>▸</span>
                         </button>
-
-                        <button className="group flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-[#07357A] hover:bg-[#05285d] transition-all text-[15px] font-bold shadow-lg">
-                            Start Now
-                            <HiArrowNarrowRight className="text-[20px]" />
+                        <button className="px-8 py-3 bg-[#0a254d] text-white border border-white/20 rounded-lg hover:bg-[#0d3166] transition-colors flex items-center gap-2">
+                            Start Now <span>→</span>
                         </button>
                     </div>
                 </div>
             </div>
         </section>
     );
-}
+};
+
+export default HeroSection;

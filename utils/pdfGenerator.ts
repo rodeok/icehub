@@ -57,7 +57,7 @@ export const downloadReceiptPDF = async (reference: string, userData: any) => {
       
       <div style="text-align: center; color: #999; font-size: 11px;">
         <p>Thank you for choosing ICE HUB. This is a computer-generated receipt.</p>
-        <p>ICE HUB - Digital Innovation Center</p>
+        <p>ICE HUB</p>
       </div>
     </div>
   `;
