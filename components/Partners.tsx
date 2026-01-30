@@ -1,4 +1,7 @@
+'use client';
+
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 const partners = [
     {
@@ -51,9 +54,19 @@ export default function Partners() {
                 {/* Logos */}
                 <div className="mt-16 grid grid-cols-2 md:grid-cols-5 items-center gap-y-12 gap-x-8">
                     {partners.map((partner, index) => (
-                        <div
+                        <motion.div
                             key={index}
-                            className="flex justify-center items-center"
+                            className="flex justify-center items-center cursor-pointer"
+                            whileHover={{
+                                scale: 1.1,
+                                filter: "brightness(1.1)",
+                                transition: { duration: 0.3 }
+                            }}
+                            whileTap={{ scale: 0.95 }}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: index * 0.1 }}
                         >
                             <Image
                                 src={partner.src}
@@ -62,7 +75,7 @@ export default function Partners() {
                                 height={partner.height}
                                 className="object-contain"
                             />
-                        </div>
+                        </motion.div>
                     ))}
                 </div>
             </div>

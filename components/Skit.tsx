@@ -1,15 +1,23 @@
+"use client";
 import Image from "next/image";
 import { FiArrowUpRight } from "react-icons/fi";
+import { motion } from "framer-motion";
 
 const Skit = () => {
   return (
-    <section className="w-full bg-white py-16 px-6 md:px-12 lg:px-24">
+    <section className="w-full bg-white pt-10 pb-4 px-6 md:px-12 lg:px-24 overflow-hidden">
       <div className="mx-auto max-w-7xl grid lg:grid-cols-2 gap-16 items-center">
 
         {/* LEFT CONTENT */}
-        <div className="space-y-6">
+        <motion.div
+          initial={{ opacity: 0, x: -50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="space-y-6"
+        >
           <h2 className="text-[32px] md:text-[40px] font-bold leading-tight text-black">
-            <span className="text-[#0D55BA]">SKIT Program</span>:specialized
+            <span className="text-[#0D55BA]">SKIT Program</span>: specialized
             <br />
             Knowledge & Innovation Training
           </h2>
@@ -28,14 +36,20 @@ const Skit = () => {
             Learn More
             <FiArrowUpRight className="ml-1 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </a>
-        </div>
+        </motion.div>
 
-        {/* RIGHT IMAGE COLLAGE – UPDATED TO MATCH DESIGN */}
-        <div className="relative flex justify-center lg:justify-end items-center h-[660px]">
-          <div className="relative w-[600px] h-full">
+        {/* RIGHT IMAGE COLLAGE */}
+        <motion.div
+          initial={{ opacity: 0, x: 50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="relative flex justify-center lg:justify-end items-center h-auto lg:h-[660px]"
+        >
+          <div className="relative w-full max-w-[600px] aspect-[4/5] lg:h-full lg:aspect-auto">
 
             {/* Image 1 – flat top, rounded bottom */}
-            <div className="absolute left-0 top-[12.86px] w-[271.6px] h-[260.24px] overflow-hidden rounded-b-[150px] shadow-md">
+            <div className="absolute left-0 top-[2%] w-[45%] aspect-square overflow-hidden rounded-b-[100px] md:rounded-b-[150px] shadow-md z-10 transition-transform duration-500 hover:scale-105">
               <Image
                 src="/images/1.png"
                 alt="Kids learning robotics"
@@ -45,7 +59,7 @@ const Skit = () => {
             </div>
 
             {/* Image 2 – bottom-left rectangle */}
-            <div className="absolute left-[40.06px] top-[292.6px] w-[219.54px] h-[296.14px] overflow-hidden rounded-md shadow-md">
+            <div className="absolute left-[7%] top-[45%] w-[37%] aspect-[3/4] overflow-hidden rounded-md shadow-md z-0 transition-transform duration-500 hover:scale-105">
               <Image
                 src="/images/2.png"
                 alt="Kid with laptop"
@@ -55,7 +69,7 @@ const Skit = () => {
             </div>
 
             {/* Image 3 – rounded top, flat bottom */}
-            <div className="absolute left-[291.77px] top-0 w-[271px] h-[485px] overflow-hidden rounded-t-[150px] shadow-lg">
+            <div className="absolute left-[50%] top-0 w-[45%] aspect-[1/2] lg:h-[485px] lg:w-[271px] overflow-hidden rounded-t-[100px] md:rounded-t-[150px] shadow-lg z-20 transition-transform duration-500 hover:scale-105">
               <Image
                 src="/images/3.png"
                 alt="Student coding"
@@ -65,7 +79,7 @@ const Skit = () => {
             </div>
 
             {/* Image 4 – bottom-right soft rectangle */}
-            <div className="absolute left-[291.77px] top-[505px] w-[271px] h-[152px] overflow-hidden rounded-[4px] shadow-md">
+            <div className="absolute left-[50%] top-[75%] lg:top-[505px] w-[45%] h-[20%] lg:w-[271px] lg:h-[152px] overflow-hidden rounded-[4px] shadow-md z-10 transition-transform duration-500 hover:scale-105">
               <Image
                 src="/images/4.png"
                 alt="Students learning together"
@@ -75,7 +89,7 @@ const Skit = () => {
             </div>
 
           </div>
-        </div>
+        </motion.div>
 
       </div>
     </section>

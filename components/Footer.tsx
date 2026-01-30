@@ -71,9 +71,10 @@ export default function NewsletterFooter() {
                 <div>
                     <h4 className="font-semibold !text-black">Services</h4>
                     <ul className="mt-4 space-y-3 text-sm text-gray-600">
-                        <li>Frontend web dev</li>
-                        <li>Backend web dev</li>
-                        <li>UI/UX Design</li>
+                        <li><a href="/courses" className="hover:text-blue-600 transition">Courses</a></li>
+                        <li><a href="/services/web-software" className="hover:text-blue-600 transition">Web and Software Solutions</a></li>
+                        <li><a href="/services/startup-incubation" className="hover:text-blue-600 transition">Startup Incubation</a></li>
+                        <li><a href="/services/workspace" className="hover:text-blue-600 transition">Workspace</a></li>
                     </ul>
                 </div>
 

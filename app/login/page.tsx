@@ -1,12 +1,46 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import AuthLayout from "@/components/AuthLayout";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [formData, setFormData] = useState({
+        email: "",
+        password: "",
+    });
+    const router = useRouter();
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setError("");
+
+        try {
+            const result = await signIn("credentials", {
+                email: formData.email,
+                password: formData.password,
+                redirect: false,
+            });
+
+            if (result?.error) {
+                setError(result.error);
+            } else if (result?.ok) {
+                router.push("/dashboard");
+                router.refresh();
+            }
+        } catch (err) {
+            setError("An error occurred. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <AuthLayout
@@ -15,7 +49,14 @@ export default function LoginPage() {
             formTitle="Login"
             formSubtitle="Become a part of great innovators"
         >
-            <form className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Error Message */}
+                {error && (
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
+                        <p className="text-sm font-medium">{error}</p>
+                    </div>
+                )}
+
                 {/* Email Address */}
                 <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -27,8 +68,13 @@ export default function LoginPage() {
                         </div>
                         <input
                             type="email"
+                            value={formData.email}
+                            onChange={(e) =>
+                                setFormData({ ...formData, email: e.target.value })
+                            }
                             placeholder="Enter your email address"
                             className="block w-full pl-11 pr-4 py-3 bg-gray-50 border border-transparent rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none text-gray-900"
+                            required
                         />
                     </div>
                 </div>
@@ -44,8 +90,13 @@ export default function LoginPage() {
                         </div>
                         <input
                             type={showPassword ? "text" : "password"}
+                            value={formData.password}
+                            onChange={(e) =>
+                                setFormData({ ...formData, password: e.target.value })
+                            }
                             placeholder="Password"
                             className="block w-full pl-11 pr-12 py-3 bg-gray-50 border border-transparent rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none text-gray-900"
+                            required
                         />
                         <button
                             type="button"
@@ -60,9 +111,10 @@ export default function LoginPage() {
                 {/* Submit Button */}
                 <button
                     type="submit"
-                    className="w-full bg-[#0D55BA] hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-200 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                    disabled={loading}
+                    className="w-full bg-[#0D55BA] hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-200 transition-all transform hover:-translate-y-0.5 active:translate-y-0 disabled:bg-blue-400 disabled:cursor-not-allowed disabled:transform-none"
                 >
-                    Log In
+                    {loading ? "Logging in..." : "Log In"}
                 </button>
 
                 {/* Don't have an account? */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronDown, Menu, X } from "lucide-react";
@@ -8,14 +8,23 @@ import { ChevronDown, Menu, X } from "lucide-react";
 export default function Navbar() {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const toggleMenu = (menu: string) => {
     setOpenMenu(openMenu === menu ? null : menu);
   };
 
   return (
-    <header className="w-full bg-white shadow-sm">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+    <header className={`w-full sticky top-0 z-[100] transition-all duration-300 ${isScrolled ? "bg-white/90 backdrop-blur-md shadow-md py-2" : "bg-white py-4"}`}>
+      <nav className="mx-auto flex max-w-7xl items-center justify-between px-6">
         {/* Logo */}
         <div className="flex items-center gap-2">
           <Link href="/" className="nav-link">
@@ -78,8 +87,14 @@ export default function Navbar() {
 
             {openMenu === "services" && (
               <Dropdown>
+                <DropdownItem href="/courses">
+                  Digital Skills
+                </DropdownItem>
                 <DropdownItem href="/services/web-software">
                   Web & Software Solution
+                </DropdownItem>
+                <DropdownItem href="/services/startup-incubation">
+                  Startup Incubation
                 </DropdownItem>
                 <DropdownItem href="/services/workspace">
                   Workspace
@@ -161,7 +176,9 @@ export default function Navbar() {
               </button>
               {openMenu === "services" && (
                 <ul className="mt-3 ml-4 flex flex-col gap-3 text-base text-gray-600">
+                  <li><Link href="/courses" onClick={() => setMobileMenuOpen(false)}>Digital Skills</Link></li>
                   <li><Link href="/services/web-software" onClick={() => setMobileMenuOpen(false)}>Web & Software Solution</Link></li>
+                  <li><Link href="/services/startup-incubation" onClick={() => setMobileMenuOpen(false)}>Startup Incubation</Link></li>
                   <li><Link href="/services/workspace" onClick={() => setMobileMenuOpen(false)}>Workspace</Link></li>
                 </ul>
               )}

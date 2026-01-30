@@ -10,19 +10,16 @@ import Partners from "@/components/Partners";
 import Footer from "@/components/Footer";
 
 export default function Home() {
-  return (
-    <div className="relative">
-      <div className="absolute top-0 left-0 right-0 z-50">
-        <Navbar />
-      </div>
-      <Hero />
-      <Explore />
-      <Skit />
-      <Choose />
-      <Faq />
-      <Testimonials />
-      <Partners />
-      <Footer />
-    </div>
-  );
+    return (
+        <div className="relative">
+            <Hero />
+            <Explore />
+            <Skit />
+            <Choose />
+            <Faq />
+            <Testimonials />
+            <Partners />
+            <Footer />
+        </div>
+    );
 }

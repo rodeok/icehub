@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const faqs = [
   'How do I apply for a program?',
@@ -16,15 +17,25 @@ export default function Faq() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section className="max-w-5xl mx-auto px-4 py-20">
-      <h2 className="text-center text-3xl font-semibold mb-12">
+    <section className="max-w-5xl mx-auto px-4 pt-10 pb-20">
+      <motion.h2
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="text-center text-3xl font-semibold mb-12"
+      >
         Frequently Asked Questions
-      </h2>
+      </motion.h2>
 
       <div className="space-y-6">
         {faqs.map((question, index) => (
-          <div
+          <motion.div
             key={index}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
             className="relative rounded-xl bg-white shadow-sm border border-blue-100 overflow-hidden"
           >
             {/* Radial gradient blue line */}
@@ -55,7 +66,7 @@ export default function Faq() {
 
               <Plus className="w-5 h-5 text-gray-700" />
             </button>
-          </div>
+          </motion.div>
         ))}
       </div>
     </section>

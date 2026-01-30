@@ -1,6 +1,7 @@
 'use client';
 
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 type Testimonial = {
     name: string;
@@ -39,20 +40,36 @@ export default function Testimonials() {
             <div className="absolute left-40 top-64 h-2 w-2 rounded-full bg-red-500" />
 
             <div className="max-w-7xl mx-auto px-4 text-center">
-                <h2 className="text-3xl md:text-4xl font-bold tracking-wide !text-black">
+                <motion.h2
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className="text-3xl md:text-4xl font-bold tracking-wide !text-black"
+                >
                     TESTIMONIALS
-                </h2>
-                <p className="mt-4 max-w-2xl mx-auto !text-black">
+                </motion.h2>
+                <motion.p
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.1 }}
+                    className="mt-4 max-w-2xl mx-auto !text-black"
+                >
                     Hear from the people who’ve experienced Ice Hub — students, mentors,
                     and partners sharing how our programs have shaped their growth and
                     success.
-                </p>
+                </motion.p>
 
                 {/* Cards */}
                 <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
                     {testimonials.map((item, index) => (
-                        <div
+                        <motion.div
                             key={index}
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.5, delay: index * 0.1 }}
                             className="bg-white rounded-xl p-8 text-left shadow-lg"
                         >
                             {/* Stars */}
@@ -70,19 +87,25 @@ export default function Testimonials() {
                                 <p className="font-semibold !text-black">{item.name}</p>
                                 <p className="text-sm !text-black">{item.role}</p>
                             </div>
-                        </div>
+                        </motion.div>
                     ))}
                 </div>
 
                 {/* Navigation */}
-                <div className="mt-14 flex justify-center items-center gap-4">
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.4 }}
+                    className="mt-14 flex justify-center items-center gap-4"
+                >
                     <button className="flex h-10 w-10 items-center justify-center rounded bg-white shadow">
                         <ArrowLeft size={18} />
                     </button>
                     <button className="flex h-10 w-10 items-center justify-center rounded bg-blue-600 text-white shadow">
                         <ArrowRight size={18} />
                     </button>
-                </div>
+                </motion.div>
             </div>
         </section>
     );
