@@ -3,12 +3,14 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { ChevronDown, Menu, X } from "lucide-react";
 
 export default function Navbar() {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,6 +23,11 @@ export default function Navbar() {
   const toggleMenu = (menu: string) => {
     setOpenMenu(openMenu === menu ? null : menu);
   };
+
+  // Do not show the navbar on dashboard routes
+  if (pathname?.startsWith('/dashboard')) {
+    return null;
+  }
 
   return (
     <header className={`w-full sticky top-0 z-[100] transition-all duration-300 ${isScrolled ? "bg-white/90 backdrop-blur-md shadow-md py-2" : "bg-white py-4"}`}>
@@ -118,9 +125,9 @@ export default function Navbar() {
 
         {/* CTA Button - Desktop */}
         <div className="hidden md:flex items-center gap-4">
-          <Link href="/login" className="text-sm font-semibold text-gray-700 hover:text-blue-600 transition">
+          {/* <Link href="/login" className="text-sm font-semibold text-gray-700 hover:text-blue-600 transition">
             Login
-          </Link>
+          </Link> */}
           <Link
             href="/get-started"
             className="rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
@@ -193,13 +200,13 @@ export default function Navbar() {
           </ul>
 
           <div className="flex flex-col gap-3">
-            <Link
+            {/* <Link
               href="/login"
               onClick={() => setMobileMenuOpen(false)}
               className="w-full text-center rounded-full border-2 border-blue-600 px-6 py-3 text-blue-600 font-semibold hover:bg-blue-50"
             >
               Login
-            </Link>
+            </Link> */}
             <Link
               href="/get-started"
               onClick={() => setMobileMenuOpen(false)}

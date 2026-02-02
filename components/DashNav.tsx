@@ -3,10 +3,11 @@
 import { useSession, signOut } from 'next-auth/react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, Bell, ChevronDown, User, LogOut, Settings } from 'lucide-react';
+import { Search, Bell, ChevronDown, User, LogOut, Settings, Menu } from 'lucide-react';
+import { useSidebar } from '@/context/SidebarContext';
 import Link from 'next/link';
 
-export default function DashNav() {
+export default function DashNav({ uniqueCode }: { uniqueCode?: string }) {
     const { data: session } = useSession();
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const router = useRouter();
@@ -16,11 +17,21 @@ export default function DashNav() {
         router.push('/login');
     };
 
+    const displayId = uniqueCode || (session?.user as any)?.uniqueCode || 'IH-PENDING';
+    const { toggleSidebar } = useSidebar();
+
     return (
-        <header className="flex h-20 items-center justify-between bg-white px-8 border-b border-gray-100/80 sticky top-0 z-40">
-            {/* Left: Page Title & Search Bar */}
-            <div className="flex items-center gap-10 flex-1">
-                <h1 className="text-xl font-bold text-gray-800 tracking-tight">Dashboard</h1>
+        <header className="flex h-20 items-center justify-between bg-white px-4 sm:px-8 border-b border-gray-100/80 sticky top-0 z-40">
+            {/* Left: Mobile Menu Toggle & Page Title */}
+            <div className="flex items-center gap-4 sm:gap-10 flex-1">
+                <button
+                    onClick={toggleSidebar}
+                    className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-50 text-gray-600 sm:hidden hover:bg-gray-100 transition-colors"
+                    aria-label="Toggle Menu"
+                >
+                    <Menu size={20} />
+                </button>
+                <h1 className="text-lg sm:text-xl font-bold text-gray-800 tracking-tight">Dashboard</h1>
 
                 <div className="relative w-full max-w-md hidden md:block">
                     <Search
@@ -36,10 +47,10 @@ export default function DashNav() {
             </div>
 
             {/* Right: Notifications & Profile */}
-            <div className="flex items-center gap-8">
+            <div className="flex items-center gap-3 sm:gap-8">
                 {/* Notification Bell */}
                 <button className="relative flex h-10 w-10 items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-50">
-                    <Bell size={22} strokeWidth={1.5} />
+                    <Bell strokeWidth={1.5} className="w-5 h-5 sm:w-[22px] sm:h-[22px]" />
                     <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full border-2 border-white bg-red-500" />
                 </button>
 
@@ -51,10 +62,10 @@ export default function DashNav() {
                     >
                         <div className="text-right hidden sm:block">
                             <p className="text-sm font-bold text-gray-900 leading-tight">
-                                {session?.user?.name || 'Samuel Adekunle'}
+                                {session?.user?.name || 'User'}
                             </p>
                             <p className="text-[11px] font-medium text-gray-400">
-                                ID: IH-2024-0892
+                                ID: {displayId}
                             </p>
                         </div>
 

@@ -108,7 +108,7 @@ const Explore = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.5, delay: (index % 3) * 0.1 }}
-                            className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover-lift hover-glow transition-all flex flex-col h-full group"
+                            className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover-lift hover-glow transition-[transform,box-shadow] duration-300 flex flex-col h-full group gpu"
                         >
                             <div className="relative h-64 w-full overflow-hidden">
                                 <Image

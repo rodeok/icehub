@@ -9,6 +9,7 @@ export interface IUser extends Document {
     address?: string;
     experienceLevel?: 'beginner' | 'intermediate' | 'advanced';
     enrolledPrograms: mongoose.Types.ObjectId[];
+    uniqueCode: string;
     createdAt: Date;
     updatedAt: Date;
     isActive: boolean;
@@ -59,6 +60,11 @@ const UserSchema: Schema = new Schema(
         isActive: {
             type: Boolean,
             default: true,
+        },
+        uniqueCode: {
+            type: String,
+            unique: true,
+            sparse: true,
         },
     },
     {

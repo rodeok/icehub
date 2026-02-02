@@ -69,8 +69,8 @@ export default function Testimonials() {
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.5, delay: index * 0.1 }}
-                            className="bg-white rounded-xl p-8 text-left shadow-lg"
+                            transition={{ duration: 0.5 }}
+                            className="bg-white rounded-xl p-8 text-left shadow-lg gpu"
                         >
                             {/* Stars */}
                             <div className="flex gap-1 text-orange-400">
@@ -96,13 +96,13 @@ export default function Testimonials() {
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
-                    className="mt-14 flex justify-center items-center gap-4"
+                    transition={{ duration: 0.5, delay: 0.1 }}
+                    className="mt-14 flex justify-center items-center gap-4 gpu"
                 >
-                    <button className="flex h-10 w-10 items-center justify-center rounded bg-white shadow">
+                    <button className="flex h-10 w-10 items-center justify-center rounded bg-white shadow transition-[transform,box-shadow] hover:scale-110 active:scale-95">
                         <ArrowLeft size={18} />
                     </button>
-                    <button className="flex h-10 w-10 items-center justify-center rounded bg-blue-600 text-white shadow">
+                    <button className="flex h-10 w-10 items-center justify-center rounded bg-blue-600 text-white shadow transition-[transform,box-shadow] hover:scale-110 active:scale-95">
                         <ArrowRight size={18} />
                     </button>
                 </motion.div>

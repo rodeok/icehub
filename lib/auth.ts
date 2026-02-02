@@ -3,6 +3,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import connectDB from './mongodb';
 import User from '@/models/User';
 import { comparePassword } from './bcrypt';
+import { generateUniqueUserCode } from '@/utils/generateCode';
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -38,10 +39,18 @@ export const authOptions: NextAuthOptions = {
                     throw new Error('Your account has been deactivated');
                 }
 
+                // Auto-generate code for existing users if missing (Fix: Use findOneAndUpdate for persistence)
+                if (!user.uniqueCode) {
+                    const uniqueCode = await generateUniqueUserCode();
+                    await User.findByIdAndUpdate(user._id, { uniqueCode });
+                    user.uniqueCode = uniqueCode;
+                }
+
                 return {
                     id: user._id.toString(),
                     email: user.email,
                     name: user.fullName,
+                    uniqueCode: user.uniqueCode,
                     image: null,
                 };
             },
@@ -58,12 +67,14 @@ export const authOptions: NextAuthOptions = {
         async jwt({ token, user }) {
             if (user) {
                 token.id = user.id;
+                token.uniqueCode = (user as any).uniqueCode;
             }
             return token;
         },
         async session({ session, token }) {
             if (session.user) {
-                session.user.id = token.id as string;
+                (session.user as any).id = token.id as string;
+                (session.user as any).uniqueCode = token.uniqueCode as string;
             }
             return session;
         },

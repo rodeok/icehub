@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -49,7 +50,7 @@ const HeroSection = () => {
         <section
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            className="relative w-full min-h-[500px] md:min-h-[650px] flex items-center bg-[#0a254d] overflow-hidden"
+            className="relative w-full min-h-[500px] md:min-h-[650px] flex items-center bg-[#0a254d] overflow-hidden gpu"
         >
             {/* Slides */}
             {slides.map((slide, index) => (
@@ -63,10 +64,12 @@ const HeroSection = () => {
                         <div className="relative w-full h-full flex items-center">
                             {/* Background Image */}
                             <div className="absolute inset-0 z-0">
-                                <img
+                                <Image
                                     src={slide.image}
                                     alt={slide.highlight}
-                                    className="w-full h-full object-cover object-center opacity-80"
+                                    fill
+                                    priority={index === currentIndex}
+                                    className="object-cover object-center opacity-80"
                                 />
                             </div>
 
@@ -105,7 +108,7 @@ const HeroSection = () => {
                                         {slide.buttons.map((btn, btnIndex) => (
                                             <button
                                                 key={btnIndex}
-                                                className="px-8 md:px-10 py-3 md:py-4 bg-[#0a254d]/80 backdrop-blur-sm text-white border border-white/20 rounded-xl hover:bg-[#0d3166] transition-all hover:scale-105 flex items-center gap-3 text-base md:text-lg font-medium"
+                                                className="px-8 md:px-10 py-3 md:py-4 bg-[#0a254d]/80 backdrop-blur-sm text-white border border-white/20 rounded-xl hover:bg-[#0d3166] transition-[background-color,transform] hover:scale-105 flex items-center gap-3 text-base md:text-lg font-medium gpu"
                                             >
                                                 {btn.text} <span>{btn.icon}</span>
                                             </button>
@@ -151,15 +154,16 @@ const HeroSection = () => {
                                             clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)'
                                         }}
                                     >
-                                        <div className="w-full h-full bg-white overflow-hidden"
+                                        <div className="w-full h-full bg-white overflow-hidden relative"
                                             style={{
                                                 clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)'
                                             }}
                                         >
-                                            <img
+                                            <Image
                                                 src={slide.image}
                                                 alt="Professional Woman"
-                                                className="w-full h-full object-cover object-[center_20%]"
+                                                fill
+                                                className="object-cover object-[center_20%]"
                                             />
                                         </div>
                                     </div>
@@ -183,7 +187,7 @@ const HeroSection = () => {
                             exit={{ opacity: 0, x: -20 }}
                             transition={{ duration: 0.3 }}
                             onClick={prevSlide}
-                            className="absolute left-4 md:left-8 z-30 p-2 md:p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-all group"
+                            className="absolute left-4 md:left-8 z-30 p-2 md:p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-[background-color,transform] group gpu"
                             aria-label="Previous slide"
                         >
                             <ChevronLeft className="w-6 h-6 md:w-8 md:h-8 group-hover:-translate-x-1 transition-transform" />
@@ -195,7 +199,7 @@ const HeroSection = () => {
                             exit={{ opacity: 0, x: 20 }}
                             transition={{ duration: 0.3 }}
                             onClick={nextSlide}
-                            className="absolute right-4 md:right-8 z-30 p-2 md:p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-all group"
+                            className="absolute right-4 md:right-8 z-30 p-2 md:p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-[background-color,transform] group gpu"
                             aria-label="Next slide"
                         >
                             <ChevronRight className="w-6 h-6 md:w-8 md:h-8 group-hover:translate-x-1 transition-transform" />
@@ -210,7 +214,7 @@ const HeroSection = () => {
                     <button
                         key={index}
                         onClick={() => setCurrentIndex(index)}
-                        className={`transition-all duration-300 rounded-full ${index === currentIndex ? "w-8 h-2 bg-blue-500" : "w-2 h-2 bg-white/50"
+                        className={`transition-[width,background-color] duration-300 rounded-full ${index === currentIndex ? "w-8 h-2 bg-blue-500" : "w-2 h-2 bg-white/50"
                             }`}
                         aria-label={`Go to slide ${index + 1}`}
                     />

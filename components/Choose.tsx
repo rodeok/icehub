@@ -102,9 +102,9 @@ export default function WhyChooseIceHub() {
                         <div className="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full bg-indigo-500 text-white">
                             <Laptop className="h-8 w-8" />
                         </div>
-                        <h3 className="mt-4 text-lg font-semibold text-gray-900">Practical Projects</h3>
+                        <h3 className="mt-4 text-lg font-semibold text-gray-900">Project-based Learning</h3>
                         <p className="mt-2 text-sm text-gray-600">
-                            Build real-world applications and gain hands-on experience through industry-standard development projects.
+                            Our hands-on programs mirror real industry challenges, helping you build practical, meaningful solutions.
                         </p>
                     </div>
 
@@ -113,9 +113,9 @@ export default function WhyChooseIceHub() {
                         <div className="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full bg-orange-500 text-white">
                             <Briefcase className="h-8 w-8" />
                         </div>
-                        <h3 className="mt-4 text-lg font-semibold text-gray-900">Career Support</h3>
+                        <h3 className="mt-4 text-lg font-semibold text-gray-900">Expert Instructors</h3>
                         <p className="mt-2 text-sm text-gray-600">
-                            Receive personalized career coaching, resume building sessions, and interview preparation to land your dream job.
+                            Learn from seasoned professionals and industry experts who share practical insights and personalized guidance in every session.
                         </p>
                     </div>
 
@@ -124,9 +124,9 @@ export default function WhyChooseIceHub() {
                         <div className="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full bg-purple-500 text-white">
                             <GraduationCap className="h-8 w-8" />
                         </div>
-                        <h3 className="mt-4 text-lg font-semibold text-gray-900">Modern Curriculum</h3>
+                        <h3 className="mt-4 text-lg font-semibold text-gray-900">Physical and Virtual Class</h3>
                         <p className="mt-2 text-sm text-gray-600">
-                            Stay ahead with a curriculum developed by industry experts, covering the latest technologies and best practices.
+                            You can choose to learn physically at our hub or join virtually from anywhere. Our flexible learning options ensure you never miss out, no matter your location or schedule.
                         </p>
                     </div>
 
@@ -135,9 +135,9 @@ export default function WhyChooseIceHub() {
                         <div className="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full bg-teal-500 text-white">
                             <Globe className="h-8 w-8" />
                         </div>
-                        <h3 className="mt-4 text-lg font-semibold text-gray-900">Lifetime Community</h3>
+                        <h3 className="mt-4 text-lg font-semibold text-gray-900">Community Support</h3>
                         <p className="mt-2 text-sm text-gray-600">
-                            Join an exclusive network of tech professionals and alumni for ongoing support and networking opportunities.
+                            You’ll get free access to ICE Hub’s workspace and learning resources. Plus, our vibrant tech community supports your growth, collaboration, and innovation journey.
                         </p>
                     </div>
                 </div>

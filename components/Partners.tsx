@@ -56,7 +56,7 @@ export default function Partners() {
                     {partners.map((partner, index) => (
                         <motion.div
                             key={index}
-                            className="flex justify-center items-center cursor-pointer"
+                            className="flex justify-center items-center cursor-pointer gpu"
                             whileHover={{
                                 scale: 1.1,
                                 filter: "brightness(1.1)",
@@ -66,7 +66,7 @@ export default function Partners() {
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ delay: index * 0.1 }}
+                            transition={{ duration: 0.4 }}
                         >
                             <Image
                                 src={partner.src}

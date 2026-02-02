@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useSession } from 'next-auth/react';
 import {
     ArrowRight,
     CreditCard,
@@ -20,24 +21,27 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({
-    userName = "Samuel Adekunle",
-    studentId = "IH-2024-0892",
-    programName = "Software Engineering (Web Track)",
-    progress = 18
+    userName = "",
+    studentId,
+    programName = "No active programs",
+    progress = 0
 }) => {
+    const { data: session } = useSession();
+    const displayId = studentId || (session?.user as any)?.uniqueCode || 'IH-PENDING';
+
     return (
         <div className="max-w-6xl mx-auto space-y-8 pb-12">
             {/* Hero Banner */}
-            <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-blue-600 to-blue-800 p-8 text-white shadow-2xl lg:p-12">
-                <div className="relative z-10 space-y-6">
-                    <span className="inline-block rounded-full bg-white/20 px-4 py-1.5 text-xs font-bold tracking-wide backdrop-blur-md">
+            <div className="relative overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br from-blue-600 to-blue-800 p-6 sm:p-8 text-white shadow-2xl lg:p-12">
+                <div className="relative z-10 space-y-4 sm:space-y-6">
+                    <span className="inline-block rounded-full bg-white/20 px-3 py-1 sm:px-4 sm:py-1.5 text-[10px] sm:text-xs font-bold tracking-wide backdrop-blur-md">
                         Training Hub
                     </span>
                     <div className="space-y-2">
-                        <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">
+                        <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight lg:text-5xl">
                             Welcome back, {userName}!
                         </h1>
-                        <p className="max-w-md text-lg text-blue-100/90 leading-relaxed">
+                        <p className="max-w-md text-sm sm:text-lg text-blue-100/90 leading-relaxed">
                             Track your learning journey at Ice Hub. You're making great progress in your software engineering track.
                         </p>
                     </div>
@@ -57,17 +61,17 @@ const Dashboard: React.FC<DashboardProps> = ({
             </div>
 
             {/* Start Next Module Card */}
-            <div className="group flex flex-col items-center justify-between gap-6 rounded-[2rem] border border-gray-100 bg-white p-8 shadow-sm transition-all hover:shadow-md sm:flex-row">
-                <div className="flex items-center gap-5">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 ring-4 ring-blue-50/50">
-                        <Sparkles className="h-7 w-7" />
+            <div className="group flex flex-col items-center justify-between gap-6 rounded-[1.5rem] sm:rounded-[2rem] border border-gray-100 bg-white p-6 sm:p-8 shadow-sm transition-all hover:shadow-md sm:flex-row">
+                <div className="flex items-center gap-4 sm:gap-5">
+                    <div className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-xl sm:rounded-2xl bg-blue-50 text-blue-600 ring-4 ring-blue-50/50">
+                        <Sparkles className="h-6 w-6 sm:h-7 sm:w-7" />
                     </div>
                     <div>
-                        <h3 className="text-xl font-bold text-gray-900">Start your next module</h3>
-                        <p className="text-gray-500">Select a program to continue your learning journey.</p>
+                        <h3 className="text-lg sm:text-xl font-bold text-gray-900">Start your next module</h3>
+                        <p className="text-sm sm:text-base text-gray-500">Select a program to continue learning.</p>
                     </div>
                 </div>
-                <button className="group/btn flex items-center gap-2 rounded-2xl bg-blue-600 px-8 py-4 font-bold text-white transition-all hover:bg-blue-700 hover:shadow-xl active:scale-95">
+                <button className="w-full sm:w-auto group/btn flex items-center justify-center gap-2 rounded-xl sm:rounded-2xl bg-blue-600 px-6 sm:px-8 py-3.5 sm:py-4 font-bold text-white transition-all hover:bg-blue-700 hover:shadow-xl active:scale-95">
                     Continue Learning
                     <ArrowRight className="h-5 w-5 transition-transform group-hover/btn:translate-x-1" />
                 </button>
@@ -78,23 +82,23 @@ const Dashboard: React.FC<DashboardProps> = ({
                 <h2 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 ml-2">Student Overview</h2>
                 <div className="grid gap-6 lg:grid-cols-5">
                     {/* Profile Card */}
-                    <div className="lg:col-span-3 flex flex-col items-start gap-8 rounded-[2.5rem] border border-gray-100 bg-white p-10 shadow-sm">
-                        <div className="flex flex-wrap items-center gap-8">
-                            <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-blue-50 text-3xl font-black text-blue-600 shadow-inner ring-8 ring-blue-50/30">
-                                {userName.split(' ').map(n => n[0]).join('')}
+                    <div className="lg:col-span-3 flex flex-col items-start gap-6 sm:gap-8 rounded-[2rem] sm:rounded-[2.5rem] border border-gray-100 bg-white p-6 sm:p-10 shadow-sm">
+                        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-8 text-center sm:text-left">
+                            <div className="flex h-20 w-20 sm:h-24 sm:w-24 items-center justify-center rounded-2xl sm:rounded-3xl bg-blue-50 text-2xl sm:text-3xl font-black text-blue-600 shadow-inner ring-4 sm:ring-8 ring-blue-50/30">
+                                {userName ? userName.split(' ').map(n => n[0]).join('') : 'U'}
                             </div>
-                            <div className="space-y-2">
-                                <div className="flex items-center gap-3">
-                                    <h3 className="text-3xl font-black text-gray-900 tracking-tight">{userName}</h3>
-                                    <span className="rounded-full bg-green-100 px-3 py-1 text-[11px] font-black text-green-600 uppercase tracking-wider">Active</span>
+                            <div className="space-y-1 sm:space-y-2">
+                                <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
+                                    <h3 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">{userName || 'User'}</h3>
+                                    <span className="rounded-full bg-green-100 px-3 py-1 text-[10px] sm:text-[11px] font-black text-green-600 uppercase tracking-wider">Active</span>
                                 </div>
-                                <p className="text-gray-500 font-medium">Student ID: <span className="font-mono font-bold text-gray-900 bg-gray-50 px-2 py-1 rounded-md">{studentId}</span></p>
+                                <p className="text-sm sm:text-base text-gray-500 font-medium">Student ID: <span className="font-mono font-bold text-gray-900 bg-gray-50 px-2 py-0.5 sm:py-1 rounded-md">{displayId}</span></p>
                             </div>
                         </div>
                         <div className="w-full h-px bg-gray-100"></div>
-                        <div className="space-y-2">
-                            <p className="text-[11px] font-black uppercase tracking-widest text-gray-400">Enrolled Program</p>
-                            <p className="text-2xl font-black text-gray-900">{programName}</p>
+                        <div className="space-y-1 sm:space-y-2 text-center sm:text-left w-full">
+                            <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-gray-400">Enrolled Program</p>
+                            <p className="text-xl sm:text-2xl font-black text-gray-900">{programName}</p>
                         </div>
                     </div>
 

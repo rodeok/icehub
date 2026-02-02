@@ -1,34 +1,48 @@
+import Image from "next/image";
 const teamMembers = [
     {
         name: "Isaac C. Emeti",
         role: "Founder & CEO",
-        description: "Leads ICE Hub's vision, strategy, and growth, driving innovation and community impact across all initiatives."
+        description: "Leads ICE Hub's vision, strategy, and growth, driving innovation and community impact across all initiatives.",
+        img: "/images/1.png"
     },
     {
         name: "Chiamaka Blessing Emeti",
         role: "COO",
-        description: "Oversees daily operations, programs, and partnerships to ensure organizational excellence and long-term sustainability."
+        description: "Oversees daily operations, programs, and partnerships to ensure organizational excellence and long-term sustainability.",
+        img: "/images/1.png"
     },
     {
         name: "Okpala Jane Ifeoma",
         role: "Program Manager",
-        description: "Designs, coordinates, and manages high impact tech programs that empower learners and strengthen community engagement."
+        description: "Designs, coordinates, and manages high impact tech programs that empower learners and strengthen community engagement.",
+        img: "/images/1.png"
     },
     {
         name: "Joshua Ikegwuonu",
         role: "Business Development Executive",
-        description: "Builds strategic partnerships, drives growth opportunities, and expands ICE Hub's influence within the tech ecosystem."
+        description: "Builds strategic partnerships, drives growth opportunities, and expands ICE Hub's influence within the tech ecosystem.",
+        img: "/images/1.png"
     },
     {
         name: "Chimdindu Praise Ezulike",
         role: "Lead Designer/Product Design Instructor",
-        description: "Crafts user-centered digital experiences and trains aspiring designers to build innovative, industry-ready products."
+        description: "Crafts user-centered digital experiences and trains aspiring designers to build innovative, industry-ready products.",
+        img: "/images/1.png"
     },
     {
         name: "Onyekachukwu Ejimkeonye",
         role: "Senior Software Engineer/ Mobile App Dev Instructor",
-        description: "Oversees daily operations, programs, and partnerships to ensure organizational excellence and long-term sustainability."
-    }
+        description: "Oversees daily operations, programs, and partnerships to ensure organizational excellence and long-term sustainability.",
+        img: "/images/1.png"
+    },
+    // {
+    //     name: "Elosiuba Favour",
+    //     role: "Full stack Software Engineer",
+    //     description: "Oversees daily operations, programs, and partnerships to ensure organizational excellence and long-term sustainability.",
+    //     img: "/images/1.png"
+    // },
+
 ];
 
 const TeamSection = () => {
@@ -55,7 +69,7 @@ const TeamSection = () => {
                         >
                             {/* Avatar placeholder */}
                             <div className="flex-shrink-0">
-                                <div className="w-16 h-16 rounded-full bg-gray-100" />
+                                <Image src={member.img} alt="profile" width={40} height={40} />
                             </div>
 
                             {/* Info */}

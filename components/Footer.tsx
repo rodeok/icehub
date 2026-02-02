@@ -7,32 +7,32 @@ export default function NewsletterFooter() {
     return (
         <footer className="w-full bg-white">
             {/* Newsletter */}
-            <div className="max-w-7xl mx-auto px-4 pt-24">
-                <div className="bg-[#0B3470] rounded-2xl px-8 md:px-16 py-14 flex flex-col md:flex-row md:items-center md:justify-between gap-10 !text-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-16 sm:pt-20 md:pt-24">
+                <div className="bg-[#0B3470] rounded-xl sm:rounded-2xl px-6 sm:px-8 md:px-16 py-10 sm:py-12 md:py-14 flex flex-col md:flex-row md:items-center md:justify-between gap-8 sm:gap-10 !text-white">
                     {/* Left */}
                     <div className="max-w-lg">
-                        <h3 className="text-3xl font-bold !text-white">Subscribe our newsletter</h3>
-                        <p className="mt-4 text-sm !text-white leading-relaxed">
+                        <h3 className="text-2xl sm:text-3xl font-bold !text-white">Subscribe our newsletter</h3>
+                        <p className="mt-3 sm:mt-4 text-sm sm:text-base !text-white leading-relaxed opacity-90">
                             Subscribe to our newsletter and be the first to receive insights,
-                            update and expert tips on our courses
+                            updates and expert tips on our courses
                         </p>
                     </div>
 
                     {/* Right */}
                     <div className="w-full md:max-w-md">
-                        <p className="text-sm mb-3 !text-white">Stay up to date</p>
-                        <div className="flex bg-[#123F80] rounded-full p-1">
+                        <p className="text-sm mb-3 !text-white font-medium">Stay up to date</p>
+                        <div className="flex flex-col sm:flex-row bg-[#123F80] rounded-full sm:p-1 overflow-hidden gap-2 sm:gap-0 p-2 sm:p-1">
                             <input
                                 type="email"
-                                placeholder="Enter your mail"
-                                className="flex-1 bg-transparent px-5 text-sm !text-white placeholder-white placeholder:opacity-70 focus:outline-none"
+                                placeholder="Enter your email"
+                                className="flex-1 bg-transparent px-4 py-2.5 sm:px-5 sm:py-0 text-sm sm:text-base !text-white placeholder-white placeholder:opacity-70 focus:outline-none"
                             />
-                            <button className="bg-blue-500 hover:bg-blue-600 transition text-sm font-medium px-6 py-3 rounded-full">
+                            <button className="bg-blue-500 hover:bg-blue-600 active:scale-95 transition-all text-sm sm:text-base font-semibold px-5 py-2.5 sm:px-6 sm:py-3 rounded-full shadow-lg hover:shadow-xl">
                                 Subscribe
                             </button>
                         </div>
-                        <p className="mt-3 text-xs !text-white">
-                            By subscribing you are agreeing to privacy policy
+                        <p className="mt-3 text-xs sm:text-sm !text-white opacity-80">
+                            By subscribing you agree to our privacy policy
                         </p>
                     </div>
                 </div>

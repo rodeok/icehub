@@ -17,31 +17,35 @@ export default function AuthLayout({
     welcomeSubtitle,
     formTitle,
     formSubtitle,
-    sideIllustration = "/images/auth_illustration.png",
+    sideIllustration = "/images/authtable.png",
 }: AuthLayoutProps) {
     return (
         <div className="flex min-h-screen">
             {/* Left Side - Welcome Banner */}
             <div className="hidden lg:flex lg:w-1/2 bg-[#0D55BA] flex-col items-center justify-center p-12 text-white relative overflow-hidden">
-                {/* Logo */}
-                <div className="absolute top-12 left-12">
-                    <Link href="/">
-                        <div className="bg-white p-2 rounded-xl shadow-lg">
-                            <Image
-                                src="/images/icehub.png"
-                                alt="ICE HUB"
-                                width={40}
-                                height={40}
-                                priority
-                            />
-                        </div>
-                    </Link>
-                </div>
+                {/* Content Container */}
+                <div className="max-w-md w-full flex flex-col items-center text-center z-10">
+                    {/* Logo - Centered */}
+                    <div className="mb-8">
+                        <Link href="/">
+                            <div className="bg-white p-3 rounded-xl shadow-lg inline-block">
+                                <Image
+                                    src="/images/icehub.png"
+                                    alt="ICE HUB"
+                                    width={48}
+                                    height={48}
+                                    priority
+                                />
+                            </div>
+                        </Link>
+                    </div>
 
-                {/* Content */}
-                <div className="max-w-md text-center z-10">
-                    <h2 className="text-4xl font-bold mb-4">{welcomeTitle}</h2>
-                    <p className="text-blue-100 text-lg mb-12">{welcomeSubtitle}</p>
+                    <h2 className="text-4xl font-bold mb-4 tracking-tight leading-snug !text-white">
+                        {welcomeTitle}
+                    </h2>
+                    <p className="!text-white text-lg mb-12 max-w-[300px] leading-relaxed opacity-90">
+                        {welcomeSubtitle}
+                    </p>
 
                     <div className="relative w-full aspect-square max-w-sm mx-auto">
                         <Image
@@ -54,17 +58,19 @@ export default function AuthLayout({
                     </div>
                 </div>
 
-                {/* Decorative Circles */}
-                <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
-                <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl"></div>
+                {/* Decorative Elements - matching the image's subtle waves/circles */}
+                <div className="absolute inset-0 pointer-events-none opacity-20">
+                    <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-blue-400 rounded-full blur-[100px]" />
+                    <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-blue-600 rounded-full blur-[100px]" />
+                </div>
             </div>
 
             {/* Right Side - Form */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white">
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white overflow-y-auto">
                 <div className="w-full max-w-md">
-                    <div className="text-center lg:text-left mb-10">
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">{formTitle}</h1>
-                        <p className="text-gray-500">{formSubtitle}</p>
+                    <div className="text-center mb-10">
+                        <h1 className="text-2xl font-bold text-gray-900 mb-2">{formTitle}</h1>
+                        <p className="text-gray-500 font-medium">{formSubtitle}</p>
                     </div>
                     {children}
                 </div>

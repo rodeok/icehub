@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 import { hashPassword } from '@/lib/bcrypt';
+import { generateUniqueUserCode } from '@/utils/generateCode';
 
 export async function POST(req: NextRequest) {
     try {
@@ -31,6 +32,9 @@ export async function POST(req: NextRequest) {
         // Hash password
         const hashedPassword = await hashPassword(password);
 
+        // Generate a unique code using the utility
+        const uniqueCode = await generateUniqueUserCode();
+
         // Create new user
         const user = await User.create({
             fullName,
@@ -39,6 +43,7 @@ export async function POST(req: NextRequest) {
             phoneNumber,
             address,
             experienceLevel: experienceLevel || 'beginner',
+            uniqueCode,
         });
 
         return NextResponse.json(
@@ -48,6 +53,7 @@ export async function POST(req: NextRequest) {
                     id: user._id,
                     fullName: user.fullName,
                     email: user.email,
+                    uniqueCode: user.uniqueCode,
                 },
             },
             { status: 201 }

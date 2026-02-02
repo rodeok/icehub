@@ -74,8 +74,9 @@ export default function SignupPage() {
             welcomeSubtitle="Join our community of digital innovators"
             formTitle="Create an Account"
             formSubtitle="Become a part of great innovators"
+            sideIllustration="/images/authtable.png"
         >
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-5">
                 {/* Error Message */}
                 {error && (
                     <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
@@ -85,7 +86,7 @@ export default function SignupPage() {
 
                 {/* Full Name */}
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-bold text-gray-700 mb-1.5">
                         Full Name
                     </label>
                     <div className="relative">
@@ -99,7 +100,7 @@ export default function SignupPage() {
                                 setFormData({ ...formData, fullName: e.target.value })
                             }
                             placeholder="Enter your full name"
-                            className="block w-full pl-11 pr-4 py-3 bg-gray-50 border border-transparent rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none text-gray-900"
+                            className="block w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-blue-500 transition-all outline-none text-gray-900 text-sm"
                             required
                         />
                     </div>
@@ -107,7 +108,7 @@ export default function SignupPage() {
 
                 {/* Email Address */}
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-bold text-gray-700 mb-1.5">
                         Email Address
                     </label>
                     <div className="relative">
@@ -121,7 +122,7 @@ export default function SignupPage() {
                                 setFormData({ ...formData, email: e.target.value })
                             }
                             placeholder="Enter your email address"
-                            className="block w-full pl-11 pr-4 py-3 bg-gray-50 border border-transparent rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none text-gray-900"
+                            className="block w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-blue-500 transition-all outline-none text-gray-900 text-sm"
                             required
                         />
                     </div>
@@ -129,33 +130,29 @@ export default function SignupPage() {
 
                 {/* Course */}
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-bold text-gray-700 mb-1.5">
                         Course
                     </label>
                     <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <BookOpen className="h-5 w-5 text-gray-400" />
                         </div>
-                        <select
-                            className="block w-full pl-11 pr-4 py-3 bg-gray-50 border border-transparent rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none text-gray-900 appearance-none"
+                        <input
+                            type="text"
                             value={formData.course}
                             onChange={(e) =>
                                 setFormData({ ...formData, course: e.target.value })
                             }
-                        >
-                            <option value="" disabled>Enter your course of interest</option>
-                            <option value="frontend">Front-End Development</option>
-                            <option value="backend">Back-End Development</option>
-                            <option value="uiux">UI/UX Design</option>
-                            <option value="cyber">Cybersecurity</option>
-                            <option value="data">Data Analytics</option>
-                        </select>
+                            placeholder="Enter your course of interest"
+                            className="block w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-blue-500 transition-all outline-none text-gray-900 text-sm"
+                            required
+                        />
                     </div>
                 </div>
 
                 {/* Password */}
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-bold text-gray-700 mb-1.5">
                         Password
                     </label>
                     <div className="relative">
@@ -169,7 +166,7 @@ export default function SignupPage() {
                                 setFormData({ ...formData, password: e.target.value })
                             }
                             placeholder="Password"
-                            className="block w-full pl-11 pr-12 py-3 bg-gray-50 border border-transparent rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none text-gray-900"
+                            className="block w-full pl-11 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-blue-500 transition-all outline-none text-gray-900 text-sm"
                             required
                             minLength={6}
                         />
@@ -178,22 +175,24 @@ export default function SignupPage() {
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600"
                         >
-                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
                     </div>
                 </div>
 
                 {/* Submit Button */}
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full bg-[#0D55BA] hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-200 transition-all transform hover:-translate-y-0.5 active:translate-y-0 disabled:bg-blue-400 disabled:cursor-not-allowed disabled:transform-none"
-                >
-                    {loading ? "Creating Account..." : "Create Account"}
-                </button>
+                <div className="pt-2">
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full bg-[#186ADE] hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all disabled:bg-blue-400 disabled:cursor-not-allowed"
+                    >
+                        {loading ? "Creating Account..." : "Create Account"}
+                    </button>
+                </div>
 
                 {/* Already have an account? */}
-                <p className="text-center text-sm font-medium text-gray-600 mt-8">
+                <p className="text-center text-sm font-medium text-gray-900 mt-6">
                     Already have an account?{" "}
                     <Link href="/login" className="text-blue-600 hover:underline font-bold">
                         Log In

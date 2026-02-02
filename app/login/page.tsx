@@ -46,8 +46,9 @@ export default function LoginPage() {
         <AuthLayout
             welcomeTitle="Hello! Welcome back to Ice Hub"
             welcomeSubtitle="Great Innovator. Your journey of excellence continues!"
-            formTitle="Login"
+            formTitle="Create an Account"
             formSubtitle="Become a part of great innovators"
+            sideIllustration="/images/authtable.png"
         >
             <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Error Message */}
@@ -59,7 +60,7 @@ export default function LoginPage() {
 
                 {/* Email Address */}
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-bold text-gray-700 mb-2">
                         Email Address
                     </label>
                     <div className="relative">
@@ -73,7 +74,7 @@ export default function LoginPage() {
                                 setFormData({ ...formData, email: e.target.value })
                             }
                             placeholder="Enter your email address"
-                            className="block w-full pl-11 pr-4 py-3 bg-gray-50 border border-transparent rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none text-gray-900"
+                            className="block w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-blue-500 transition-all outline-none text-gray-900 text-sm"
                             required
                         />
                     </div>
@@ -81,7 +82,7 @@ export default function LoginPage() {
 
                 {/* Password */}
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-bold text-gray-700 mb-2">
                         Password
                     </label>
                     <div className="relative">
@@ -95,7 +96,7 @@ export default function LoginPage() {
                                 setFormData({ ...formData, password: e.target.value })
                             }
                             placeholder="Password"
-                            className="block w-full pl-11 pr-12 py-3 bg-gray-50 border border-transparent rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none text-gray-900"
+                            className="block w-full pl-11 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-blue-500 transition-all outline-none text-gray-900 text-sm"
                             required
                         />
                         <button
@@ -103,7 +104,7 @@ export default function LoginPage() {
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600"
                         >
-                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
                     </div>
                 </div>
@@ -112,13 +113,13 @@ export default function LoginPage() {
                 <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-[#0D55BA] hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-200 transition-all transform hover:-translate-y-0.5 active:translate-y-0 disabled:bg-blue-400 disabled:cursor-not-allowed disabled:transform-none"
+                    className="w-full bg-[#186ADE] hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all disabled:bg-blue-400 disabled:cursor-not-allowed"
                 >
                     {loading ? "Logging in..." : "Log In"}
                 </button>
 
                 {/* Don't have an account? */}
-                <p className="text-center text-sm font-medium text-gray-600 mt-8">
+                <p className="text-center text-sm font-medium text-gray-900 mt-8">
                     Don't have an account?{" "}
                     <Link href="/get-started" className="text-blue-600 hover:underline font-bold">
                         Sign Up
