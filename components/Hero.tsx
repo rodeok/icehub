@@ -92,23 +92,23 @@ const HeroSection = () => {
                             />
 
                             {/* Content Layer */}
-                            <div className="container mx-auto px-6 md:px-12 relative z-20">
+                            <div className="container mx-auto px-6 md:px-12 relative z-20 pt-32 sm:pt-44 md:pt-16">
                                 <div className={`max-w-2xl transition-all duration-1000 transform ${index === currentIndex ? "translate-x-0 opacity-100" : "-translate-x-10 opacity-0"
                                     }`}>
-                                    <h1 className="text-4xl md:text-6xl font-bold leading-tight !text-white mb-4">
-                                        {slide.main} <br />
+                                    <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold leading-tight !text-white mb-4">
+                                        <span className="whitespace-nowrap">{slide.main}</span> <br />
                                         <span className="text-white">{slide.highlight}</span>
                                     </h1>
 
-                                    <p className="text-base md:text-xl mb-6 md:mb-10 max-w-xl font-light !text-white opacity-95 leading-relaxed">
+                                    <p className="text-sm sm:text-base md:text-xl mb-6 md:mb-10 max-w-xl font-light !text-white opacity-95 leading-relaxed">
                                         {slide.description}
                                     </p>
 
-                                    <div className="flex flex-wrap gap-4 md:gap-6">
+                                    <div className="flex flex-col sm:flex-row flex-wrap gap-4 md:gap-6">
                                         {slide.buttons.map((btn, btnIndex) => (
                                             <button
                                                 key={btnIndex}
-                                                className="px-8 md:px-10 py-3 md:py-4 bg-[#0a254d]/80 backdrop-blur-sm text-white border border-white/20 rounded-xl hover:bg-[#0d3166] transition-[background-color,transform] hover:scale-105 flex items-center gap-3 text-base md:text-lg font-medium gpu"
+                                                className="w-full sm:w-auto px-6 sm:px-8 md:px-10 py-3 md:py-4 bg-[#0a254d]/80 backdrop-blur-sm text-white border border-white/20 rounded-xl hover:bg-[#0d3166] transition-[background-color,transform] hover:scale-105 flex items-center justify-center gap-3 text-sm sm:text-base md:text-lg font-medium gpu"
                                             >
                                                 {btn.text} <span>{btn.icon}</span>
                                             </button>
@@ -120,24 +120,24 @@ const HeroSection = () => {
                     ) : (
                         /* Layout 2: Split Layout with Hexagon (Slide 2) */
                         <div className="relative w-full h-full flex items-center bg-gradient-to-br from-[#083370] via-[#1066DF] to-[#083370]">
-                            <div className="container mx-auto px-6 md:px-12 flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8">
+                            <div className="container mx-auto px-6 md:px-12 flex flex-row items-center justify-between gap-4 lg:gap-8 pt-32 sm:pt-44 lg:pt-16">
                                 {/* Left Content */}
-                                <div className={`max-w-xl text-left transition-all duration-1000 transform ${index === currentIndex ? "translate-x-0 opacity-100" : "-translate-x-10 opacity-0"
+                                <div className={`flex-1 lg:max-w-xl text-left transition-all duration-1000 transform ${index === currentIndex ? "translate-x-0 opacity-100" : "-translate-x-10 opacity-0"
                                     }`}>
-                                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight !text-white mb-4">
-                                        {slide.main} <br />
+                                    <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight !text-white mb-4">
+                                        <span className="whitespace-nowrap">{slide.main}</span> <br />
                                         <span className="text-white">{slide.highlight}</span>
                                     </h1>
 
-                                    <p className="text-base md:text-lg lg:text-xl mb-6 md:mb-8 font-light !text-white opacity-90 leading-relaxed">
+                                    <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-6 md:mb-8 font-light !text-white opacity-90 leading-relaxed">
                                         {slide.description}
                                     </p>
 
-                                    <div className="flex flex-wrap gap-4 md:gap-6">
+                                    <div className="flex flex-col sm:flex-row flex-wrap gap-4 md:gap-6 justify-center lg:justify-start w-full">
                                         {slide.buttons.map((btn, btnIndex) => (
                                             <button
                                                 key={btnIndex}
-                                                className="px-8 md:px-10 py-3 md:py-4 bg-[#0a254d]/80 backdrop-blur-sm text-white border border-white/20 rounded-xl hover:bg-[#0d3166] transition-all hover:scale-105 flex items-center gap-3 text-base md:text-lg font-medium"
+                                                className="w-full sm:w-auto px-6 sm:px-8 md:px-10 py-3 md:py-4 bg-[#0a254d]/80 backdrop-blur-sm text-white border border-white/20 rounded-xl hover:bg-[#0d3166] transition-all hover:scale-105 flex items-center justify-center gap-3 text-sm sm:text-base md:text-lg font-medium"
                                             >
                                                 {btn.text} <span>{btn.icon}</span>
                                             </button>
@@ -146,10 +146,10 @@ const HeroSection = () => {
                                 </div>
 
                                 {/* Right Image (Hexagon) */}
-                                <div className={`relative flex items-center justify-center transition-all duration-1000 transform ${index === currentIndex ? "translate-x-0 opacity-100 scale-100" : "translate-x-10 opacity-0 scale-90"
+                                <div className={`relative flex blur-md lg:blur-none items-center justify-center transition-all duration-1000 transform ${index === currentIndex ? "translate-x-0 opacity-100 scale-100" : "translate-x-10 opacity-0 scale-90"
                                     } lg:w-1/2`}>
                                     {/* Hexagon Border Effect */}
-                                    <div className="relative w-[280px] h-[320px] md:w-[400px] md:h-[460px] bg-blue-400 p-[3px]"
+                                    <div className="relative w-[220px] h-[260px] sm:w-[280px] sm:h-[320px] md:w-[400px] md:h-[460px] bg-blue-400 p-[3px]"
                                         style={{
                                             clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)'
                                         }}
