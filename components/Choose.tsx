@@ -31,8 +31,8 @@ export default function WhyChooseIceHub() {
                         transition={{ duration: 0.5 }}
                         className="bg-sky-50 rounded-2xl p-8 text-center shadow-sm"
                     >
-                        <div className="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full bg-blue-500">
-                            <img src="/images/colab.png" alt="Collaborative Learning" className="h-8 w-8" />
+                        <div className="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full">
+                            <img src="/images/colab.png" alt="Collaborative Learning" className="h-17 w-17" />
                         </div>
                         <h3 className="mt-4 text-lg font-semibold text-gray-900">Collaborative Learning</h3>
                         <p className="mt-2 text-sm text-gray-600">
@@ -48,8 +48,8 @@ export default function WhyChooseIceHub() {
                         transition={{ duration: 0.5, delay: 0.1 }}
                         className="bg-sky-50 rounded-2xl p-8 text-center shadow-sm"
                     >
-                        <div className="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full bg-green-500">
-                            <img src="/images/mentor.png" alt="Mentorship" className="h-8 w-8" />
+                        <div className="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full ">
+                            <img src="/images/mentor.png" alt="Mentorship" className="h-17 w-17" />
                         </div>
                         <h3 className="mt-4 text-lg font-semibold text-gray-900">Mentorship</h3>
                         <p className="mt-2 text-sm text-gray-600">
@@ -65,8 +65,8 @@ export default function WhyChooseIceHub() {
                         transition={{ duration: 0.5, delay: 0.2 }}
                         className="bg-sky-50 rounded-2xl p-8 text-center shadow-sm"
                     >
-                        <div className="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full bg-red-500">
-                            <img src="/images/job.png" alt="Job Opportunity" className="h-8 w-8" />
+                        <div className="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full">
+                            <img src="/images/job.png" alt="Job Opportunity" className="h-17 w-17" />
                         </div>
                         <h3 className="mt-4 text-lg font-semibold text-gray-900">Job Opportunity</h3>
                         <p className="mt-2 text-sm text-gray-600">
@@ -82,8 +82,8 @@ export default function WhyChooseIceHub() {
                         transition={{ duration: 0.5, delay: 0.3 }}
                         className="bg-sky-50 rounded-2xl p-8 text-center shadow-sm"
                     >
-                        <div className="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full bg-pink-500">
-                            <img src="/images/cert.png" alt="Certification" className="h-8 w-8" />
+                        <div className="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full">
+                            <img src="/images/cert.png" alt="Certification" className="h-17 w-17" />
                         </div>
                         <h3 className="mt-4 text-lg font-semibold text-gray-900">Certification</h3>
                         <p className="mt-2 text-sm text-gray-600">
@@ -99,8 +99,8 @@ export default function WhyChooseIceHub() {
                 >
                     {/* Card 5 */}
                     <div className="bg-sky-50 rounded-2xl p-8 text-center shadow-sm">
-                        <div className="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full bg-indigo-500 text-white">
-                            <Laptop className="h-8 w-8" />
+                        <div className="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full  text-white">
+                            <img src="/images/project-based.png" alt="Certification" className="h-17 w-17" />
                         </div>
                         <h3 className="mt-4 text-lg font-semibold text-gray-900">Project-based Learning</h3>
                         <p className="mt-2 text-sm text-gray-600">
@@ -110,8 +110,8 @@ export default function WhyChooseIceHub() {
 
                     {/* Card 6 */}
                     <div className="bg-sky-50 rounded-2xl p-8 text-center shadow-sm">
-                        <div className="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full bg-orange-500 text-white">
-                            <Briefcase className="h-8 w-8" />
+                        <div className="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full text-white">
+                            <img src="/images/expert.png" alt="Certification" className="h-17 w-17" />
                         </div>
                         <h3 className="mt-4 text-lg font-semibold text-gray-900">Expert Instructors</h3>
                         <p className="mt-2 text-sm text-gray-600">
@@ -121,8 +121,8 @@ export default function WhyChooseIceHub() {
 
                     {/* Card 7 */}
                     <div className="bg-sky-50 rounded-2xl p-8 text-center shadow-sm">
-                        <div className="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full bg-purple-500 text-white">
-                            <GraduationCap className="h-8 w-8" />
+                        <div className="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full  text-white">
+                            <img src="/images/physical.png" alt="Certification" className="h-17 w-17" />
                         </div>
                         <h3 className="mt-4 text-lg font-semibold text-gray-900">Physical and Virtual Class</h3>
                         <p className="mt-2 text-sm text-gray-600">
@@ -132,8 +132,8 @@ export default function WhyChooseIceHub() {
 
                     {/* Card 8 */}
                     <div className="bg-sky-50 rounded-2xl p-8 text-center shadow-sm">
-                        <div className="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full bg-teal-500 text-white">
-                            <Globe className="h-8 w-8" />
+                        <div className="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full text-white">
+                            <img src="/images/community.png" alt="Certification" className="h-17 w-17" />
                         </div>
                         <h3 className="mt-4 text-lg font-semibold text-gray-900">Community Support</h3>
                         <p className="mt-2 text-sm text-gray-600">

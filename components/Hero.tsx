@@ -190,7 +190,7 @@ const HeroSection = () => {
                             className="absolute left-4 md:left-8 z-30 p-2 md:p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-[background-color,transform] group gpu"
                             aria-label="Previous slide"
                         >
-                            <ChevronLeft className="w-6 h-6 md:w-8 md:h-8 group-hover:-translate-x-1 transition-transform" />
+                            {/* <ChevronLeft className="w-6 h-6 md:w-8 md:h-8 group-hover:-translate-x-1 transition-transform" /> */}
                         </motion.button>
                         <motion.button
                             key="next-btn"
@@ -202,7 +202,7 @@ const HeroSection = () => {
                             className="absolute right-4 md:right-8 z-30 p-2 md:p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-[background-color,transform] group gpu"
                             aria-label="Next slide"
                         >
-                            <ChevronRight className="w-6 h-6 md:w-8 md:h-8 group-hover:translate-x-1 transition-transform" />
+                            {/* <ChevronRight className="w-6 h-6 md:w-8 md:h-8 group-hover:translate-x-1 transition-transform" /> */}
                         </motion.button>
                     </>
                 )}
