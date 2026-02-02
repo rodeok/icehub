@@ -4,12 +4,13 @@ import Program from '@/models/Program';
 
 export async function GET(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         await connectDB();
+        const { id } = await params;
 
-        const program = await Program.findById(params.id);
+        const program = await Program.findById(id);
 
         if (!program) {
             return NextResponse.json(
