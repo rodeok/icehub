@@ -2,7 +2,7 @@ import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface IPayment extends Document {
     _id: mongoose.Types.ObjectId;
-    userId: mongoose.Types.ObjectId;
+    userId?: mongoose.Types.ObjectId | string;
     programId: mongoose.Types.ObjectId;
     reference: string;
     amount: number;
@@ -20,7 +20,7 @@ const PaymentSchema: Schema = new Schema(
         userId: {
             type: Schema.Types.ObjectId,
             ref: 'User',
-            required: [true, 'User ID is required'],
+            required: false,
         },
         programId: {
             type: Schema.Types.ObjectId,

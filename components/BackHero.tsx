@@ -38,7 +38,7 @@ export default function BackHero() {
 
                         <div className="mt-10">
                             <Link
-                                href="/apply"
+                                href="/enroll"
                                 className="inline-block bg-[#1a73e8] px-10 py-4 text-base font-semibold text-white shadow-sm hover:bg-blue-700 transition"
                             >
                                 Enroll Now

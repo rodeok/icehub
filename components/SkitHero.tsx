@@ -23,7 +23,7 @@ export default function NextGenHero() {
 
                         <div className="mt-10 flex flex-col sm:flex-row gap-4">
                             <Link
-                                href="/register"
+                                href="/enroll?category=skit"
                                 className="inline-flex justify-center items-center rounded-md bg-[#1a73e8] px-8 py-3.5 text-base font-bold text-white shadow-lg hover:bg-blue-600 transition-colors"
                                 style={{ backgroundColor: '#1a73e8' }}
                             >
