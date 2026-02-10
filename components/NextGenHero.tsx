@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function NextGenHero() {
     return (
@@ -44,12 +45,18 @@ export default function NextGenHero() {
                         </div>
                     </div>
 
-                    {/* Right Column: Card Placeholder */}
+                    {/* Right Column: Hero Image Card */}
                     <div className="flex justify-center lg:justify-end">
                         <div className="relative w-full max-w-[500px] aspect-square bg-white rounded-[40px] shadow-2xl overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                            {/* This is the white card shown in the design. 
-                   It can hold an image or video later. */}
-                            <div className="w-full h-full bg-slate-50/10"></div>
+                            <Image
+                                src="/images/nextgen.jpg"
+                                alt="NextGen Tech Skill Training"
+                                fill
+                                className="object-cover"
+                                priority
+                            />
+                            {/* Subtle Overlay */}
+                            <div className="absolute inset-0 bg-blue-600/5 pointer-events-none"></div>
                         </div>
                     </div>
 

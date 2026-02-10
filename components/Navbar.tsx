@@ -197,6 +197,9 @@ export default function Navbar() {
             <li>
               <Link href="/blogs" onClick={() => setMobileMenuOpen(false)}>Blogs & Activities</Link>
             </li>
+            <li>
+              <Link href="/services/start-incubation" onClick={() => setMobileMenuOpen(false)}>Startup Incubation</Link>
+            </li>
           </ul>
 
           <div className="flex flex-col gap-3">

@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const CorePhilosophy = () => {
     return (
         <section className="py-20 px-4 bg-white">
@@ -13,8 +15,15 @@ const CorePhilosophy = () => {
                         </p>
 
 
-                        {/* Placeholder image box */}
-                        <div className="w-full max-w-xs h-56 bg-muted rounded-2xl" />
+                        {/* Core Philosophy Image with custom shape design */}
+                        <div className="relative w-full max-w-sm aspect-square">
+                            <Image
+                                src="/images/phil.jpg"
+                                alt="Our Core Philosophy"
+                                fill
+                                className="object-cover rounded-tl-[2rem] rounded-tr-[5rem] rounded-bl-[5rem] rounded-br-[2rem]"
+                            />
+                        </div>
                     </div>
 
                     {/* Right side - Mission, Vision, Values */}

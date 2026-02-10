@@ -1,5 +1,5 @@
-
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
 export default function DigitalHero() {
@@ -37,12 +37,15 @@ export default function DigitalHero() {
                         </div>
                     </div>
 
-                    {/* Right Column: Circle Placeholder */}
+                    {/* Right Column: Image with custom shape design */}
                     <div className="flex justify-center lg:justify-end relative">
-                        {/* Large decorative circle matching the design */}
-                        <div className="w-[350px] h-[350px] sm:w-[450px] sm:h-[450px] lg:w-[550px] lg:h-[550px] rounded-full bg-blue-100/50 relative overflow-hidden">
-                            {/* This circle represents the image placeholder region from the design */}
-                            <div className="w-full h-full bg-slate-50/10"></div>
+                        <div className="relative w-[350px] h-[350px] sm:w-[450px] sm:h-[450px] lg:w-[550px] lg:h-[550px]">
+                            <Image
+                                src="/images/lit.jpg"
+                                alt="Digital Literacy"
+                                fill
+                                className="object-cover rounded-tl-[2rem] rounded-tr-[5rem] rounded-bl-[5rem] rounded-br-[2rem]"
+                            />
                         </div>
                     </div>
 

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 
-export default function NextGenHero() {
+export default function SkitHero() {
     return (
         <section className="relative w-full overflow-hidden bg-[#f8faff] pt-32 pb-12 lg:py-24">
             {/* Background Decorative Elements */}
@@ -12,12 +12,12 @@ export default function NextGenHero() {
 
                     {/* Left Column: Text Content */}
                     <div className="max-w-2xl">
-                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.15]">
+                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.15] !text-black">
                             Inspiring Young Minds Through <br />
                             <span className="text-[#1a73e8]">Technology</span>
                         </h1>
 
-                        <p className="mt-8 text-lg text-slate-600 leading-relaxed max-w-lg">
+                        <p className="mt-8 text-lg text-slate-600 leading-relaxed max-w-lg !text-slate-500">
                             A beginner-friendly tech program designed to help kids and teens explore exciting digital skills in a fun, creative, and interactive way.
                         </p>
 
@@ -43,10 +43,11 @@ export default function NextGenHero() {
                     <div className="flex justify-center lg:justify-end">
                         <div className="relative w-full max-w-[500px] aspect-square bg-white rounded-[40px] shadow-2xl overflow-hidden hover:shadow-xl transition-shadow duration-300">
                             <Image
-                                src="/images/skit.png"
+                                src="/images/skit.jpg"
                                 alt="Skit Program"
                                 fill
                                 className="object-cover"
+                                priority
                             />
                         </div>
                     </div>
