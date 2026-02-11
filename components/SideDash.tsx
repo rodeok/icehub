@@ -33,12 +33,12 @@ export default function SideDash() {
         },
         {
             name: 'Personal Information',
-            href: '/dashboard/peesonal-info',
+            href: '/dashboard/personal-info',
             icon: User,
         },
         {
             name: 'Payments',
-            href: '/dashboard/payments',
+            href: '/dashboard/payment',
             icon: CreditCard,
         },
         {

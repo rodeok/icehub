@@ -10,8 +10,36 @@ import Link from 'next/link';
 export default function DashNav({ uniqueCode }: { uniqueCode?: string }) {
     const { data: session } = useSession();
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
     const router = useRouter();
     const pathname = usePathname();
+
+    const notifications = [
+        {
+            id: 1,
+            title: 'Project Submission',
+            description: 'Your Phase 1 project has been graded. Check your results!',
+            time: '2 mins ago',
+            icon: <Search className="text-blue-500" size={16} />,
+            bg: 'bg-blue-50',
+        },
+        {
+            id: 2,
+            title: 'Upcoming Webinar',
+            description: 'Join our "Future of AI" webinar tomorrow at 10:00 AM.',
+            time: '1 hour ago',
+            icon: <Bell className="text-blue-500" size={16} />,
+            bg: 'bg-blue-50',
+        },
+        {
+            id: 3,
+            title: 'Payment Reminder',
+            description: 'Your next installment is due in 3 days.',
+            time: '5 hours ago',
+            icon: <Settings className="text-red-500" size={16} />,
+            bg: 'bg-red-50',
+        },
+    ];
 
     const handleLogout = async () => {
         await signOut({ redirect: false });
@@ -65,15 +93,64 @@ export default function DashNav({ uniqueCode }: { uniqueCode?: string }) {
             {/* Right: Notifications & Profile */}
             <div className="flex items-center gap-3 sm:gap-8">
                 {/* Notification Bell */}
-                <button className="relative flex h-10 w-10 items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-50">
-                    <Bell strokeWidth={1.5} className="w-5 h-5 sm:w-[22px] sm:h-[22px]" />
-                    <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full border-2 border-white bg-red-500" />
-                </button>
+                <div className="relative">
+                    <button
+                        onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                        className={`relative flex h-10 w-10 items-center justify-center rounded-full transition-colors ${isNotificationsOpen ? 'bg-gray-100 text-blue-600' : 'text-gray-500 hover:bg-gray-50'}`}
+                    >
+                        <Bell strokeWidth={1.5} className="w-5 h-5 sm:w-[22px] sm:h-[22px]" />
+                        <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full border-2 border-white bg-red-500" />
+                    </button>
+
+                    {/* Notifications Dropdown */}
+                    {isNotificationsOpen && (
+                        <div className="absolute right-0 mt-3 w-80 sm:w-96 rounded-2xl border border-gray-100 bg-white shadow-xl ring-1 ring-black/5 z-50 animate-in fade-in zoom-in duration-200">
+                            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-50">
+                                <h3 className="font-bold text-gray-900">Notifications</h3>
+                                <button className="text-xs font-bold text-blue-600 hover:underline">Mark all read</button>
+                            </div>
+
+                            <div className="max-h-[400px] overflow-y-auto">
+                                {notifications.map((notif) => (
+                                    <div key={notif.id} className="px-6 py-4 border-b border-gray-50 last:border-none hover:bg-gray-50/50 transition-colors cursor-pointer group">
+                                        <div className="flex gap-4">
+                                            <div className={`flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full ${notif.bg}`}>
+                                                {notif.icon}
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="flex items-center justify-between mb-0.5">
+                                                    <h4 className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{notif.title}</h4>
+                                                    <span className="text-[11px] font-medium text-gray-400">{notif.time}</span>
+                                                </div>
+                                                <p className="text-xs text-gray-500 leading-normal line-clamp-2">
+                                                    {notif.description}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="p-3 border-t border-gray-50 bg-gray-50/30 rounded-b-2xl">
+                                <Link
+                                    href="/dashboard/notifications"
+                                    onClick={() => setIsNotificationsOpen(false)}
+                                    className="flex items-center justify-center w-full py-2.5 text-sm font-bold text-gray-600 hover:text-blue-600 transition-colors"
+                                >
+                                    View All Notifications
+                                </Link>
+                            </div>
+                        </div>
+                    )}
+                </div>
 
                 {/* User Profile Dropdown */}
                 <div className="relative">
                     <button
-                        onClick={() => setIsProfileOpen(!isProfileOpen)}
+                        onClick={() => {
+                            setIsProfileOpen(!isProfileOpen);
+                            setIsNotificationsOpen(false);
+                        }}
                         className="flex items-center gap-3 rounded-2xl p-1.5 transition-all hover:bg-gray-50 select-none group"
                     >
                         <div className="text-right hidden sm:block">
@@ -111,6 +188,7 @@ export default function DashNav({ uniqueCode }: { uniqueCode?: string }) {
 
                             <Link
                                 href="/dashboard/personal-info"
+                                onClick={() => setIsProfileOpen(false)}
                                 className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-blue-600"
                             >
                                 <User size={18} strokeWidth={1.5} />
@@ -119,6 +197,7 @@ export default function DashNav({ uniqueCode }: { uniqueCode?: string }) {
 
                             <Link
                                 href="/dashboard/settings"
+                                onClick={() => setIsProfileOpen(false)}
                                 className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-blue-600"
                             >
                                 <Settings size={18} strokeWidth={1.5} />
@@ -139,5 +218,6 @@ export default function DashNav({ uniqueCode }: { uniqueCode?: string }) {
                 </div>
             </div>
         </header>
+
     );
 }

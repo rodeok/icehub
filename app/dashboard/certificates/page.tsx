@@ -1,151 +1,101 @@
-import { redirect } from 'next/navigation';
-import { getAuthSession } from '@/lib/auth';
-import connectDB from '@/lib/mongodb';
-import Certificate from '@/models/Certificate';
+'use client';
 
-export default async function CertificatesPage() {
-    const session = await getAuthSession();
+import React from 'react';
+import {
+    Award,
+    CheckCircle2,
+    Circle,
+    Download,
+    Star,
+    Share2
+} from 'lucide-react';
 
-    if (!session?.user) {
-        redirect('/login');
-    }
-
-    await connectDB();
-
-    // Fetch user certificates
-    const certificates = await Certificate.find({ userId: session.user.id })
-        .populate('programId')
-        .sort({ issueDate: -1 })
-        .lean();
+export default function CertificatesPage() {
+    const checklist = [
+        { task: "Complete all 40 modules", completed: true },
+        { task: "Submit all 15 assignments", completed: false },
+        { task: "Maintain 80% attendance", completed: true },
+        { task: "Pass final project assessment", completed: false }
+    ];
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <div className="max-w-7xl mx-auto px-4 py-8">
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900">My Certificates</h1>
-                    <p className="text-gray-600 mt-2">
-                        View and download your earned certificates
-                    </p>
-                </div>
+        <div className="space-y-8 pb-12">
+            {/* Header */}
+            <div>
+                <h1 className="text-3xl font-bold text-gray-900">Course Certification</h1>
+                <p className="text-gray-500 mt-1 font-medium text-sm">Track your eligibility for graduation and certificates</p>
+            </div>
 
-                {certificates.length === 0 ? (
-                    <div className="bg-white rounded-lg shadow p-12 text-center">
-                        <svg
-                            className="mx-auto h-12 w-12 text-gray-400"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-                            />
-                        </svg>
-                        <h3 className="mt-2 text-sm font-medium text-gray-900">
-                            No certificates yet
-                        </h3>
-                        <p className="mt-1 text-sm text-gray-500">
-                            Complete a program to earn your first certificate
-                        </p>
-                        <div className="mt-6">
-                            <a
-                                href="/dashboard/programs"
-                                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-                            >
-                                View My Programs
-                            </a>
-                        </div>
+            {/* Content Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+                {/* Progress Card */}
+                <div className="lg:col-span-7 bg-white rounded-[32px] border border-gray-100 shadow-sm p-8 lg:p-12 space-y-10">
+                    <div className="h-16 w-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
+                        <Award size={32} strokeWidth={1.5} />
                     </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {certificates.map((certificate: any) => (
-                            <div
-                                key={certificate._id.toString()}
-                                className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden"
-                            >
-                                <div className="p-6">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <span
-                                            className={`text-xs font-medium px-2 py-1 rounded ${certificate.status === 'issued'
-                                                    ? 'text-green-600 bg-green-100'
-                                                    : 'text-red-600 bg-red-100'
-                                                }`}
-                                        >
-                                            {certificate.status === 'issued' ? 'Active' : 'Revoked'}
-                                        </span>
-                                    </div>
 
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2">
-                                        {certificate.programId?.name || 'Program'}
-                                    </h3>
+                    <div className="space-y-4">
+                        <h2 className="text-2xl font-extrabold text-gray-900">Completion Progress</h2>
+                        <p className="text-gray-500 text-sm leading-relaxed max-w-md">
+                            You're currently in the middle of your software development journey. Complete all requirements to unlock your digital certificate.
+                        </p>
+                    </div>
 
-                                    <div className="space-y-2 mb-4">
-                                        <div className="flex items-center text-sm text-gray-600">
-                                            <svg
-                                                className="w-4 h-4 mr-2"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
-                                                />
-                                            </svg>
-                                            <span className="font-mono">
-                                                {certificate.certificateNumber}
-                                            </span>
-                                        </div>
-
-                                        <div className="flex items-center text-sm text-gray-600">
-                                            <svg
-                                                className="w-4 h-4 mr-2"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                                />
-                                            </svg>
-                                            <span>
-                                                Issued:{' '}
-                                                {new Date(certificate.issueDate).toLocaleDateString()}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    {/* QR Code Preview */}
-                                    {certificate.qrCodeData && (
-                                        <div className="mb-4 flex justify-center">
-                                            <img
-                                                src={certificate.qrCodeData}
-                                                alt="Certificate QR Code"
-                                                className="w-32 h-32"
-                                            />
-                                        </div>
-                                    )}
-
-                                    <div className="pt-4 border-t border-gray-200 space-y-2">
-                                        <button className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors">
-                                            Download Certificate
-                                        </button>
-                                        <button className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded hover:bg-gray-200 transition-colors">
-                                            View Details
-                                        </button>
-                                    </div>
-                                </div>
+                    {/* Checklist */}
+                    <div className="space-y-6">
+                        {checklist.map((item, index) => (
+                            <div key={index} className="flex items-center gap-4 group cursor-default">
+                                {item.completed ? (
+                                    <CheckCircle2 size={24} className="text-green-500 shrink-0" strokeWidth={2.5} />
+                                ) : (
+                                    <Circle size={24} className="text-gray-200 shrink-0 group-hover:text-blue-200 transition-colors" strokeWidth={2} />
+                                )}
+                                <span className={`text-sm font-bold ${item.completed ? 'text-gray-700' : 'text-gray-400'}`}>
+                                    {item.task}
+                                </span>
                             </div>
                         ))}
                     </div>
-                )}
+
+                    <div className="pt-4 space-y-4">
+                        <button
+                            disabled
+                            className="w-full py-5 bg-gray-50 text-gray-400 rounded-[20px] text-sm font-black uppercase tracking-widest flex items-center justify-center gap-3 cursor-not-allowed group transition-all"
+                        >
+                            <Download size={18} strokeWidth={2.5} className="group-hover:scale-110 transition-transform" />
+                            Download Certificate
+                        </button>
+                        <p className="text-center text-[10px] font-black text-gray-300 uppercase tracking-widest">
+                            Eligibility Status: 60% Completed
+                        </p>
+                    </div>
+                </div>
+
+                {/* Sidebar Cards */}
+                <div className="lg:col-span-5 space-y-6">
+                    {/* Preview Placeholder */}
+                    <div className="aspect-[4/3] bg-blue-50/30 rounded-[32px] border-2 border-dashed border-blue-100 flex flex-col items-center justify-center p-8 text-center group hover:bg-blue-50/50 transition-all">
+                        <div className="h-16 w-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-6 group-hover:scale-110 transition-transform">
+                            <Star size={32} className="text-blue-100" />
+                        </div>
+                        <p className="text-sm font-bold text-blue-200/80 max-w-[200px] leading-relaxed">
+                            Certificate preview will be available once you graduate.
+                        </p>
+                    </div>
+
+                    {/* Recognition Info Card */}
+                    <div className="bg-blue-50/50 p-8 rounded-[32px] border border-blue-100 space-y-6">
+                        <div className="flex items-center gap-3 text-blue-600">
+                            <Share2 size={20} strokeWidth={2.5} />
+                            <h3 className="text-sm font-black uppercase tracking-widest">Professional Recognition</h3>
+                        </div>
+                        <p className="text-xs text-blue-500 font-bold leading-relaxed">
+                            Ice Hub certificates are globally recognized and can be added directly to your LinkedIn profile to boost your visibility to recruiters.
+                        </p>
+                    </div>
+                </div>
+
             </div>
         </div>
     );

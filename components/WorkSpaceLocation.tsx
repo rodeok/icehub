@@ -24,14 +24,14 @@ export default function WorkSpaceLocation() {
                         </div>
                     </div>
 
-                    {/* Right Column: Map Placeholder */}
+                    {/* Right Column: Map View */}
                     <div className="relative">
-                        <div className="aspect-[4/3] w-full bg-slate-200 rounded-[2.5rem] shadow-sm flex items-center justify-center overflow-hidden">
-                            {/* Visual indicator of a map / site location */}
-                            <div className="text-slate-400 flex flex-col items-center gap-3">
-                                <MapPin size={48} strokeWidth={1} />
-                                <span className="text-sm font-semibold uppercase tracking-wider">Map View</span>
-                            </div>
+                        <div className="aspect-[4/3] w-full bg-slate-200 rounded-[2.5rem] shadow-sm overflow-hidden border border-slate-100">
+                            <img
+                                src="/images/icelocale.jpeg"
+                                alt="Workspace Location Map"
+                                className="w-full h-full object-cover object-bottom hover:scale-105 transition-transform duration-700"
+                            />
                         </div>
                     </div>
 
