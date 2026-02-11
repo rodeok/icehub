@@ -33,7 +33,7 @@ export default function SideDash() {
         },
         {
             name: 'Personal Information',
-            href: '/dashboard/profile',
+            href: '/dashboard/peesonal-info',
             icon: User,
         },
         {

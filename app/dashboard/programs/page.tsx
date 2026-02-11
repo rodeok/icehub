@@ -107,9 +107,9 @@ export default async function ProgramsPage() {
                                     </div>
 
                                     <div className="pt-4 border-t border-gray-200">
-                                        <button className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors">
+                                        <a href={`/dashboard/programs/${program._id}`} className="block w-full text-center bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors">
                                             Continue Learning
-                                        </button>
+                                        </a>
                                     </div>
                                 </div>
                             </div>

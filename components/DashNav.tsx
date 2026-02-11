@@ -2,7 +2,7 @@
 
 import { useSession, signOut } from 'next-auth/react';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Search, Bell, ChevronDown, User, LogOut, Settings, Menu } from 'lucide-react';
 import { useSidebar } from '@/context/SidebarContext';
 import Link from 'next/link';
@@ -11,6 +11,7 @@ export default function DashNav({ uniqueCode }: { uniqueCode?: string }) {
     const { data: session } = useSession();
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const router = useRouter();
+    const pathname = usePathname();
 
     const handleLogout = async () => {
         await signOut({ redirect: false });
@@ -31,7 +32,22 @@ export default function DashNav({ uniqueCode }: { uniqueCode?: string }) {
                 >
                     <Menu size={20} />
                 </button>
-                <h1 className="text-lg sm:text-xl font-bold text-gray-800 tracking-tight">Dashboard</h1>
+
+                {/* Dynamic Title */}
+                <div>
+                    {pathname?.startsWith('/dashboard/programs/') && pathname.split('/').length > 3 ? (
+                        <div>
+                            <h1 className="text-lg sm:text-xl font-bold text-gray-800 tracking-tight">
+                                Welcome back, {session?.user?.name || 'Student'}
+                            </h1>
+                            <p className="text-sm text-gray-500">Software Development Bootcamp</p>
+                        </div>
+                    ) : (
+                        <h1 className="text-lg sm:text-xl font-bold text-gray-800 tracking-tight">
+                            Dashboard
+                        </h1>
+                    )}
+                </div>
 
                 <div className="relative w-full max-w-md hidden md:block">
                     <Search

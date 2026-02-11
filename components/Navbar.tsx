@@ -24,8 +24,8 @@ export default function Navbar() {
     setOpenMenu(openMenu === menu ? null : menu);
   };
 
-  // Do not show the navbar on dashboard routes
-  if (pathname?.startsWith('/dashboard')) {
+  // Do not show the navbar on dashboard or admin routes
+  if (pathname?.startsWith('/dashboard') || pathname?.startsWith('/admin')) {
     return null;
   }
 

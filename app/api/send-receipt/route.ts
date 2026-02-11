@@ -34,6 +34,8 @@ export async function POST(req: Request) {
           <div style="display: flex; gap: 20px; align-items: start; margin: 20px 0;">
             <div style="flex: 1; background-color: #f8f9fa; padding: 15px; border-radius: 8px;">
                 <p style="margin: 5px 0;"><strong>Plan:</strong> ${userData.planTitle}</p>
+                <p style="margin: 5px 0;"><strong>Booking Date:</strong> ${new Date(userData.startDate).toLocaleDateString()}</p>
+                <p style="margin: 5px 0;"><strong>Time Slot:</strong> ${userData.timeSlot || 'All Day'}</p>
                 <p style="margin: 5px 0;"><strong>Billing:</strong> ${userData.selectedPrice}</p>
                 <p style="margin: 5px 0;"><strong>Reference:</strong> ${reference}</p>
                 <p style="margin: 5px 0;"><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>

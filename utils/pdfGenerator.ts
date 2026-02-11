@@ -49,6 +49,14 @@ export const downloadReceiptPDF = async (reference: string, userData: any) => {
           <span>Workspace Plan:</span>
           <span style="font-weight: bold;">${userData.planTitle}</span>
         </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+          <span>Booking Date:</span>
+          <span style="font-weight: bold;">${new Date(userData.startDate).toLocaleDateString()}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+          <span>Time Slot:</span>
+          <span style="font-weight: bold;">${userData.timeSlot || 'All Day'}</span>
+        </div>
         <div style="display: flex; justify-content: space-between; font-size: 20px; font-weight: bold; margin-top: 20px; border-top: 2px dashed #d1e2ff; padding-top: 15px;">
           <span>Total Paid:</span>
           <span>${userData.selectedPrice}</span>
