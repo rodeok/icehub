@@ -1,31 +1,236 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import {
     CheckCircle2,
     Clock,
     Info,
     CreditCard,
     Receipt,
-    Download
+    Download,
+    Loader2,
+    AlertCircle
 } from 'lucide-react';
 
-const transactions = [
-    {
-        id: 'TX-9012',
-        date: 'Jan 15, 2024',
-        amount: '₦150,000',
-        status: 'PAID'
-    },
-    {
-        id: 'TX-8843',
-        date: 'Dec 10, 2023',
-        amount: '₦50,000',
-        status: 'PAID'
-    }
-];
+interface Payment {
+    _id: string;
+    reference: string;
+    amount: number;
+    status: 'pending' | 'success' | 'failed';
+    programId: {
+        name: string;
+    };
+    createdAt: string;
+    paymentMethod: string;
+}
+
+interface PaymentData {
+    payments: Payment[];
+    enrolledPrograms: any[];
+    unpaidPrograms: any[];
+    stats: {
+        totalFees: number;
+        totalPaid: number;
+        outstandingBalance: number;
+    };
+}
+
+type PaymentOption = 'full' | 'initial' | 'balance';
+
+interface PaymentAmountOption {
+    id: PaymentOption;
+    label: string;
+    percentage: number;
+    description: string;
+}
 
 export default function PaymentPage() {
+    const { data: session } = useSession();
+    const searchParams = useSearchParams();
+    const router = useRouter();
+
+    const [loading, setLoading] = useState(true);
+    const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [processingPayment, setProcessingPayment] = useState(false);
+    const [selectedPaymentOption, setSelectedPaymentOption] = useState<PaymentOption>('initial');
+
+    const PROGRAM_PRICE = 450000; // Fixed price as requested
+
+    const paymentOptions: PaymentAmountOption[] = [
+        {
+            id: 'full',
+            label: 'Full Payment',
+            percentage: 100,
+            description: 'Pay the complete amount at once'
+        },
+        {
+            id: 'initial',
+            label: 'Initial Payment (60%)',
+            percentage: 60,
+            description: 'Pay 60% now, 40% later'
+        },
+        {
+            id: 'balance',
+            label: 'Remaining Balance (40%)',
+            percentage: 40,
+            description: 'Pay the outstanding 40%'
+        }
+    ];
+
+    const fetchPaymentData = async () => {
+        try {
+            setLoading(true);
+            const res = await fetch('/api/payments/user');
+
+            if (!res.ok) {
+                throw new Error('Failed to fetch payment data');
+            }
+
+            const data = await res.json();
+            setPaymentData(data);
+            setError(null);
+        } catch (err: any) {
+            console.error('Error fetching payment data:', err);
+            setError(err.message || 'Failed to load payment information');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (session?.user) {
+            fetchPaymentData();
+        }
+    }, [session]);
+
+    // Handle payment verification callback
+    useEffect(() => {
+        const verify = searchParams.get('verify');
+        const reference = searchParams.get('reference');
+
+        if (verify === 'true' && reference) {
+            verifyPayment(reference);
+        }
+    }, [searchParams]);
+
+    const verifyPayment = async (reference: string) => {
+        try {
+            const res = await fetch('/api/payments/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    reference,
+                    programId: paymentData?.unpaidPrograms[0]?._id,
+                }),
+            });
+
+            if (res.ok) {
+                // Refresh payment data
+                await fetchPaymentData();
+                router.replace('/dashboard/payment');
+                alert('Payment successful! Your enrollment has been confirmed.');
+            }
+        } catch (err) {
+            console.error('Verification error:', err);
+        }
+    };
+
+    const handleMakePayment = async () => {
+        const selectedOption = paymentOptions.find(opt => opt.id === selectedPaymentOption);
+
+        if (!selectedOption) return;
+
+        // Calculate payment amount based on selected option
+        const paymentAmount = Math.round((PROGRAM_PRICE * selectedOption.percentage) / 100);
+
+        // Check if balance payment is available
+        if (selectedPaymentOption === 'balance') {
+            const initialPaymentAmount = Math.round((PROGRAM_PRICE * 60) / 100); // 60% = 270,000
+
+            if (!paymentData || paymentData.stats.totalPaid < initialPaymentAmount) {
+                alert('You need to make the initial payment (60%) first before paying the balance.');
+                return;
+            }
+        }
+
+        try {
+            setProcessingPayment(true);
+
+            // Payment without program - user will select program after payment
+            const res = await fetch('/api/payments/initialize', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    programId: null, // No program selected yet
+                    customAmount: paymentAmount,
+                    paymentType: selectedPaymentOption,
+                }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.error || 'Failed to initialize payment');
+            }
+
+            // Redirect to Paystack payment page
+            window.location.href = data.authorizationUrl;
+        } catch (err: any) {
+            console.error('Payment initialization error:', err);
+            alert(err.message || 'Failed to initialize payment. Please try again.');
+        } finally {
+            setProcessingPayment(false);
+        }
+    };
+
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat('en-NG', {
+            style: 'currency',
+            currency: 'NGN',
+            maximumFractionDigits: 0
+        }).format(amount);
+    };
+
+    const formatDate = (dateStr: string) => {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        });
+    };
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+                <p className="text-sm font-bold text-gray-400">Loading payment information...</p>
+            </div>
+        );
+    }
+
+    if (error || !paymentData) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
+                <AlertCircle className="h-12 w-12 text-red-400" />
+                <p className="text-sm font-bold text-gray-600">
+                    {error || 'Failed to load payment data'}
+                </p>
+                <button
+                    onClick={fetchPaymentData}
+                    className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                    Retry
+                </button>
+            </div>
+        );
+    }
+
+    const { stats, payments } = paymentData;
+
     return (
         <div className="space-y-8 pb-12">
             {/* Header */}
@@ -44,7 +249,9 @@ export default function PaymentPage() {
                     <div className="space-y-6">
                         <div className="flex justify-between items-center transition-all hover:translate-x-1">
                             <span className="text-sm font-medium text-gray-400">Total Program Fee</span>
-                            <span className="text-xl font-black text-gray-900 tracking-tight">₦450,000</span>
+                            <span className="text-xl font-black text-gray-900 tracking-tight">
+                                {formatCurrency(PROGRAM_PRICE)}
+                            </span>
                         </div>
 
                         <div className="flex justify-between items-center transition-all hover:translate-x-1">
@@ -54,7 +261,9 @@ export default function PaymentPage() {
                                 </div>
                                 <span className="text-sm font-bold text-green-500">Amount Paid</span>
                             </div>
-                            <span className="text-xl font-black text-green-500 tracking-tight">₦200,000</span>
+                            <span className="text-xl font-black text-green-500 tracking-tight">
+                                {formatCurrency(stats.totalPaid)}
+                            </span>
                         </div>
 
                         <div className="flex justify-between items-center transition-all hover:translate-x-1 text-blue-600">
@@ -64,26 +273,86 @@ export default function PaymentPage() {
                                 </div>
                                 <span className="text-sm font-bold">Outstanding Balance</span>
                             </div>
-                            <span className="text-xl font-black tracking-tight">₦250,000</span>
+                            <span className="text-xl font-black tracking-tight">
+                                {formatCurrency(Math.max(PROGRAM_PRICE - stats.totalPaid, 0))}
+                            </span>
                         </div>
                     </div>
+
+                    {/* Payment Amount Selector */}
+                    {(PROGRAM_PRICE - stats.totalPaid) > 0 && (
+                        <div className="space-y-4">
+                            <h3 className="text-base font-bold text-gray-900">Select Payment Amount</h3>
+                            <div className="space-y-3">
+                                {paymentOptions.map((option) => {
+                                    const amount = Math.round((PROGRAM_PRICE * option.percentage) / 100);
+                                    const isDisabled = option.id === 'balance' && stats.totalPaid < Math.round((PROGRAM_PRICE * 60) / 100);
+
+                                    return (
+                                        <label
+                                            key={option.id}
+                                            className={`flex items-start gap-4 p-4 rounded-2xl border-2 transition-all cursor-pointer ${selectedPaymentOption === option.id
+                                                ? 'border-blue-600 bg-blue-50/50'
+                                                : 'border-gray-100 bg-white hover:border-blue-200'
+                                                } ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        >
+                                            <input
+                                                type="radio"
+                                                name="paymentOption"
+                                                value={option.id}
+                                                checked={selectedPaymentOption === option.id}
+                                                onChange={() => !isDisabled && setSelectedPaymentOption(option.id)}
+                                                disabled={isDisabled}
+                                                className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500"
+                                            />
+                                            <div className="flex-1">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-sm font-bold text-gray-900">{option.label}</span>
+                                                    <span className="text-lg font-black text-gray-900">{formatCurrency(amount)}</span>
+                                                </div>
+                                                <p className="text-xs text-gray-500 font-medium mt-1">
+                                                    {option.description}
+                                                    {isDisabled && ' (Requires 60% initial payment first)'}
+                                                </p>
+                                            </div>
+                                        </label>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
 
                     {/* Next Payment Alert */}
-                    <div className="bg-blue-50/50 p-6 rounded-2xl border border-blue-100 flex items-start gap-4">
-                        <div className="h-8 w-8 bg-blue-600 text-white rounded-full flex items-center justify-center shrink-0">
-                            <Info size={16} strokeWidth={3} />
+                    {(PROGRAM_PRICE - stats.totalPaid) > 0 && (
+                        <div className="bg-blue-50/50 p-6 rounded-2xl border border-blue-100 flex items-start gap-4">
+                            <div className="h-8 w-8 bg-blue-600 text-white rounded-full flex items-center justify-center shrink-0">
+                                <Info size={16} strokeWidth={3} />
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-sm font-bold text-blue-600">Payment Required</p>
+                                <p className="text-xs text-blue-500 font-medium leading-relaxed">
+                                    Complete your payment to ensure uninterrupted access to course materials.
+                                </p>
+                            </div>
                         </div>
-                        <div className="space-y-1">
-                            <p className="text-sm font-bold text-blue-600">Next payment due: Feb 15, 2024</p>
-                            <p className="text-xs text-blue-500 font-medium leading-relaxed">
-                                Keep your payments up to date to ensure uninterrupted access to course materials.
-                            </p>
-                        </div>
-                    </div>
+                    )}
 
-                    <button className="w-full py-5 bg-blue-600 text-white rounded-[20px] text-base font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all flex items-center justify-center gap-3">
-                        <CreditCard size={20} strokeWidth={2.5} />
-                        Make Payment
+                    <button
+                        onClick={handleMakePayment}
+                        disabled={processingPayment || (paymentData && PROGRAM_PRICE - paymentData.stats.totalPaid <= 0)}
+                        className="w-full py-5 bg-blue-600 text-white rounded-[20px] text-base font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {processingPayment ? (
+                            <>
+                                <Loader2 size={20} className="animate-spin" />
+                                Processing...
+                            </>
+                        ) : (
+                            <>
+                                <CreditCard size={20} strokeWidth={2.5} />
+                                {(paymentData && PROGRAM_PRICE - paymentData.stats.totalPaid > 0) ? 'Make Payment' : 'All Paid'}
+                            </>
+                        )}
                     </button>
                 </div>
 
@@ -110,37 +379,52 @@ export default function PaymentPage() {
                     <h2 className="text-xl font-bold text-gray-900">Transaction History</h2>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full">
-                        <thead>
-                            <tr className="bg-gray-50/50">
-                                <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Transaction ID</th>
-                                <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Date</th>
-                                <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Amount</th>
-                                <th className="px-8 py-5 text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Status</th>
-                                <th className="px-8 py-5 text-right text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Receipt</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-50">
-                            {transactions.map((tx, index) => (
-                                <tr key={index} className="hover:bg-gray-50/30 transition-colors">
-                                    <td className="px-8 py-6 text-sm font-bold text-gray-600">{tx.id}</td>
-                                    <td className="px-8 py-6 text-sm font-medium text-gray-500">{tx.date}</td>
-                                    <td className="px-8 py-6 text-base font-black text-gray-900">{tx.amount}</td>
-                                    <td className="px-8 py-6 text-center">
-                                        <span className="px-3.5 py-1.5 bg-green-50 text-green-500 rounded-lg text-[10px] font-black tracking-widest border border-green-100/30">
-                                            {tx.status}
-                                        </span>
-                                    </td>
-                                    <td className="px-8 py-6 text-right">
-                                        <button className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 transition-colors">
-                                            <Download size={14} strokeWidth={2.5} />
-                                            <span className="text-xs font-bold leading-none border-b border-blue-600/30">Download</span>
-                                        </button>
-                                    </td>
+                    {payments.length > 0 ? (
+                        <table className="w-full">
+                            <thead>
+                                <tr className="bg-gray-50/50">
+                                    <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Transaction ID</th>
+                                    <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Date</th>
+                                    <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Amount</th>
+                                    <th className="px-8 py-5 text-center text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Status</th>
+                                    <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.15em]">Program</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="divide-y divide-gray-50">
+                                {payments.map((tx) => (
+                                    <tr key={tx._id} className="hover:bg-gray-50/30 transition-colors">
+                                        <td className="px-8 py-6 text-sm font-bold text-gray-600">
+                                            {tx.reference.substring(0, 12)}...
+                                        </td>
+                                        <td className="px-8 py-6 text-sm font-medium text-gray-500">
+                                            {formatDate(tx.createdAt)}
+                                        </td>
+                                        <td className="px-8 py-6 text-base font-black text-gray-900">
+                                            {formatCurrency(tx.amount)}
+                                        </td>
+                                        <td className="px-8 py-6 text-center">
+                                            <span className={`px-3.5 py-1.5 rounded-lg text-[10px] font-black tracking-widest border ${tx.status === 'success'
+                                                ? 'bg-green-50 text-green-500 border-green-100/30'
+                                                : tx.status === 'pending'
+                                                    ? 'bg-orange-50 text-orange-400 border-orange-100/30'
+                                                    : 'bg-red-50 text-red-400 border-red-100/30'
+                                                }`}>
+                                                {tx.status.toUpperCase()}
+                                            </span>
+                                        </td>
+                                        <td className="px-8 py-6 text-sm font-medium text-gray-500">
+                                            {tx.programId?.name || 'N/A'}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) : (
+                        <div className="py-20 text-center">
+                            <p className="text-sm font-bold text-gray-400">No transactions yet</p>
+                            <p className="text-xs text-gray-400 mt-1">Your payment history will appear here</p>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

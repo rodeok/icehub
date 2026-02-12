@@ -68,12 +68,26 @@ export async function POST(request: Request) {
             videoLessons,
             resourcesCount,
             videoUrls,
-            resourceUrls
+            resourceUrls,
+            modules // New structured content
         } = body;
 
         // Basic validation
         if (!name || !category) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+        }
+
+        // Calculate stats from modules if provided
+        let calcTotalModules = Number(totalModules) || 0;
+        let calcVideoLessons = Number(videoLessons) || 0;
+        let calcResourcesCount = Number(resourcesCount) || 0;
+
+        if (modules && Array.isArray(modules)) {
+            calcTotalModules = modules.length;
+            calcVideoLessons = modules.reduce((acc: number, mod: any) => acc + (mod.lessons?.length || 0), 0);
+            calcResourcesCount = modules.reduce((acc: number, mod: any) =>
+                acc + (mod.lessons?.reduce((lAcc: number, lesson: any) => lAcc + (lesson.resources?.length || 0), 0) || 0), 0
+            );
         }
 
         const newProgram = new Program({
@@ -85,11 +99,12 @@ export async function POST(request: Request) {
             skillLevel,
             curriculum: curriculum || [],
             imageUrl,
-            totalModules: Number(totalModules) || 0,
-            videoLessons: Number(videoLessons) || 0,
-            resourcesCount: Number(resourcesCount) || 0,
+            totalModules: calcTotalModules,
+            videoLessons: calcVideoLessons,
+            resourcesCount: calcResourcesCount,
             videoUrls: videoUrls || [],
             resourceUrls: resourceUrls || [],
+            modules: modules || [], // Store the detailed content
             isActive: true,
             enrolledCount: 0
         });

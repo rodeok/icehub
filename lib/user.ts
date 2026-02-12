@@ -2,6 +2,7 @@ import { cache } from 'react';
 import { getAuthSession } from './auth';
 import connectDB from './mongodb';
 import User from '@/models/User';
+import Program from '@/models/Program'; // Import Program model to register schema
 import { generateUniqueUserCode } from '@/utils/generateCode';
 
 export const getCachedUser = cache(async () => {

@@ -14,45 +14,50 @@ export const authOptions: NextAuthOptions = {
                 password: { label: 'Password', type: 'password' },
             },
             async authorize(credentials) {
-                if (!credentials?.email || !credentials?.password) {
-                    throw new Error('Please enter your email and password');
+                try {
+                    if (!credentials?.email || !credentials?.password) {
+                        throw new Error('Please enter your email and password');
+                    }
+
+                    await connectDB();
+
+                    const user = await User.findOne({ email: credentials.email });
+
+                    if (!user) {
+                        throw new Error('No user found with this email');
+                    }
+
+                    const isPasswordValid = await comparePassword(
+                        credentials.password,
+                        user.password
+                    );
+
+                    if (!isPasswordValid) {
+                        throw new Error('Invalid password');
+                    }
+
+                    if (!user.isActive) {
+                        throw new Error('Your account has been deactivated');
+                    }
+
+                    // Auto-generate code for existing users if missing (Fix: Use findOneAndUpdate for persistence)
+                    if (!user.uniqueCode) {
+                        const uniqueCode = await generateUniqueUserCode();
+                        await User.findByIdAndUpdate(user._id, { uniqueCode });
+                        user.uniqueCode = uniqueCode;
+                    }
+
+                    return {
+                        id: user._id.toString(),
+                        email: user.email,
+                        name: user.fullName,
+                        uniqueCode: user.uniqueCode,
+                        image: null,
+                    };
+                } catch (error) {
+                    console.error("Authentication Error:", error);
+                    throw error;
                 }
-
-                await connectDB();
-
-                const user = await User.findOne({ email: credentials.email });
-
-                if (!user) {
-                    throw new Error('No user found with this email');
-                }
-
-                const isPasswordValid = await comparePassword(
-                    credentials.password,
-                    user.password
-                );
-
-                if (!isPasswordValid) {
-                    throw new Error('Invalid password');
-                }
-
-                if (!user.isActive) {
-                    throw new Error('Your account has been deactivated');
-                }
-
-                // Auto-generate code for existing users if missing (Fix: Use findOneAndUpdate for persistence)
-                if (!user.uniqueCode) {
-                    const uniqueCode = await generateUniqueUserCode();
-                    await User.findByIdAndUpdate(user._id, { uniqueCode });
-                    user.uniqueCode = uniqueCode;
-                }
-
-                return {
-                    id: user._id.toString(),
-                    email: user.email,
-                    name: user.fullName,
-                    uniqueCode: user.uniqueCode,
-                    image: null,
-                };
             },
         }),
     ],

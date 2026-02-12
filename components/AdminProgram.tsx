@@ -16,11 +16,33 @@ import {
     Upload,
     Trash2,
     Loader2,
-    Image as ImageIcon
+    Image as ImageIcon,
+    ChevronDown,
+    ChevronUp
 } from 'lucide-react';
 import Image from 'next/image';
 import { CldUploadWidget } from 'next-cloudinary';
 import UploadDropzone from './UploadDropzone';
+
+interface Resource {
+    title: string;
+    url: string;
+    type: string;
+    size?: string;
+}
+
+interface Lesson {
+    title: string;
+    duration: string;
+    videoUrl?: string; // Video URL associated with the lesson
+    isFree: boolean;
+    resources: Resource[];
+}
+
+interface Module {
+    title: string;
+    lessons: Lesson[];
+}
 
 export default function AdminProgram() {
     const [programs, setPrograms] = useState<any[]>([]);
@@ -38,12 +60,7 @@ export default function AdminProgram() {
         weeks: '',
         skillLevel: 'beginner',
         imageUrl: '',
-        totalModules: '',
-        videoLessons: '',
-        resourcesCount: '',
-        videoUrls: [] as string[],
-        resourceUrls: [] as string[],
-        curriculum: [] as string[]
+        modules: [] as Module[], // Structured modules
     });
 
     const fetchPrograms = async () => {
@@ -88,18 +105,56 @@ export default function AdminProgram() {
                 weeks: '',
                 skillLevel: 'beginner',
                 imageUrl: '',
-                totalModules: '',
-                videoLessons: '',
-                resourcesCount: '',
-                videoUrls: [],
-                resourceUrls: [],
-                curriculum: []
+                modules: [],
             });
         } catch (err: any) {
             alert(err.message);
         } finally {
             setIsSubmitting(false);
         }
+    };
+
+    // Helper functions for Module/Lesson Management
+    const addModule = () => {
+        setFormData({
+            ...formData,
+            modules: [...formData.modules, { title: 'New Module', lessons: [] }]
+        });
+    };
+
+    const updateModuleTitle = (index: number, title: string) => {
+        const newModules = [...formData.modules];
+        newModules[index].title = title;
+        setFormData({ ...formData, modules: newModules });
+    };
+
+    const deleteModule = (index: number) => {
+        const newModules = [...formData.modules];
+        newModules.splice(index, 1);
+        setFormData({ ...formData, modules: newModules });
+    };
+
+    const addLesson = (moduleIndex: number) => {
+        const newModules = [...formData.modules];
+        newModules[moduleIndex].lessons.push({
+            title: 'New Lesson',
+            duration: '10:00',
+            isFree: false,
+            resources: []
+        });
+        setFormData({ ...formData, modules: newModules });
+    };
+
+    const updateLesson = (moduleIndex: number, lessonIndex: number, field: keyof Lesson, value: any) => {
+        const newModules = [...formData.modules];
+        (newModules[moduleIndex].lessons[lessonIndex] as any)[field] = value;
+        setFormData({ ...formData, modules: newModules });
+    };
+
+    const deleteLesson = (moduleIndex: number, lessonIndex: number) => {
+        const newModules = [...formData.modules];
+        newModules[moduleIndex].lessons.splice(lessonIndex, 1);
+        setFormData({ ...formData, modules: newModules });
     };
 
     if (loading && programs.length === 0) {
@@ -335,169 +390,125 @@ export default function AdminProgram() {
                                 </div>
                             </div>
 
-
-                            {/* Course Content / Curriculum */}
-                            <div className="space-y-4 pt-4">
-                                <h3 className="text-sm font-bold text-gray-900 border-l-4 border-blue-600 pl-3">Course Content</h3>
-                                <div className="space-y-3">
-                                    {formData.curriculum.map((moduleName, idx) => (
-                                        <div key={idx} className="flex gap-2">
-                                            <div className="flex-1 px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-medium text-gray-800">
-                                                <span className="text-gray-400 font-bold mr-2">Module {idx + 1}:</span>
-                                                {moduleName}
-                                            </div>
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    const newCurriculum = [...formData.curriculum];
-                                                    newCurriculum.splice(idx, 1);
-                                                    setFormData({
-                                                        ...formData,
-                                                        curriculum: newCurriculum,
-                                                        totalModules: Math.max(0, (Number(formData.totalModules) || 0) - 1) + ""
-                                                    });
-                                                }}
-                                                className="p-3.5 bg-red-50 text-red-500 rounded-2xl hover:bg-red-100 transition-colors"
-                                            >
-                                                <X size={18} />
-                                            </button>
-                                        </div>
-                                    ))}
-
-                                    <div className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            id="newModuleInput"
-                                            placeholder="Enter module title (e.g. Introduction to React)"
-                                            className="flex-1 px-5 py-3.5 bg-gray-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-blue-100 outline-none transition-all font-medium"
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    e.preventDefault();
-                                                    const input = e.currentTarget;
-                                                    if (input.value.trim()) {
-                                                        setFormData({
-                                                            ...formData,
-                                                            curriculum: [...formData.curriculum, input.value.trim()],
-                                                            totalModules: (Number(formData.totalModules) || 0) + 1 + ""
-                                                        });
-                                                        input.value = '';
-                                                    }
-                                                }
-                                            }}
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                const input = document.getElementById('newModuleInput') as HTMLInputElement;
-                                                if (input && input.value.trim()) {
-                                                    setFormData({
-                                                        ...formData,
-                                                        curriculum: [...formData.curriculum, input.value.trim()],
-                                                        totalModules: (Number(formData.totalModules) || 0) + 1 + ""
-                                                    });
-                                                    input.value = '';
-                                                }
-                                            }}
-                                            className="px-6 bg-gray-900 text-white rounded-2xl font-bold text-sm hover:bg-gray-800 transition-all"
-                                        >
-                                            Add
-                                        </button>
-                                    </div>
-                                    <p className="text-xs text-gray-400 pl-2">Press Enter to add a module</p>
-                                </div>
+                            {/* Image Upload */}
+                            <div className="space-y-2">
+                                <UploadDropzone
+                                    type="image"
+                                    label="Thumbnail Image"
+                                    description="Best size: 1280x720 (16:9)"
+                                    currentValue={formData.imageUrl}
+                                    onUploadSuccess={(url) => setFormData({ ...formData, imageUrl: url })}
+                                    onRemove={() => setFormData({ ...formData, imageUrl: '' })}
+                                />
                             </div>
 
-
-                            {/* Media Uploads */}                            {/* Media Uploads */}
-                            <div className="space-y-6 pt-4">
-                                <h3 className="text-sm font-bold text-gray-900 border-l-4 border-blue-600 pl-3">Media & Resources</h3>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <UploadDropzone
-                                        type="image"
-                                        label="Thumbnail Image"
-                                        description="Best size: 1280x720 (16:9)"
-                                        currentValue={formData.imageUrl}
-                                        onUploadSuccess={(url) => setFormData({ ...formData, imageUrl: url })}
-                                        onRemove={() => setFormData({ ...formData, imageUrl: '' })}
-                                    />
-
-                                    <div className="space-y-4">
-                                        <UploadDropzone
-                                            type="video"
-                                            label={`Video Lessons (${formData.videoUrls.length})`}
-                                            description="MP4, MOV supported"
-                                            onUploadSuccess={(url) => setFormData({
-                                                ...formData,
-                                                videoUrls: [...formData.videoUrls, url],
-                                                videoLessons: (Number(formData.videoLessons) || 0) + 1 + ""
-                                            })}
-                                        />
-                                        <div className="flex flex-wrap gap-2">
-                                            {formData.videoUrls.map((url, i) => (
-                                                <div key={i} className="px-3 py-1 bg-purple-50 text-purple-600 rounded-full text-[10px] font-bold flex items-center gap-2">
-                                                    Video {i + 1}
-                                                    <button onClick={() => setFormData({
-                                                        ...formData,
-                                                        videoUrls: formData.videoUrls.filter((_, idx) => idx !== i),
-                                                        videoLessons: Math.max(0, Number(formData.videoLessons) - 1) + ""
-                                                    })}>
-                                                        <X size={10} />
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Manual Video Lesson Count</label>
-                                        <input
-                                            type="number"
-                                            placeholder="Total videos"
-                                            className="w-full px-5 py-3.5 bg-gray-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-blue-100 outline-none transition-all font-medium"
-                                            value={formData.videoLessons}
-                                            onChange={(e) => setFormData({ ...formData, videoLessons: e.target.value })}
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Module Count</label>
-                                        <input
-                                            type="number"
-                                            placeholder="Total modules"
-                                            className="w-full px-5 py-3.5 bg-gray-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-blue-100 outline-none transition-all font-medium"
-                                            value={formData.totalModules}
-                                            onChange={(e) => setFormData({ ...formData, totalModules: e.target.value })}
-                                        />
-                                    </div>
+                            {/* Modules & Lessons Management */}
+                            <div className="space-y-6 pt-6 border-t border-gray-100">
+                                <div className="flex justify-between items-center">
+                                    <h3 className="text-lg font-bold text-gray-900">Course Modules</h3>
+                                    <button
+                                        type="button"
+                                        onClick={addModule}
+                                        className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-xl text-sm font-bold shadow-sm hover:bg-gray-800 transition-all"
+                                    >
+                                        <Plus size={16} /> Add Module
+                                    </button>
                                 </div>
 
                                 <div className="space-y-4">
-                                    <UploadDropzone
-                                        type="pdf"
-                                        label={`Resources (${formData.resourceUrls.length})`}
-                                        description="PDF, ZIP supported"
-                                        onUploadSuccess={(url) => setFormData({
-                                            ...formData,
-                                            resourceUrls: [...formData.resourceUrls, url],
-                                            resourcesCount: (Number(formData.resourcesCount) || 0) + 1 + ""
-                                        })}
-                                    />
-                                    <div className="flex flex-wrap gap-2">
-                                        {formData.resourceUrls.map((url, i) => (
-                                            <div key={i} className="px-3 py-1 bg-green-50 text-green-600 rounded-full text-[10px] font-bold flex items-center gap-2">
-                                                Resource {i + 1}
-                                                <button onClick={() => setFormData({
-                                                    ...formData,
-                                                    resourceUrls: formData.resourceUrls.filter((_, idx) => idx !== i),
-                                                    resourcesCount: Math.max(0, Number(formData.resourcesCount) - 1) + ""
-                                                })}>
-                                                    <X size={10} />
+                                    {formData.modules.map((module, mIdx) => (
+                                        <div key={mIdx} className="bg-gray-50 rounded-2xl border border-gray-100 p-5 space-y-4">
+                                            <div className="flex items-center gap-4">
+                                                <div className="bg-white p-2 rounded-lg border border-gray-100 shadow-sm text-gray-400 font-bold text-xs">
+                                                    #{mIdx + 1}
+                                                </div>
+                                                <input
+                                                    type="text"
+                                                    value={module.title}
+                                                    onChange={(e) => updateModuleTitle(mIdx, e.target.value)}
+                                                    className="flex-1 bg-white border-none rounded-xl px-4 py-2.5 text-sm font-bold text-gray-900 focus:ring-2 focus:ring-blue-100 outline-none"
+                                                    placeholder="Module Title"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => deleteModule(mIdx)}
+                                                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                                >
+                                                    <Trash2 size={18} />
                                                 </button>
                                             </div>
-                                        ))}
-                                    </div>
+
+                                            {/* Lessons */}
+                                            <div className="pl-4 space-y-3 border-l-2 border-gray-200 ml-4">
+                                                {module.lessons.map((lesson, lIdx) => (
+                                                    <div key={lIdx} className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm space-y-4">
+                                                        <div className="flex items-start justify-between gap-4">
+                                                            <div className="flex-1 space-y-3">
+                                                                <input
+                                                                    type="text"
+                                                                    value={lesson.title}
+                                                                    onChange={(e) => updateLesson(mIdx, lIdx, 'title', e.target.value)}
+                                                                    className="w-full bg-gray-50 border-none rounded-lg px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-blue-100 outline-none"
+                                                                    placeholder="Lesson Title"
+                                                                />
+                                                                <div className="flex gap-3">
+                                                                    <input
+                                                                        type="text"
+                                                                        value={lesson.duration}
+                                                                        onChange={(e) => updateLesson(mIdx, lIdx, 'duration', e.target.value)}
+                                                                        className="w-24 bg-gray-50 border-none rounded-lg px-3 py-2 text-xs font-medium focus:ring-2 focus:ring-blue-100 outline-none"
+                                                                        placeholder="Duration (e.g. 10:00)"
+                                                                    />
+                                                                    <div className="flex items-center gap-2">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            checked={lesson.isFree}
+                                                                            onChange={(e) => updateLesson(mIdx, lIdx, 'isFree', e.target.checked)}
+                                                                            id={`free-${mIdx}-${lIdx}`}
+                                                                            className="rounded text-blue-600 focus:ring-blue-500"
+                                                                        />
+                                                                        <label htmlFor={`free-${mIdx}-${lIdx}`} className="text-xs text-gray-500 font-medium">Free Preview</label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => deleteLesson(mIdx, lIdx)}
+                                                                className="text-gray-400 hover:text-red-500"
+                                                            >
+                                                                <X size={16} />
+                                                            </button>
+                                                        </div>
+
+                                                        {/* Video Upload per Lesson */}
+                                                        <div>
+                                                            <UploadDropzone
+                                                                type="video"
+                                                                label={lesson.videoUrl ? "Replace Video" : "Upload Video Lesson"}
+                                                                currentValue={lesson.videoUrl}
+                                                                onUploadSuccess={(url) => updateLesson(mIdx, lIdx, 'videoUrl', url)}
+                                                                onRemove={() => updateLesson(mIdx, lIdx, 'videoUrl', '')}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                ))}
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() => addLesson(mIdx)}
+                                                    className="flex items-center gap-2 text-xs font-bold text-blue-600 hover:text-blue-700 py-2"
+                                                >
+                                                    <Plus size={14} /> Add Lesson
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+
+                                    {formData.modules.length === 0 && (
+                                        <div className="text-center py-8 text-gray-400 text-sm italic border-2 border-dashed border-gray-100 rounded-2xl">
+                                            No modules added yet. Click "Add Module" to start.
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 

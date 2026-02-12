@@ -3,7 +3,7 @@ import mongoose, { Schema, Document, Model } from 'mongoose';
 export interface IPayment extends Document {
     _id: mongoose.Types.ObjectId;
     userId?: mongoose.Types.ObjectId | string;
-    programId: mongoose.Types.ObjectId;
+    programId?: mongoose.Types.ObjectId;
     reference: string;
     amount: number;
     currency: string;
@@ -25,7 +25,7 @@ const PaymentSchema: Schema = new Schema(
         programId: {
             type: Schema.Types.ObjectId,
             ref: 'Program',
-            required: [true, 'Program ID is required'],
+            required: false, // Optional - can be null if user pays before selecting program
         },
         reference: {
             type: String,
@@ -61,6 +61,11 @@ const PaymentSchema: Schema = new Schema(
         timestamps: true,
     }
 );
+
+// Force model recompilation in dev mode to pick up schema changes
+if (process.env.NODE_ENV !== 'production') {
+    delete mongoose.models.Payment;
+}
 
 const Payment: Model<IPayment> =
     mongoose.models.Payment ||

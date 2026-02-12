@@ -1,5 +1,27 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
+export interface IResource {
+    title: string;
+    url: string;
+    type: string;
+    size?: string;
+}
+
+export interface ILesson {
+    _id?: mongoose.Types.ObjectId;
+    title: string;
+    duration: string;
+    videoUrl?: string;
+    isFree: boolean;
+    resources: IResource[];
+}
+
+export interface IModule {
+    _id?: mongoose.Types.ObjectId;
+    title: string;
+    lessons: ILesson[];
+}
+
 export interface IProgram extends Document {
     _id: mongoose.Types.ObjectId;
     name: string;
@@ -9,6 +31,7 @@ export interface IProgram extends Document {
     weeks: number;
     skillLevel: 'beginner' | 'intermediate' | 'advanced';
     curriculum: string[];
+    modules: IModule[];
     imageUrl?: string;
     totalModules: number;
     videoLessons: number;
@@ -21,6 +44,26 @@ export interface IProgram extends Document {
     updatedAt: Date;
     price: number;
 }
+
+const ResourceSchema = new Schema({
+    title: { type: String, required: true },
+    url: { type: String, required: true },
+    type: { type: String, default: 'pdf' },
+    size: { type: String }
+});
+
+const LessonSchema = new Schema({
+    title: { type: String, required: true },
+    duration: { type: String, required: true }, // e.g. "10:00"
+    videoUrl: { type: String }, // optional if not yet uploaded
+    isFree: { type: Boolean, default: false }, // for preview
+    resources: [ResourceSchema]
+});
+
+const ModuleSchema = new Schema({
+    title: { type: String, required: true },
+    lessons: [LessonSchema]
+});
 
 const ProgramSchema: Schema = new Schema(
     {
@@ -63,11 +106,12 @@ const ProgramSchema: Schema = new Schema(
             enum: ['beginner', 'intermediate', 'advanced'],
             default: 'beginner',
         },
-        curriculum: [
+        curriculum: [ // Key topics/summary for landing page
             {
                 type: String,
             },
         ],
+        modules: [ModuleSchema], // Detailed course content
         imageUrl: {
             type: String,
         },
@@ -103,7 +147,8 @@ const ProgramSchema: Schema = new Schema(
         },
         price: {
             type: Number,
-            required: [true, 'Price is required'],
+            required: false, // Optional for now
+            default: 0,
             min: 0,
         },
     },
