@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import AuthLayout from "@/components/AuthLayout";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
 
-export default function LoginPage() {
+function LoginForm() {
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -16,6 +17,8 @@ export default function LoginPage() {
         password: "",
     });
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -32,7 +35,7 @@ export default function LoginPage() {
             if (result?.error) {
                 setError(result.error);
             } else if (result?.ok) {
-                router.push("/dashboard");
+                router.push(callbackUrl);
                 router.refresh();
             }
         } catch (err) {
@@ -127,5 +130,13 @@ export default function LoginPage() {
                 </p>
             </form>
         </AuthLayout>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+            <LoginForm />
+        </Suspense>
     );
 }
