@@ -40,9 +40,15 @@ export async function POST(request: Request) {
         const verificationToken = crypto.randomBytes(16).toString('hex');
         const qrCodeData = `https://icehub.icedt.org/verify/${verificationToken}`;
 
+        // Generate certificate number
+        const year = new Date().getFullYear();
+        const random = crypto.randomBytes(3).toString('hex').toUpperCase();
+        const certificateNumber = `ICEHUB-${year}-${random}`;
+
         const newCertificate = new Certificate({
             userId,
             programId,
+            certificateNumber,
             completionDate: completionDate || new Date(),
             qrCodeData,
             status: 'issued'
