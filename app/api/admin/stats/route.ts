@@ -56,7 +56,7 @@ export async function GET() {
         const recentActivity = [
             ...latestUsers.map(user => ({
                 user: user.fullName,
-                action: 'joined ICEDT Hub',
+                action: 'joined ICEHUB',
                 time: user.createdAt,
                 type: 'registration'
             })),
