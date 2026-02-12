@@ -42,7 +42,7 @@ export async function PUT(req: NextRequest) {
         await connectDB();
 
         const body = await req.json();
-        const { fullName, phoneNumber, address, experienceLevel } = body;
+        const { fullName, phoneNumber, address, experienceLevel, emergencyContactName, emergencyContactPhone } = body;
 
         const updatedUser = await User.findByIdAndUpdate(
             session.user.id,
@@ -51,6 +51,8 @@ export async function PUT(req: NextRequest) {
                 phoneNumber,
                 address,
                 experienceLevel,
+                emergencyContactName,
+                emergencyContactPhone
             },
             { new: true, runValidators: true }
         ).select('-password');

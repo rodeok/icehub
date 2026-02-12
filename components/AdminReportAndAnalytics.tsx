@@ -1,13 +1,14 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Download,
     TrendingUp,
     UserMinus,
     BookOpen,
     Calendar,
-    Award
+    Award,
+    Loader2
 } from 'lucide-react';
 import {
     BarChart,
@@ -22,66 +23,47 @@ import {
     Cell
 } from 'recharts';
 
-const stats = [
-    {
-        label: 'COMPLETION RATE',
-        value: '82.4%',
-        trend: '+4.5%',
-        icon: Award,
-        iconBg: 'bg-blue-50',
-        iconColor: 'text-blue-600',
-        trendColor: 'text-green-500',
-        trendBg: 'bg-green-50'
-    },
-    {
-        label: 'AVG. TEST SCORE',
-        value: '78%',
-        trend: '+2.1%',
-        icon: TrendingUp,
-        iconBg: 'bg-purple-50',
-        iconColor: 'text-purple-600',
-        trendColor: 'text-green-500',
-        trendBg: 'bg-green-50'
-    },
-    {
-        label: 'DROPOUT RATE',
-        value: '5.2%',
-        trend: '-1.2%',
-        icon: UserMinus,
-        iconBg: 'bg-red-50',
-        iconColor: 'text-red-500',
-        trendColor: 'text-red-500',
-        trendBg: 'bg-red-50'
-    },
-    {
-        label: 'ACTIVE STUDENTS',
-        value: '842',
-        trend: '+12%',
-        icon: BookOpen,
-        iconBg: 'bg-green-50',
-        iconColor: 'text-green-600',
-        trendColor: 'text-green-500',
-        trendBg: 'bg-green-50'
-    }
-];
-
-const dailyEngagementData = [
-    { name: 'Mon', value: 40 },
-    { name: 'Tue', value: 30 },
-    { name: 'Wed', value: 60 },
-    { name: 'Thu', value: 45 },
-    { name: 'Fri', value: 90 },
-    { name: 'Sat', value: 75 },
-    { name: 'Sun', value: 40 }
-];
-
-const enrollmentSplitData = [
-    { name: 'Bootcamps', value: 45, color: '#2563eb' },
-    { name: 'Online Courses', value: 35, color: '#a855f7' },
-    { name: 'Incubation', value: 20, color: '#10b981' }
-];
-
 export default function AdminReportAndAnalytics() {
+    const [data, setData] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+
+    const fetchAnalytics = async () => {
+        try {
+            setLoading(true);
+            const res = await fetch('/api/admin/analytics');
+            if (res.ok) {
+                const result = await res.json();
+                setData(result);
+            }
+        } catch (err) {
+            console.error('Error fetching analytics:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchAnalytics();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="h-[600px] w-full flex flex-col items-center justify-center gap-4 bg-white rounded-[32px] border border-gray-50">
+                <Loader2 size={40} className="animate-spin text-blue-600" />
+                <p className="text-sm font-bold text-gray-400 tracking-widest uppercase">Generating Real-time Reports...</p>
+            </div>
+        );
+    }
+
+    const { metrics = [], dailyEngagementData = [], enrollmentSplitData = [] } = data || {};
+
+    const iconConfig: any = {
+        'completion': { icon: Award, bg: 'bg-blue-50', color: 'text-blue-600' },
+        'score': { icon: TrendingUp, bg: 'bg-purple-50', color: 'text-purple-600' },
+        'dropout': { icon: UserMinus, bg: 'bg-red-50', color: 'text-red-500' },
+        'active': { icon: BookOpen, bg: 'bg-green-50', color: 'text-green-600' }
+    };
+
     return (
         <div className="space-y-8 pb-12">
             {/* Header */}
@@ -98,22 +80,26 @@ export default function AdminReportAndAnalytics() {
 
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {stats.map((stat, index) => (
-                    <div key={index} className="bg-white p-6 rounded-[32px] border border-gray-50 shadow-sm flex flex-col gap-6">
-                        <div className="flex justify-between items-start">
-                            <div className={`p-3 rounded-2xl ${stat.iconBg} ${stat.iconColor}`}>
-                                <stat.icon size={20} />
+                {(metrics.length > 0 ? metrics : []).map((stat: any, index: number) => {
+                    const config = iconConfig[stat.type] || iconConfig['completion'];
+                    const Icon = config.icon;
+                    return (
+                        <div key={index} className="bg-white p-6 rounded-[32px] border border-gray-50 shadow-sm flex flex-col gap-6">
+                            <div className="flex justify-between items-start">
+                                <div className={`p-3 rounded-2xl ${config.bg} ${config.color}`}>
+                                    <Icon size={20} />
+                                </div>
+                                <div className={`px-2 py-0.5 bg-green-50 text-green-500 rounded-lg text-[10px] font-black`}>
+                                    {stat.trend}
+                                </div>
                             </div>
-                            <div className={`px-2 py-0.5 ${stat.trendBg} ${stat.trendColor} rounded-lg text-[10px] font-black`}>
-                                {stat.trend}
+                            <div>
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{stat.label}</p>
+                                <h3 className="text-3xl font-bold text-gray-900 mt-1">{stat.value}</h3>
                             </div>
                         </div>
-                        <div>
-                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{stat.label}</p>
-                            <h3 className="text-3xl font-bold text-gray-900 mt-1">{stat.value}</h3>
-                        </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             {/* Charts Section */}
@@ -122,12 +108,12 @@ export default function AdminReportAndAnalytics() {
                 {/* Daily Engagement Bar Chart */}
                 <div className="lg:col-span-8 bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm flex flex-col gap-8">
                     <div className="flex justify-between items-center">
-                        <h3 className="text-xl font-bold text-gray-900">Daily Engagement</h3>
+                        <h3 className="text-xl font-bold text-gray-900">Daily Registrations</h3>
                         <div className="flex items-center gap-3">
                             <button className="p-2.5 bg-gray-50 rounded-xl text-gray-400 hover:text-gray-600 transition-all">
                                 <Calendar size={18} />
                             </button>
-                            <div className="h-10 w-24 bg-gray-50 rounded-xl" /> {/* Placeholder per image */}
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Last 7 Days</span>
                         </div>
                     </div>
 
@@ -164,7 +150,7 @@ export default function AdminReportAndAnalytics() {
 
                 {/* Enrollment Split Donut Chart */}
                 <div className="lg:col-span-4 bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm flex flex-col gap-8">
-                    <h3 className="text-xl font-bold text-gray-900">Enrollment Split</h3>
+                    <h3 className="text-xl font-bold text-gray-900">Program Split</h3>
 
                     <div className="flex-1 flex flex-col justify-center gap-12">
                         <div className="relative h-[240px] w-full flex items-center justify-center">
@@ -178,20 +164,20 @@ export default function AdminReportAndAnalytics() {
                                         dataKey="value"
                                         stroke="none"
                                     >
-                                        {enrollmentSplitData.map((entry, index) => (
+                                        {enrollmentSplitData.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={entry.color} />
                                         ))}
                                     </Pie>
                                 </PieChart>
                             </ResponsiveContainer>
                             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                                <span className="text-3xl font-black text-gray-900">100%</span>
-                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total</span>
+                                <span className="text-3xl font-black text-gray-900">Hub</span>
+                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Share</span>
                             </div>
                         </div>
 
                         <div className="space-y-5">
-                            {enrollmentSplitData.map((item, index) => (
+                            {(enrollmentSplitData.length > 0 ? enrollmentSplitData : []).map((item: any, index: number) => (
                                 <div key={index} className="flex justify-between items-center group">
                                     <div className="flex items-center gap-4">
                                         <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color }} />

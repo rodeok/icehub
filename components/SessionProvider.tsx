@@ -5,8 +5,9 @@ import { ReactNode } from 'react';
 
 interface SessionProviderProps {
     children: ReactNode;
+    session?: any;
 }
 
-export default function SessionProvider({ children }: SessionProviderProps) {
-    return <NextAuthSessionProvider>{children}</NextAuthSessionProvider>;
+export default function SessionProvider({ children, session }: SessionProviderProps) {
+    return <NextAuthSessionProvider session={session}>{children}</NextAuthSessionProvider>;
 }

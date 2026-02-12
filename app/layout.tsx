@@ -24,17 +24,22 @@ export const metadata: Metadata = {
   description: "ICEHUB Official Website",
 };
 
-export default function RootLayout({
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(authOptions);
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased`}
       >
-        <SessionProvider>
+        <SessionProvider session={session}>
           <Navbar />
           <main>{children}</main>
         </SessionProvider>

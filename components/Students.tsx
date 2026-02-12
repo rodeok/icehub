@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Search,
     Filter,
@@ -10,109 +10,130 @@ import {
     MoreHorizontal,
     Calendar,
     ChevronLeft,
-    ChevronRight
+    ChevronRight,
+    Loader2,
+    X,
+    CheckCircle2
 } from 'lucide-react';
 
-const studentsData = [
-    {
-        name: 'Sarah Connor',
-        email: 'sarah.c@icehub.tech',
-        id: 'STU001',
-        program: 'Fullstack Bootcamp',
-        cohort: 'Jan 2026',
-        enrolled: 'Jan 5, 2026',
-        status: 'ACTIVE',
-        initial: 'S',
-        bgColor: 'bg-blue-100',
-        textColor: 'text-blue-600'
-    },
-    {
-        name: 'John Smith',
-        email: 'j.smith@icehub.tech',
-        id: 'STU002',
-        program: 'UX Design Foundations',
-        cohort: 'Feb 2026',
-        enrolled: 'Feb 1, 2026',
-        status: 'PENDING',
-        initial: 'J',
-        bgColor: 'bg-blue-100',
-        textColor: 'text-blue-600'
-    },
-    {
-        name: 'Elena Rodriguez',
-        email: 'elena.r@icehub.tech',
-        id: 'STU003',
-        program: 'Data Science Incubation',
-        cohort: 'Jan 2026',
-        enrolled: 'Jan 10, 2026',
-        status: 'ACTIVE',
-        initial: 'E',
-        bgColor: 'bg-blue-100',
-        textColor: 'text-blue-600'
-    },
-    {
-        name: 'Marcus Wright',
-        email: 'm.wright@icehub.tech',
-        id: 'STU004',
-        program: 'Mobile App Bootcamp',
-        cohort: 'Mar 2026',
-        enrolled: 'Mar 12, 2026',
-        status: 'INACTIVE',
-        initial: 'M',
-        bgColor: 'bg-blue-100',
-        textColor: 'text-blue-600'
-    },
-    {
-        name: 'David Lee',
-        email: 'd.lee@icehub.tech',
-        id: 'STU005',
-        program: 'Fullstack Bootcamp',
-        cohort: 'Jan 2026',
-        enrolled: 'Jan 5, 2026',
-        status: 'ACTIVE',
-        initial: 'D',
-        bgColor: 'bg-blue-100',
-        textColor: 'text-blue-600'
-    },
-    {
-        name: 'Lisa Ray',
-        email: 'lisa.r@icehub.tech',
-        id: 'STU006',
-        program: 'Digital Literacy',
-        cohort: 'Feb 2026',
-        enrolled: 'Feb 15, 2026',
-        status: 'ACTIVE',
-        initial: 'L',
-        bgColor: 'bg-blue-100',
-        textColor: 'text-blue-600'
-    },
-    {
-        name: 'James Bond',
-        email: '007@icehub.tech',
-        id: 'STU007',
-        program: 'Security Specialist',
-        cohort: 'Jan 2026',
-        enrolled: 'Jan 20, 2026',
-        status: 'SUSPENDED',
-        initial: 'J',
-        bgColor: 'bg-blue-100',
-        textColor: 'text-blue-600'
-    },
-    {
-        name: 'Diana Prince',
-        email: 'diana.p@icehub.tech',
-        id: 'STU008',
-        program: 'UX Design Foundations',
-        cohort: 'Feb 2026',
-        enrolled: 'Feb 1, 2026',
-        status: 'ACTIVE',
-        initial: 'D',
-        bgColor: 'bg-blue-100',
-        textColor: 'text-blue-600'
-    }
-];
-
 export default function Students() {
+    const [students, setStudents] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [search, setSearch] = useState('');
+    const [statusFilter, setStatusFilter] = useState('All');
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+    // For counts
+    const [totalCount, setTotalCount] = useState(0);
+    const [programs, setPrograms] = useState<any[]>([]);
+
+    // Form state for adding student
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        id: '',
+        programId: '',
+        enrolledOn: new Date().toISOString().split('T')[0]
+    });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    useEffect(() => {
+        const fetchPrograms = async () => {
+            try {
+                const response = await fetch('/api/programs');
+                const data = await response.json();
+                setPrograms(data.programs || []);
+                if (data.programs?.length > 0) {
+                    setFormData(prev => ({ ...prev, programId: data.programs[0]._id }));
+                }
+            } catch (err) {
+                console.error('Failed to fetch programs');
+            }
+        };
+        fetchPrograms();
+    }, []);
+
+    const fetchStudents = async () => {
+        setLoading(true);
+        try {
+            const query = new URLSearchParams({
+                search,
+                status: statusFilter
+            });
+            const response = await fetch(`/api/admin/students?${query}`);
+            if (!response.ok) throw new Error('Failed to fetch students');
+            const data = await response.json();
+            setStudents(data.students);
+            setTotalCount(data.total);
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchStudents();
+    }, [search, statusFilter]);
+
+    const handleExportCSV = () => {
+        if (students.length === 0) return;
+
+        const headers = ['Student', 'Email', 'ID', 'Program', 'Cohort', 'Enrolled On', 'Status'];
+        const csvContent = [
+            headers.join(','),
+            ...students.map(s => [
+                `"${s.name}"`,
+                `"${s.email}"`,
+                `"${s.id}"`,
+                `"${s.program}"`,
+                `"${s.cohort}"`,
+                `"${s.enrolled}"`,
+                `"${s.status}"`
+            ].join(','))
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `students_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    const handleAddStudent = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        try {
+            const response = await fetch('/api/admin/students', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || 'Failed to add student');
+            }
+            setIsAddModalOpen(false);
+            fetchStudents();
+            setFormData({
+                name: '',
+                email: '',
+                id: '',
+                programId: programs[0]?._id || '',
+                enrolledOn: new Date().toISOString().split('T')[0]
+            });
+        } catch (err: any) {
+            alert(err.message);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     return (
         <div className="space-y-6 pb-8">
             {/* Header Section */}
@@ -122,11 +143,18 @@ export default function Students() {
                     <p className="text-gray-500 mt-1">Manage all enrolled students, their progress and accounts.</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-100 rounded-xl text-sm font-bold text-gray-700 shadow-sm hover:bg-gray-50 transition-all">
+                    <button
+                        onClick={handleExportCSV}
+                        disabled={loading || students.length === 0}
+                        className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-100 rounded-xl text-sm font-bold text-gray-700 shadow-sm hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
                         <Download size={18} />
                         Export CSV
                     </button>
-                    <button className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all">
+                    <button
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all"
+                    >
                         <UserPlus size={18} />
                         Add Student
                     </button>
@@ -140,6 +168,8 @@ export default function Students() {
                     <input
                         type="text"
                         placeholder="Search by name, email or ID..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
                         className="w-full pl-11 pr-4 py-3 bg-gray-50 border-none rounded-xl text-sm focus:ring-1 focus:ring-blue-100 outline-none transition-all"
                     />
                 </div>
@@ -150,10 +180,15 @@ export default function Students() {
                     </button>
                     <div className="h-6 w-px bg-gray-100 mx-2 hidden lg:block" />
                     <div className="flex items-center bg-gray-50 p-1 rounded-xl">
-                        <StatusToggle label="All" count={1289} active />
-                        <StatusToggle label="Active" />
-                        <StatusToggle label="Pending" />
-                        <StatusToggle label="Inactive" />
+                        {['All', 'Active', 'Pending', 'Inactive'].map((status) => (
+                            <button
+                                key={status}
+                                onClick={() => setStatusFilter(status)}
+                                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${statusFilter === status ? 'bg-blue-600 text-white shadow-md shadow-blue-100' : 'text-gray-500 hover:text-gray-700'}`}
+                            >
+                                {status}
+                            </button>
+                        ))}
                     </div>
                 </div>
             </div>
@@ -173,69 +208,170 @@ export default function Students() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
-                            {studentsData.map((student, index) => (
-                                <tr key={index} className="hover:bg-gray-50 transition-colors group">
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-4">
-                                            <div className={`h-10 w-10 rounded-full ${student.bgColor} ${student.textColor} flex items-center justify-center font-bold text-sm`}>
-                                                {student.initial}
+                            {students.length > 0 ? (
+                                students.map((student, index) => (
+                                    <tr key={index} className="hover:bg-gray-50 transition-colors group">
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-4">
+                                                <div className={`h-10 w-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm`}>
+                                                    {student.initial}
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-bold text-gray-900">{student.name}</p>
+                                                    <p className="text-xs text-gray-400">{student.email}</p>
+                                                </div>
                                             </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className="text-sm font-bold text-gray-700">{student.id}</span>
+                                        </td>
+                                        <td className="px-6 py-4">
                                             <div>
-                                                <p className="text-sm font-bold text-gray-900">{student.name}</p>
-                                                <p className="text-xs text-gray-400">{student.email}</p>
+                                                <p className="text-sm font-bold text-gray-700">{student.program}</p>
+                                                <p className="text-xs text-gray-400">{student.cohort}</p>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className="text-sm font-bold text-gray-700">{student.id}</span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div>
-                                            <p className="text-sm font-bold text-gray-700">{student.program}</p>
-                                            <p className="text-xs text-gray-400">{student.cohort}</p>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-2 text-gray-500">
-                                            <Calendar size={14} className="text-gray-400" />
-                                            <span className="text-sm font-medium">{student.enrolled}</span>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <StatusBadge status={student.status} />
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button className="p-2 hover:bg-white rounded-lg border border-transparent hover:border-gray-100 transition-all text-gray-400 hover:text-blue-600">
-                                                <Mail size={16} />
-                                            </button>
-                                            <button className="p-2 hover:bg-white rounded-lg border border-transparent hover:border-gray-100 transition-all text-gray-400 hover:text-gray-600">
-                                                <MoreHorizontal size={16} />
-                                            </button>
-                                        </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-2 text-gray-500">
+                                                <Calendar size={14} className="text-gray-400" />
+                                                <span className="text-sm font-medium">{student.enrolled}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <StatusBadge status={student.status} />
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button className="p-2 hover:bg-white rounded-lg border border-transparent hover:border-gray-100 transition-all text-gray-400 hover:text-blue-600">
+                                                    <Mail size={16} />
+                                                </button>
+                                                <button className="p-2 hover:bg-white rounded-lg border border-transparent hover:border-gray-100 transition-all text-gray-400 hover:text-gray-600">
+                                                    <MoreHorizontal size={16} />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={6} className="px-6 py-12 text-center text-gray-400 font-medium">
+                                        No students found matching your criteria.
                                     </td>
                                 </tr>
-                            ))}
+                            )}
                         </tbody>
                     </table>
                 </div>
 
                 {/* Pagination Footer */}
-                <div className="px-6 py-5 border-t border-gray-50 flex flex-col sm:row justify-between items-center gap-4">
+                <div className="px-6 py-5 border-t border-gray-50 flex flex-col sm:flex-row justify-between items-center gap-4">
                     <p className="text-sm text-gray-400 font-medium">
-                        Showing <span className="text-gray-900 font-bold">1-8</span> of <span className="text-gray-900 font-bold">1,289</span> students
+                        Showing <span className="text-gray-900 font-bold">1-{students.length}</span> of <span className="text-gray-900 font-bold">{totalCount}</span> students
                     </p>
                     <div className="flex items-center gap-1">
                         <PaginationButton icon={<ChevronLeft size={18} />} disabled />
                         <PaginationButton label="1" active />
-                        <PaginationButton label="2" />
-                        <PaginationButton label="3" />
-                        <span className="px-2 text-gray-300">...</span>
-                        <PaginationButton label="12" />
-                        <PaginationButton icon={<ChevronRight size={18} />} />
+                        <PaginationButton icon={<ChevronRight size={18} />} disabled />
                     </div>
                 </div>
             </div>
+
+            {/* Add Student Modal */}
+            {isAddModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
+                        <div className="p-6 border-b border-gray-50 flex justify-between items-center">
+                            <h2 className="text-xl font-bold text-gray-900">Add New Student</h2>
+                            <button onClick={() => setIsAddModalOpen(false)} className="p-2 hover:bg-gray-50 rounded-xl transition-colors">
+                                <X size={20} className="text-gray-400" />
+                            </button>
+                        </div>
+                        <form onSubmit={handleAddStudent} className="p-6 space-y-5">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Full Name</label>
+                                    <input
+                                        required
+                                        type="text"
+                                        placeholder="Enter name"
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-100 outline-none"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Student ID</label>
+                                    <input
+                                        required
+                                        type="text"
+                                        placeholder="ICE-2026-XXXX"
+                                        value={formData.id}
+                                        onChange={(e) => setFormData({ ...formData, id: e.target.value })}
+                                        className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-100 outline-none"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Email Address</label>
+                                <input
+                                    required
+                                    type="email"
+                                    placeholder="student@example.com"
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                    className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-100 outline-none"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Program</label>
+                                    <select
+                                        required
+                                        value={formData.programId}
+                                        onChange={(e) => setFormData({ ...formData, programId: e.target.value })}
+                                        className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-100 outline-none"
+                                    >
+                                        <option value="" disabled>Select program</option>
+                                        {programs.map(p => (
+                                            <option key={p._id} value={p._id}>{p.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Enrolled On</label>
+                                    <input
+                                        required
+                                        type="date"
+                                        value={formData.enrolledOn}
+                                        onChange={(e) => setFormData({ ...formData, enrolledOn: e.target.value })}
+                                        className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-100 outline-none"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="pt-4 flex gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsAddModalOpen(false)}
+                                    className="flex-1 px-6 py-3 border border-gray-100 rounded-2xl text-sm font-bold text-gray-500 hover:bg-gray-50 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                                >
+                                    {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <UserPlus size={18} />}
+                                    Add Student
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
@@ -268,10 +404,10 @@ function PaginationButton({ label, icon, active = false, disabled = false }: { l
         <button
             disabled={disabled}
             className={`h-9 w-9 flex items-center justify-center rounded-xl text-sm font-bold transition-all ${active
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-100'
-                    : disabled
-                        ? 'text-gray-200 cursor-not-allowed'
-                        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-100'
+                : disabled
+                    ? 'text-gray-200 cursor-not-allowed'
+                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
                 }`}
         >
             {label || icon}

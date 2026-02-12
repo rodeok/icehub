@@ -11,11 +11,10 @@ import {
     MoreVertical,
     ChevronRight,
     Clock,
-    CheckCircle2
+    CheckCircle2,
+    Loader2
 } from 'lucide-react';
 import {
-    LineChart,
-    Line,
     XAxis,
     YAxis,
     CartesianGrid,
@@ -24,96 +23,84 @@ import {
     Area,
     AreaChart
 } from 'recharts';
-import Image from 'next/image';
+import { useEffect, useState } from 'react';
 
-const enrollmentData = [
-    { name: 'Jan', value: 4500 },
-    { name: 'Feb', value: 5200 },
-    { name: 'Mar', value: 4800 },
-    { name: 'Apr', value: 6500 },
-    { name: 'May', value: 6200 },
-    { name: 'Jun', value: 7800 },
-    { name: 'Jul', value: 8200 },
-];
-
-const stats = [
-    {
-        title: 'Total Students',
-        value: '1,289',
-        trend: '+12.5%',
-        isPositive: true,
-        icon: Users,
-        color: 'text-blue-600',
-        bg: 'bg-blue-50',
-    },
-    {
-        title: 'Active Programs',
-        value: '24',
-        trend: '+2.4%',
-        isPositive: true,
-        icon: BookOpen,
-        color: 'text-purple-600',
-        bg: 'bg-purple-50',
-    },
-    {
-        title: 'Pending Payments',
-        value: '142',
-        trend: '-5.2%',
-        isPositive: false,
-        icon: CreditCard,
-        color: 'text-orange-600',
-        bg: 'bg-orange-50',
-    },
-    {
-        title: 'Certificates Issued',
-        value: '856',
-        trend: '+8.1%',
-        isPositive: true,
-        icon: Award,
-        color: 'text-green-600',
-        bg: 'bg-green-50',
-    },
-];
-
-const recentActivity = [
-    {
-        user: 'Sarah Connor',
-        action: 'enrolled in Fullstack Bootcamp',
-        time: '2 HOURS AGO',
-        image: '/images/icehub.png',
-        status: 'online'
-    },
-    {
-        user: 'John Smith',
-        action: 'completed payment for UX Design',
-        time: '5 HOURS AGO',
-        image: '/images/icehub.png',
-        status: 'offline'
-    },
-    {
-        user: 'Elena Rodriguez',
-        action: 'submitted Capstone Project',
-        time: '1 DAY AGO',
-        image: '/images/icehub.png',
-        status: 'offline'
-    },
-    {
-        user: 'Marcus Wright',
-        action: 'earned Digital Literacy Certificate',
-        time: '2 DAYS AGO',
-        image: '/images/icehub.png',
-        status: 'online'
-    }
-];
-
-const performanceData = [
-    { name: 'Fullstack Web Development', enrolled: 450, trend: '+15%', icon: BookOpen, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { name: 'UX/UI Design Foundations', enrolled: 320, trend: '+8%', icon: BookOpen, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { name: 'Data Science Incubation', enrolled: 180, trend: '+22%', icon: BookOpen, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { name: 'Mobile App Bootcamp', enrolled: 240, trend: '-3%', icon: BookOpen, color: 'text-blue-600', bg: 'bg-blue-50' },
-];
+interface DashboardData {
+    stats: any[];
+    enrollmentData: any[];
+    recentActivity: any[];
+    performanceData: any[];
+}
 
 export default function AdminDashboard() {
+    const [data, setData] = useState<DashboardData | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const response = await fetch('/api/admin/stats');
+                if (!response.ok) throw new Error('Failed to fetch dashboard data');
+                const result = await response.json();
+                setData(result);
+            } catch (err: any) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStats();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+                <p className="text-gray-500 font-medium tracking-tight">Gathering latest insights...</p>
+            </div>
+        );
+    }
+
+    if (error || !data) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+                <div className="p-4 bg-red-50 text-red-600 rounded-2xl border border-red-100 max-w-md text-center">
+                    <p className="font-bold">Error loading dashboard</p>
+                    <p className="text-sm mt-1">{error || 'Something went wrong while connecting to the server.'}</p>
+                </div>
+                <button
+                    onClick={() => window.location.reload()}
+                    className="px-6 py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
+                >
+                    Try Again
+                </button>
+            </div>
+        );
+    }
+
+    const { stats, enrollmentData, recentActivity, performanceData } = data;
+
+    const getStatIcon = (title: string) => {
+        switch (title) {
+            case 'Total Students': return Users;
+            case 'Active Programs': return BookOpen;
+            case 'Pending Payments': return CreditCard;
+            case 'Certificates Issued': return Award;
+            default: return Users;
+        }
+    };
+
+    const getStatColor = (title: string) => {
+        switch (title) {
+            case 'Total Students': return { text: 'text-blue-600', bg: 'bg-blue-50' };
+            case 'Active Programs': return { text: 'text-purple-600', bg: 'bg-purple-50' };
+            case 'Pending Payments': return { text: 'text-orange-600', bg: 'bg-orange-50' };
+            case 'Certificates Issued': return { text: 'text-green-600', bg: 'bg-green-50' };
+            default: return { text: 'text-gray-600', bg: 'bg-gray-50' };
+        }
+    };
     return (
         <div className="space-y-8 pb-8">
             {/* Header */}
@@ -124,23 +111,27 @@ export default function AdminDashboard() {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {stats.map((stat, index) => (
-                    <div key={index} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                        <div className="flex justify-between items-start">
-                            <div className={`p-3 rounded-xl ${stat.bg} ${stat.color}`}>
-                                <stat.icon size={24} />
+                {stats.map((stat: any, index: number) => {
+                    const Icon = getStatIcon(stat.title);
+                    const colors = getStatColor(stat.title);
+                    return (
+                        <div key={index} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <div className="flex justify-between items-start">
+                                <div className={`p-3 rounded-xl ${colors.bg} ${colors.text}`}>
+                                    <Icon size={24} />
+                                </div>
+                                <div className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold ${stat.isPositive ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
+                                    {stat.isPositive ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+                                    {stat.trend}
+                                </div>
                             </div>
-                            <div className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold ${stat.isPositive ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
-                                {stat.isPositive ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-                                {stat.trend}
+                            <div className="mt-4">
+                                <p className="text-sm font-medium text-gray-400">{stat.title}</p>
+                                <h3 className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</h3>
                             </div>
                         </div>
-                        <div className="mt-4">
-                            <p className="text-sm font-medium text-gray-400">{stat.title}</p>
-                            <h3 className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</h3>
-                        </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             {/* Middle Section: Chart & Activity */}
@@ -199,15 +190,13 @@ export default function AdminDashboard() {
                         <button className="text-sm font-bold text-blue-600 hover:underline">View All</button>
                     </div>
                     <div className="space-y-6 flex-1">
-                        {recentActivity.map((activity, index) => (
+                        {recentActivity.map((activity: any, index: number) => (
                             <div key={index} className="flex gap-4">
                                 <div className="relative">
-                                    <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border">
+                                    <div className="h-10 w-10 rounded-full bg-gray-50 flex items-center justify-center overflow-hidden border border-gray-100">
                                         <Clock size={20} className="text-gray-400" />
                                     </div>
-                                    {activity.status === 'online' && (
-                                        <div className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-white bg-green-500" />
-                                    )}
+                                    <div className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-white bg-green-500" />
                                 </div>
                                 <div className="flex-1">
                                     <div className="flex justify-between items-start">
@@ -241,12 +230,12 @@ export default function AdminDashboard() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
-                                {performanceData.map((program, index) => (
+                                {performanceData.map((program: any, index: number) => (
                                     <tr key={index} className="hover:bg-gray-50 transition-colors group">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className={`p-2 rounded-lg ${program.bg} ${program.color}`}>
-                                                    <program.icon size={16} />
+                                                <div className="p-2 rounded-lg bg-blue-50 text-blue-600">
+                                                    <BookOpen size={16} />
                                                 </div>
                                                 <span className="text-sm font-bold text-gray-900">{program.name}</span>
                                             </div>

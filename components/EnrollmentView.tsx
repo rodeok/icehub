@@ -22,6 +22,7 @@ interface Program {
     price: number;
     imageUrl?: string;
     duration: string;
+    category?: string;
 }
 
 export default function EnrollmentView() {
@@ -32,35 +33,41 @@ export default function EnrollmentView() {
     const category = searchParams.get("category");
 
     const [program, setProgram] = useState<Program | null>(null);
+    const [programs, setPrograms] = useState<Program[]>([]);
     const [loading, setLoading] = useState(true);
-    const [paymentPlan, setPaymentPlan] = useState("full");
+    const [paymentPlan, setPaymentPlan] = useState<"full" | "installment">("full");
     const [paymentMethod, setPaymentMethod] = useState("card");
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [lastRef, setLastRef] = useState("");
     const [formData, setFormData] = useState({
         fullName: session?.user?.name || "",
         email: session?.user?.email || "",
         phone: "",
         learningMode: "In-person (Nnewi hub)"
     });
-    const [isSuccess, setIsSuccess] = useState(false);
-    const [lastRef, setLastRef] = useState("");
 
     useEffect(() => {
-        if (category) {
-            fetch(`/api/programs?category=${category}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.programs && data.programs.length > 0) {
-                        setProgram(data.programs[0]);
-                    }
-                    setLoading(false);
-                })
-                .catch(err => {
-                    console.error("Error fetching program:", err);
-                    setLoading(false);
-                });
-        } else {
-            setLoading(false);
-        }
+        const fetchData = async () => {
+            try {
+                const res = await fetch("/api/programs");
+                const data = await res.json();
+                const activePrograms = data.programs || [];
+                setPrograms(activePrograms);
+
+                if (category) {
+                    const selected = activePrograms.find((p: Program) => p.category === category) || activePrograms[0];
+                    setProgram(selected);
+                } else if (activePrograms.length > 0) {
+                    setProgram(activePrograms[0]);
+                }
+            } catch (err) {
+                console.error("Error fetching data:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
     }, [category]);
 
     const amountToPay = program ? (paymentPlan === "full" ? program.price : 60000) : 0;
@@ -281,6 +288,37 @@ export default function EnrollmentView() {
                     <section className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm space-y-6">
                         <div className="flex items-center space-x-3 mb-2">
                             <span className="bg-blue-50 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">1</span>
+                            <h2 className="text-lg font-bold text-gray-900">Select Your Course</h2>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-semibold text-gray-700">Choose Program</label>
+                            <div className="relative">
+                                <select
+                                    value={program?._id || ""}
+                                    onChange={(e) => {
+                                        const selected = programs.find(p => p._id === e.target.value);
+                                        if (selected) setProgram(selected);
+                                    }}
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white appearance-none cursor-pointer"
+                                >
+                                    {programs.map((p) => (
+                                        <option key={p._id} value={p._id}>
+                                            {p.name} - ₦{p.price.toLocaleString()}
+                                        </option>
+                                    ))}
+                                </select>
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Section 2: Personal Information */}
+                    <section className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm space-y-6">
+                        <div className="flex items-center space-x-3 mb-2">
+                            <span className="bg-blue-50 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">2</span>
                             <h2 className="text-lg font-bold text-gray-900">Personal Information</h2>
                         </div>
 
@@ -341,7 +379,7 @@ export default function EnrollmentView() {
                     {/* Section 2: Choose Payment Plan */}
                     <section className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm space-y-6">
                         <div className="flex items-center space-x-3 mb-2">
-                            <span className="bg-blue-50 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">2</span>
+                            <span className="bg-blue-50 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">3</span>
                             <h2 className="text-lg font-bold text-gray-900">Choose Payment Plan</h2>
                         </div>
 
@@ -379,7 +417,7 @@ export default function EnrollmentView() {
                     {/* Section 3: Payment Method */}
                     <section className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm space-y-6">
                         <div className="flex items-center space-x-3 mb-2">
-                            <span className="bg-blue-50 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">3</span>
+                            <span className="bg-blue-50 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">4</span>
                             <h2 className="text-lg font-bold text-gray-900">Payment Method</h2>
                         </div>
 

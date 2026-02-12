@@ -7,9 +7,12 @@ export interface IUser extends Document {
     password: string;
     phoneNumber?: string;
     address?: string;
+    emergencyContactName?: string;
+    emergencyContactPhone?: string;
     experienceLevel?: 'beginner' | 'intermediate' | 'advanced';
     enrolledPrograms: mongoose.Types.ObjectId[];
     uniqueCode: string;
+    progress: number;
     createdAt: Date;
     updatedAt: Date;
     isActive: boolean;
@@ -57,6 +60,18 @@ const UserSchema: Schema = new Schema(
                 ref: 'Program',
             },
         ],
+        progress: {
+            type: Number,
+            default: 0,
+        },
+        emergencyContactName: {
+            type: String,
+            trim: true,
+        },
+        emergencyContactPhone: {
+            type: String,
+            trim: true,
+        },
         isActive: {
             type: Boolean,
             default: true,

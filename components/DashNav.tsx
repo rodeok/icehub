@@ -1,9 +1,9 @@
 'use client';
 
 import { useSession, signOut } from 'next-auth/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Search, Bell, ChevronDown, User, LogOut, Settings, Menu } from 'lucide-react';
+import { Search, Bell, ChevronDown, User, LogOut, Settings, Menu, Globe, Target } from 'lucide-react';
 import { useSidebar } from '@/context/SidebarContext';
 import Link from 'next/link';
 
@@ -11,35 +11,39 @@ export default function DashNav({ uniqueCode }: { uniqueCode?: string }) {
     const { data: session } = useSession();
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+    const [notifications, setNotifications] = useState<any[]>([]);
+    const [loadingNotifications, setLoadingNotifications] = useState(true);
     const router = useRouter();
     const pathname = usePathname();
 
-    const notifications = [
-        {
-            id: 1,
-            title: 'Project Submission',
-            description: 'Your Phase 1 project has been graded. Check your results!',
-            time: '2 mins ago',
-            icon: <Search className="text-blue-500" size={16} />,
-            bg: 'bg-blue-50',
-        },
-        {
-            id: 2,
-            title: 'Upcoming Webinar',
-            description: 'Join our "Future of AI" webinar tomorrow at 10:00 AM.',
-            time: '1 hour ago',
-            icon: <Bell className="text-blue-500" size={16} />,
-            bg: 'bg-blue-50',
-        },
-        {
-            id: 3,
-            title: 'Payment Reminder',
-            description: 'Your next installment is due in 3 days.',
-            time: '5 hours ago',
-            icon: <Settings className="text-red-500" size={16} />,
-            bg: 'bg-red-50',
-        },
-    ];
+    const fetchNotifications = async () => {
+        try {
+            setLoadingNotifications(true);
+            const res = await fetch('/api/user/notifications');
+            if (res.ok) {
+                const data = await res.json();
+                const mappedNotifications = data.map((n: any) => ({
+                    id: n._id,
+                    title: n.title,
+                    description: n.message,
+                    time: new Date(n.createdAt).toLocaleDateString(),
+                    icon: n.targetType === 'all' ? <Globe className="text-blue-500" size={16} /> : <Target className="text-purple-500" size={16} />,
+                    bg: n.targetType === 'all' ? 'bg-blue-50' : 'bg-purple-50',
+                }));
+                setNotifications(mappedNotifications);
+            }
+        } catch (err) {
+            console.error('Error fetching notifications:', err);
+        } finally {
+            setLoadingNotifications(false);
+        }
+    };
+
+    useEffect(() => {
+        if (session) {
+            fetchNotifications();
+        }
+    }, [session]);
 
     const handleLogout = async () => {
         await signOut({ redirect: false });

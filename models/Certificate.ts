@@ -29,6 +29,11 @@ const CertificateSchema: Schema = new Schema(
             type: String,
             required: [true, 'Certificate number is required'],
             unique: true,
+            default: () => {
+                const year = new Date().getFullYear();
+                const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+                return `ICEHUB-${year}-${random}`;
+            }
         },
         issueDate: {
             type: Date,
@@ -53,14 +58,6 @@ const CertificateSchema: Schema = new Schema(
     }
 );
 
-// Generate unique certificate number before saving
-CertificateSchema.pre<ICertificate>('save', async function () {
-    if (!this.certificateNumber) {
-        const year = new Date().getFullYear();
-        const random = Math.random().toString(36).substring(2, 8).toUpperCase();
-        this.certificateNumber = `ICEHUB-${year}-${random}`;
-    }
-});
 
 const Certificate: Model<ICertificate> =
     mongoose.models.Certificate ||
