@@ -21,7 +21,7 @@ interface Certificate {
     programId: {
         name: string;
         weeks: number;
-    };
+    } | null;
     completionDate: string;
 }
 
@@ -75,8 +75,8 @@ export default function CertificatesPage() {
         // Set data for the hidden preview component
         setTempCertData({
             studentName: session.user.name,
-            programName: cert.programId.name,
-            weeks: cert.programId.weeks,
+            programName: cert.programId?.name || 'Unknown Program',
+            weeks: cert.programId?.weeks || 0,
             issueDate: formattedDate,
             certNumber: cert.certificateNumber
         });
@@ -156,7 +156,7 @@ export default function CertificatesPage() {
                                     </span>
                                 </div>
                                 <h3 className="text-white font-bold text-lg leading-tight z-10 line-clamp-2">
-                                    {cert.programId.name}
+                                    {cert.programId?.name || 'Unknown Program'}
                                 </h3>
                             </div>
 

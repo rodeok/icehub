@@ -15,9 +15,12 @@ export async function GET() {
 
         await connectDB();
 
-        const certificates = await Certificate.find({ userId: session.user.id })
+        const certificatesList = await Certificate.find({ userId: session.user.id })
             .populate('programId')
             .sort({ issueDate: -1 });
+
+        // Filter out certificates where programId is null (e.g. program was deleted)
+        const certificates = certificatesList.filter(cert => cert.programId);
 
         return NextResponse.json({ certificates }, { status: 200 });
     } catch (error: any) {
