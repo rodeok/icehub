@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Payment from '@/models/Payment';
+import User from '@/models/User';
+import Program from '@/models/Program';
 
 export async function GET() {
     try {
@@ -45,16 +47,25 @@ export async function GET() {
             .lean();
 
         return NextResponse.json({
-            totalRevenue,
-            pendingCount,
-            pendingValue,
-            successRate,
-            targetProgress,
-            pendingUsers: pendingUsers.map((u: any) => u.userId?.fullName?.[0] || '?'),
-            totalPendingCount: pendingCount
+            totalRevenue: Number(totalRevenue) || 0,
+            pendingCount: Number(pendingCount) || 0,
+            pendingValue: Number(pendingValue) || 0,
+            successRate: Number(successRate) || 0,
+            targetProgress: Number(targetProgress) || 0,
+            pendingUsers: (pendingUsers || []).map((u: any) => u.userId?.fullName?.[0] || '?'),
+            totalPendingCount: Number(pendingCount) || 0
         });
     } catch (error: any) {
         console.error('Error fetching payment stats:', error);
-        return NextResponse.json({ error: 'Failed to fetch payment stats' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to fetch payment stats',
+            totalRevenue: 0,
+            pendingCount: 0,
+            pendingValue: 0,
+            successRate: 0,
+            targetProgress: 0,
+            pendingUsers: [],
+            totalPendingCount: 0
+        }, { status: 500 });
     }
 }

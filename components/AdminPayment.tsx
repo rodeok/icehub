@@ -43,7 +43,13 @@ export default function AdminPayment() {
         try {
             const res = await fetch('/api/admin/payments/stats');
             const data = await res.json();
-            setStats(data);
+            if (res.ok) {
+                setStats(data);
+            } else {
+                console.error('API Error:', data.error);
+                // Even on error, we might have default values in the refined API response
+                setStats(data);
+            }
         } catch (err) {
             console.error('Error fetching stats:', err);
         }
@@ -187,7 +193,7 @@ export default function AdminPayment() {
                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Success Rate</p>
                         <div className="flex items-center gap-3 mt-2">
                             <h3 className="text-3xl font-bold text-gray-900">
-                                {stats ? `${stats.successRate.toFixed(1)}%` : '...'}
+                                {stats ? `${(stats.successRate || 0).toFixed(1)}%` : '...'}
                             </h3>
                             <div className="flex items-center gap-1 px-2 py-0.5 bg-green-50 text-green-500 rounded-lg text-xs font-black">
                                 <TrendingUp size={12} />
