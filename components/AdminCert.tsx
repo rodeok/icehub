@@ -43,16 +43,18 @@ export default function AdminCert() {
             ]);
 
             const [eligibleData, issuedData, programsData] = await Promise.all([
-                eligibleRes.json(),
-                issuedRes.json(),
-                programsRes.json()
+                eligibleRes.ok ? eligibleRes.json() : Promise.resolve([]),
+                issuedRes.ok ? issuedRes.json() : Promise.resolve([]),
+                programsRes.ok ? programsRes.json() : Promise.resolve({ programs: [] })
             ]);
 
-            setEligibleStudents(eligibleData);
-            setIssuedCerts(issuedData);
+            setEligibleStudents(Array.isArray(eligibleData) ? eligibleData : []);
+            setIssuedCerts(Array.isArray(issuedData) ? issuedData : []);
             setAllPrograms(programsData.programs || []);
         } catch (err) {
             console.error('Error fetching certificate data:', err);
+            setEligibleStudents([]);
+            setIssuedCerts([]);
         } finally {
             setLoading(false);
         }
@@ -155,7 +157,7 @@ export default function AdminCert() {
     );
 
     return (
-        <div className="space-y-8 pb-12">
+        <div className="space-y-6 pb-12">
             {/* Hidden Certificate Template for PDF Generation */}
             <div className="fixed -left-[2000px] top-0 shadow-2xl">
                 {previewData && (
@@ -170,27 +172,31 @@ export default function AdminCert() {
             </div>
 
             {/* Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex flex-col sm:flex-row justify-between items-end gap-4 border-b border-gray-100 pb-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Certificates</h1>
-                    <p className="text-gray-500 mt-1 font-medium text-sm">Issue, track and verify digital credentials for program graduates.</p>
+                    <h1 className="text-4xl font-black text-gray-900 tracking-tight">Certificates</h1>
+                    <p className="text-gray-400 text-sm font-medium mt-1">Manage and issue digital credentials for your graduates.</p>
                 </div>
-                <button
-                    onClick={() => {
-                        setPreviewData({
-                            name: "Sample Graduate",
-                            programName: "Fullstack Engineering",
-                            weeks: 12,
-                            certNumber: "ICEHUB-2026-SAMPLE",
-                            issueDate: new Date().toLocaleDateString()
-                        });
-                        setIsPreviewOpen(true);
-                    }}
-                    className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all"
-                >
-                    <Award size={18} strokeWidth={2.5} />
-                    Design Template
-                </button>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => {
+                            setPreviewData({
+                                name: "Sample Graduate",
+                                programName: "Fullstack Engineering",
+                                weeks: 12,
+                                certNumber: "ICEHUB-2026-SAMPLE",
+                                issueDate: new Date().toLocaleDateString()
+                            });
+                            setIsPreviewOpen(true);
+                        }}
+                        className="px-6 py-3 bg-white border border-gray-200 text-gray-700 rounded-2xl text-[12px] font-black uppercase tracking-widest hover:bg-gray-50 transition-all shadow-sm"
+                    >
+                        Design Template
+                    </button>
+                    <button className="px-6 py-3 bg-blue-600 text-white rounded-2xl text-[12px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100">
+                        Bulk Issuance
+                    </button>
+                </div>
             </div>
 
             {/* Content Grid */}
@@ -199,21 +205,16 @@ export default function AdminCert() {
                 {/* Main Table Column */}
                 <div className="lg:col-span-8 space-y-6">
                     {/* Filter Bar */}
-                    <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between gap-4">
-                        <div className="relative flex-1 max-w-md">
+                    <div className="bg-gray-50/50 p-2 rounded-2xl flex items-center gap-2">
+                        <div className="relative flex-1">
                             <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                             <input
                                 type="text"
-                                placeholder="Search students or programs..."
+                                placeholder="Search by name, email or program..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border-none rounded-xl text-sm outline-none"
+                                className="w-full pl-12 pr-4 py-3 bg-white border border-gray-100 rounded-xl text-sm outline-none focus:ring-2 ring-blue-50 transition-all"
                             />
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <button className="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-all">
-                                Bulk Issue
-                            </button>
                         </div>
                     </div>
 
@@ -243,52 +244,59 @@ export default function AdminCert() {
                                             const issuedInfo = issuedCerts.find(c => c.userId?._id === student.userId && c.programId?._id === activeProgramId);
 
                                             return (
-                                                <tr key={index} className="hover:bg-gray-50/50 transition-colors">
-                                                    <td className="px-6 py-6 font-medium">
-                                                        <div>
-                                                            <p className="text-sm font-bold text-gray-900">{student.name}</p>
-                                                            <p className="text-[10px] font-bold text-gray-400 mt-0.5">{student.email}</p>
+                                                <tr key={index} className="hover:bg-gray-50/30 transition-colors group">
+                                                    <td className="px-6 py-5">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="h-10 w-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 font-black text-xs uppercase">
+                                                                {student.name.charAt(0)}
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-sm font-bold text-gray-900">{student.name}</p>
+                                                                <p className="text-[11px] font-medium text-gray-400">{student.email}</p>
+                                                            </div>
                                                         </div>
                                                     </td>
-                                                    <td className="px-6 py-6 text-center">
-                                                        <span className="text-xs font-black text-green-500">100%</span>
+                                                    <td className="px-6 py-5 text-center">
+                                                        <div className="inline-flex items-center px-2 py-1 bg-green-50 text-green-600 rounded-lg text-[10px] font-black">
+                                                            100% COMPLETE
+                                                        </div>
                                                     </td>
-                                                    <td className="px-6 py-6 text-center">
+                                                    <td className="px-6 py-5 text-center">
                                                         {student.programId ? (
-                                                            <div>
-                                                                <p className="text-xs font-black text-blue-600">{student.programName}</p>
-                                                                <p className="text-[10px] text-gray-400">{student.weeks} Weeks</p>
+                                                            <div className="inline-flex flex-col">
+                                                                <span className="text-xs font-bold text-gray-700">{student.programName}</span>
+                                                                <span className="text-[10px] font-medium text-gray-400">{student.weeks} Weeks Program</span>
                                                             </div>
                                                         ) : (
                                                             <select
-                                                                className="text-[10px] font-bold bg-gray-50 border-none rounded-lg p-1 outline-none text-blue-600"
+                                                                className="text-[11px] font-bold bg-gray-50 border border-gray-100 rounded-xl px-3 py-1.5 outline-none text-blue-600 focus:bg-white transition-all"
                                                                 value={selectedPrograms[student.userId] || ''}
                                                                 onChange={(e) => setSelectedPrograms(prev => ({ ...prev, [student.userId]: e.target.value }))}
                                                             >
-                                                                <option value="">Select Program</option>
+                                                                <option value="">Choose Program</option>
                                                                 {allPrograms.map(p => (
                                                                     <option key={p.id} value={p.id}>{p.title}</option>
                                                                 ))}
                                                             </select>
                                                         )}
                                                     </td>
-                                                    <td className="px-6 py-6 text-center">
-                                                        <div className="flex items-center justify-center gap-1.5">
+                                                    <td className="px-6 py-5 text-center">
+                                                        <div className="flex items-center justify-center">
                                                             {isIssued ? (
-                                                                <>
-                                                                    <Award size={12} className="text-blue-500" />
-                                                                    <span className="text-[9px] font-black tracking-widest text-blue-500 uppercase">ISSUED</span>
-                                                                </>
+                                                                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-full">
+                                                                    <CheckCircle2 size={12} strokeWidth={3} />
+                                                                    <span className="text-[9px] font-black tracking-widest uppercase">Verified</span>
+                                                                </div>
                                                             ) : (
-                                                                <>
-                                                                    <Clock size={12} className="text-orange-400" />
-                                                                    <span className="text-[9px] font-black tracking-widest text-orange-400 uppercase">ELIGIBLE</span>
-                                                                </>
+                                                                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 text-orange-600 rounded-full">
+                                                                    <Clock size={12} strokeWidth={3} />
+                                                                    <span className="text-[9px] font-black tracking-widest uppercase">Awaiting</span>
+                                                                </div>
                                                             )}
                                                         </div>
                                                     </td>
-                                                    <td className="px-6 py-6 text-right">
-                                                        <div className="flex items-center justify-end gap-3">
+                                                    <td className="px-6 py-5 text-right">
+                                                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                             {isIssued ? (
                                                                 <button
                                                                     onClick={() => generatePDF({
@@ -296,8 +304,8 @@ export default function AdminCert() {
                                                                         certNumber: issuedInfo.certificateNumber,
                                                                         issueDate: new Date(issuedInfo.issueDate).toLocaleDateString()
                                                                     })}
-                                                                    className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
-                                                                    title="Redownload PDF"
+                                                                    className="p-2.5 bg-gray-50 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
+                                                                    title="Redownload"
                                                                 >
                                                                     <Download size={16} />
                                                                 </button>
@@ -305,14 +313,11 @@ export default function AdminCert() {
                                                                 <button
                                                                     onClick={() => handleIssueCertificate(student)}
                                                                     disabled={issuingId === `${student.userId}-${student.programId}`}
-                                                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg text-[10px] font-black hover:bg-blue-700 transition-all shadow-sm disabled:opacity-50"
+                                                                    className="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-50 disabled:opacity-50"
                                                                 >
-                                                                    {issuingId === `${student.userId}-${student.programId}` ? 'Issuing...' : 'Issue Now'}
+                                                                    {issuingId === `${student.userId}-${student.programId}` ? '...' : 'Issue'}
                                                                 </button>
                                                             )}
-                                                            <button className="p-2 text-gray-400 hover:text-gray-600">
-                                                                <MoreVertical size={16} />
-                                                            </button>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -335,55 +340,65 @@ export default function AdminCert() {
                 {/* Sidebar Column */}
                 <div className="lg:col-span-4 space-y-6">
                     {/* Badge System Card */}
-                    <div className="bg-[#0f172a] p-8 rounded-[32px] text-white shadow-xl relative overflow-hidden group">
+                    <div className="bg-[#0c1a33] p-8 rounded-[40px] text-white shadow-2xl relative overflow-hidden group border border-white/5">
                         <div className="relative z-10">
-                            <div className="h-12 w-12 bg-blue-600/20 text-blue-400 rounded-2xl flex items-center justify-center mb-6">
-                                <Award size={28} strokeWidth={1.5} />
+                            <div className="h-14 w-14 bg-blue-500/10 text-blue-400 rounded-2xl flex items-center justify-center mb-8 border border-white/5">
+                                <Award size={32} strokeWidth={1} />
                             </div>
-                            <h2 className="text-xl font-bold mb-3 !text-white">Digital Badge System</h2>
-                            <p className="!text-white text-sm leading-relaxed mb-8">
-                                Your certificates are blockchain-verifiable. Graduates can share them directly to LinkedIn.
+                            <h2 className="text-2xl font-black mb-4 !text-white tracking-tight">E-Credential System</h2>
+                            <p className="text-gray-400 text-[13px] leading-relaxed mb-10 font-medium">
+                                Digital certificates are secured with cryptographic signatures and instant verification QR codes.
                             </p>
 
-                            <div className="space-y-4 mb-10">
-                                <div className="flex items-center gap-4 p-3 bg-white/5 rounded-2xl border border-white/5">
-                                    <div className="h-10 w-10 bg-green-500/20 text-green-400 rounded-xl flex items-center justify-center">
-                                        <QrCode size={20} />
+                            <div className="space-y-3 mb-12">
+                                {[
+                                    { icon: QrCode, label: 'Instant Verification', desc: 'Secure QR tech', color: 'text-blue-400', bg: 'bg-blue-400/10' },
+                                    { icon: Mail, label: 'Automated Delivery', desc: 'Email integration', color: 'text-purple-400', bg: 'bg-purple-400/10' },
+                                ].map((item, i) => (
+                                    <div key={i} className="flex items-center gap-4 p-4 bg-white/5 rounded-3xl border border-white/5">
+                                        <div className={`h-10 w-10 ${item.bg} ${item.color} rounded-2xl flex items-center justify-center`}>
+                                            <item.icon size={20} />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-black !text-white uppercase tracking-wider">{item.label}</p>
+                                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{item.desc}</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p className="text-xs font-bold !text-white">Verifiable QR</p>
-                                        <p className="text-[10px] !text-white">Scan to verify</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-4 p-3 bg-white/5 rounded-2xl border border-white/5">
-                                    <div className="h-10 w-10 bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center">
-                                        <Mail size={20} />
-                                    </div>
-                                    <div>
-                                        <p className="text-xs font-bold !text-white">Auto-Email</p>
-                                        <p className="text-[10px] !text-white">On graduation</p>
-                                    </div>
-                                </div>
+                                ))}
                             </div>
 
-                            <button className="w-full py-4 bg-blue-600 rounded-2xl text-sm font-bold shadow-lg shadow-blue-900/40 hover:bg-blue-700 transition-all">
-                                Upgrade System
+                            <button className="w-full py-4.5 bg-white text-gray-900 rounded-3xl text-[11px] font-black uppercase tracking-[0.2em] shadow-xl hover:bg-gray-50 transition-all scale-100 active:scale-[0.98]">
+                                Global Verification Hub
                             </button>
                         </div>
-                        <div className="absolute top-0 right-0 h-32 w-32 bg-blue-600/10 rounded-full blur-3xl -mr-16 -mt-16" />
+                        {/* Elegant Decorative Elements */}
+                        <div className="absolute -right-20 -top-20 h-64 w-64 bg-blue-600/10 rounded-full blur-[100px]" />
+                        <div className="absolute -left-20 -bottom-20 h-64 w-64 bg-purple-600/10 rounded-full blur-[100px]" />
                     </div>
 
                     {/* Quick Stats Card */}
-                    <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm">
-                        <h3 className="text-lg font-bold text-gray-900 mb-6">Quick Stats</h3>
-                        <div className="space-y-5">
-                            <div className="flex justify-between items-center">
-                                <span className="text-sm font-medium text-gray-500">Total Issued</span>
-                                <span className="text-lg font-black text-gray-900">{issuedCerts.length}</span>
+                    <div className="bg-white p-8 rounded-[40px] border border-gray-100 shadow-sm relative overflow-hidden group">
+                        <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-6">Credential Insights</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                                <p className="text-3xl font-black text-gray-900">{issuedCerts.length}</p>
+                                <p className="text-[9px] font-black text-blue-600 uppercase tracking-widest">Total Issued</p>
                             </div>
-                            <div className="flex justify-between items-center">
-                                <span className="text-sm font-medium text-gray-500">Eligible Now</span>
-                                <span className="text-lg font-black text-orange-400">{eligibleStudents.filter(s => !issuedCerts.some(c => c.userId?._id === s.userId && c.programId?._id === s.programId)).length}</span>
+                            <div className="space-y-1">
+                                <p className="text-3xl font-black text-orange-400">
+                                    {eligibleStudents.filter(s => !issuedCerts.some(c => c.userId?._id === s.userId && c.programId?._id === s.programId)).length}
+                                </p>
+                                <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Awaiting</p>
+                            </div>
+                        </div>
+
+                        <div className="mt-8 pt-6 border-t border-gray-50">
+                            <div className="flex items-center justify-between text-[11px] font-black uppercase tracking-widest text-gray-400">
+                                <span>Issuance Rate</span>
+                                <span className="text-gray-900">78%</span>
+                            </div>
+                            <div className="h-1.5 w-full bg-gray-50 rounded-full mt-2 overflow-hidden">
+                                <div className="h-full bg-blue-600 w-[78%] rounded-full" />
                             </div>
                         </div>
                     </div>

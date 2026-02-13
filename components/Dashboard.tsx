@@ -45,15 +45,28 @@ const Dashboard: React.FC<DashboardProps> = ({
     const [progress, setProgress] = React.useState(initialProgress);
     const [announcements, setAnnouncements] = React.useState<Announcement[]>([]);
 
+    const trackActivity = async (id: string, type: 'view' | 'click') => {
+        try {
+            await fetch('/api/announcements/track', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, type })
+            });
+        } catch (error) {
+            console.error(`Error tracking ${type}:`, error);
+        }
+    };
+
     const fetchDashboardData = async () => {
         try {
-            // Fetch progress (ideally we'd have a user-specific endpoint for this)
-            // For now, let's assume we fetch announcements and maybe a separate profile endpoint for progress
             const res = await fetch('/api/announcements');
             const data = await res.json();
-            if (Array.isArray(data)) setAnnouncements(data);
+            if (Array.isArray(data)) {
+                setAnnouncements(data);
+                // Track views for new announcements
+                data.forEach(ann => trackActivity(ann._id, 'view'));
+            }
 
-            // Fetch progress from user profile
             const profileRes = await fetch('/api/user/profile');
             const profileData = await profileRes.json();
             if (profileData.user && typeof profileData.user.progress === 'number') {
@@ -66,8 +79,7 @@ const Dashboard: React.FC<DashboardProps> = ({
 
     React.useEffect(() => {
         fetchDashboardData();
-        const interval = setInterval(fetchDashboardData, 30000); // Poll every 30 seconds
-        return () => clearInterval(interval);
+        // We track views only on initial load to avoid inflating stats via polling
     }, []);
     return (
         <div className="max-w-7xl mx-auto space-y-8 pb-12 px-4 sm:px-6">
@@ -208,7 +220,11 @@ const Dashboard: React.FC<DashboardProps> = ({
 
                     <div className="space-y-4">
                         {announcements.length > 0 ? announcements.map((ann, idx) => (
-                            <div key={idx} className="flex gap-3">
+                            <div
+                                key={idx}
+                                className="flex gap-3 cursor-pointer hover:bg-gray-50 p-2 -m-2 rounded-xl transition-colors"
+                                onClick={() => trackActivity(ann._id, 'click')}
+                            >
                                 <div className={`w-1.5 h-1.5 rounded-full ${idx === 0 ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]' : 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.4)]'} mt-1.5 shrink-0`} />
                                 <div>
                                     <p className="text-[13px] font-bold text-gray-900 leading-tight">{ann.title}</p>

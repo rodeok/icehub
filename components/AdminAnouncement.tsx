@@ -25,6 +25,7 @@ export default function AdminAnouncement() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [search, setSearch] = useState('');
+    const [audienceStats, setAudienceStats] = useState({ all: 0, frontend: 0, backend: 0 });
 
     const [formData, setFormData] = useState({
         title: '',
@@ -37,16 +38,21 @@ export default function AdminAnouncement() {
     const fetchData = useCallback(async () => {
         try {
             setLoading(true);
-            const [annRes, progRes] = await Promise.all([
+            const [annRes, progRes, statsRes] = await Promise.all([
                 fetch('/api/admin/announcements'),
-                fetch('/api/admin/programs')
+                fetch('/api/admin/programs'),
+                fetch('/api/admin/announcements/stats')
             ]);
-            const [annData, progData] = await Promise.all([
+            const [annData, progData, statsData] = await Promise.all([
                 annRes.json(),
-                progRes.json()
+                progRes.json(),
+                statsRes.json()
             ]);
             setAnnouncements(annData);
             setPrograms(progData.programs || []);
+            if (!statsData.error) {
+                setAudienceStats(statsData);
+            }
         } catch (err) {
             console.error('Error fetching data:', err);
         } finally {
@@ -57,6 +63,17 @@ export default function AdminAnouncement() {
     useEffect(() => {
         fetchData();
     }, [fetchData]);
+
+    const handleDelete = async (id: string) => {
+        if (!window.confirm('Are you sure you want to delete this announcement?')) return;
+        try {
+            const res = await fetch(`/api/admin/announcements/${id}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error('Failed to delete announcement');
+            await fetchData();
+        } catch (err) {
+            alert('Error deleting announcement');
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -246,8 +263,12 @@ export default function AdminAnouncement() {
                                             <span className={`px-3 py-1 rounded-lg text-[9px] font-black tracking-widest bg-green-50 text-green-500 uppercase`}>
                                                 {ann.status}
                                             </span>
-                                            <button className="p-1.5 hover:bg-gray-50 rounded-lg text-gray-400">
-                                                <MoreVertical size={16} />
+                                            <button
+                                                onClick={() => handleDelete(ann._id)}
+                                                className="p-1.5 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-500 transition-colors"
+                                                title="Delete Announcement"
+                                            >
+                                                <X size={16} />
                                             </button>
                                         </div>
                                     </div>
@@ -324,20 +345,28 @@ export default function AdminAnouncement() {
                                     </div>
                                     <span className="text-xs font-bold text-gray-700">All Registered</span>
                                 </div>
-                                <span className="text-xs font-black text-gray-400">1,289</span>
+                                <span className="text-xs font-black text-gray-400">{audienceStats.all.toLocaleString()}</span>
                             </div>
 
-                            {programs.slice(0, 3).map(p => (
-                                <div key={p.id} className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
-                                        <div className="h-10 w-10 bg-gray-50 text-gray-400 rounded-xl flex items-center justify-center">
-                                            <Globe size={18} />
-                                        </div>
-                                        <span className="text-xs font-bold text-gray-700">{p.title}</span>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="h-10 w-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center">
+                                        <Globe size={18} />
                                     </div>
-                                    <span className="text-xs font-black text-gray-400">{p.students}</span>
+                                    <span className="text-xs font-bold text-gray-700">Frontend Development</span>
                                 </div>
-                            ))}
+                                <span className="text-xs font-black text-blue-500">{audienceStats.frontend.toLocaleString()}</span>
+                            </div>
+
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="h-10 w-10 bg-purple-50 text-purple-500 rounded-xl flex items-center justify-center">
+                                        <Target size={18} />
+                                    </div>
+                                    <span className="text-xs font-bold text-gray-700">Backend Development</span>
+                                </div>
+                                <span className="text-xs font-black text-purple-500">{audienceStats.backend.toLocaleString()}</span>
+                            </div>
                         </div>
 
                         <button className="w-full mt-2 py-3.5 bg-gray-50 rounded-2xl text-[11px] font-black uppercase tracking-widest text-gray-900 hover:bg-gray-100 transition-all">

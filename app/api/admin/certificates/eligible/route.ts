@@ -15,7 +15,10 @@ export async function GET() {
 
         // Flatten the data for the UI
         const eligible = users.flatMap((user: any) => {
-            if (!user.enrolledPrograms || user.enrolledPrograms.length === 0) {
+            // Filter out any null entries in enrolledPrograms that might occur if a program was deleted
+            const validPrograms = (user.enrolledPrograms || []).filter((p: any) => p !== null);
+
+            if (validPrograms.length === 0) {
                 // Return a "placeholder" entry for students without programs
                 return [{
                     userId: user._id,
@@ -27,7 +30,7 @@ export async function GET() {
                     category: 'None'
                 }];
             }
-            return user.enrolledPrograms.map((program: any) => ({
+            return validPrograms.map((program: any) => ({
                 userId: user._id,
                 name: user.fullName,
                 email: user.email,
@@ -40,7 +43,14 @@ export async function GET() {
 
         return NextResponse.json(eligible);
     } catch (error: any) {
-        console.error('Error fetching eligible students:', error);
-        return NextResponse.json({ error: 'Failed to fetch eligibility data' }, { status: 500 });
+        console.error('CRITICAL: Error fetching eligible students:', {
+            message: error.message,
+            stack: error.stack,
+            cause: error.cause
+        });
+        return NextResponse.json({
+            error: 'Failed to fetch eligibility data',
+            details: error.message
+        }, { status: 500 });
     }
 }
