@@ -15,6 +15,10 @@ export async function GET() {
 
         await connectDB();
 
+        // Ensure Program model is registered for population
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const models = [Program];
+
         const certificatesList = await Certificate.find({ userId: session.user.id })
             .populate('programId')
             .sort({ issueDate: -1 });

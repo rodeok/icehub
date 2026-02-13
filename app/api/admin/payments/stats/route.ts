@@ -8,6 +8,10 @@ export async function GET() {
     try {
         await connectDB();
 
+        // Ensure models are registered for population (avoids tree-shaking issues)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const models = [User, Program];
+
         // 1. Total Revenue (Success only)
         const totalRevenueResult = await Payment.aggregate([
             { $match: { status: 'success' } },

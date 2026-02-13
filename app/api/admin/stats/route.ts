@@ -9,6 +9,10 @@ export async function GET() {
     try {
         await connectDB();
 
+        // Ensure models are registered for population
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const models = [User, Program, Payment, Certificate];
+
         // 1. Stats Overview
         const [totalStudents, activeProgramsCount, pendingPaymentsCount, certificatesIssuedCount] = await Promise.all([
             User.countDocuments(),

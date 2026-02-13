@@ -8,6 +8,10 @@ export async function GET(request: Request) {
     try {
         await connectDB();
 
+        // Ensure models are registered for population
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const models = [User, Program];
+
         const { searchParams } = new URL(request.url);
         const search = searchParams.get('search') || '';
 
