@@ -59,11 +59,8 @@ const CertificateSchema: Schema = new Schema(
 );
 
 
-// In development, the model might be cached with an old schema.
-if (mongoose.models.Certificate) {
-    delete (mongoose.models as any).Certificate;
-}
-
-const Certificate: Model<ICertificate> = mongoose.model<ICertificate>('Certificate', CertificateSchema);
+// Prevent model recompilation in development
+const Certificate: Model<ICertificate> =
+    mongoose.models.Certificate || mongoose.model<ICertificate>('Certificate', CertificateSchema);
 
 export default Certificate;
