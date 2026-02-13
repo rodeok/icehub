@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Play, FileText, Download, CheckCircle, Circle, ChevronDown, ChevronUp, BookOpen, Clock, ChevronRight, LayoutGrid } from "lucide-react";
+import { Play, FileText, Download, CheckCircle, Circle, ChevronDown, ChevronUp, BookOpen, Clock, ChevronRight, LayoutGrid, Lock } from "lucide-react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 
 export default function ProgramsPage() {
@@ -11,6 +11,7 @@ export default function ProgramsPage() {
     const [selectedProgramId, setSelectedProgramId] = useState<string>("");
     const [loading, setLoading] = useState(true);
     const [activeModule, setActiveModule] = useState<number | null>(0);
+    const [activeLesson, setActiveLesson] = useState<number>(0);
     const router = useRouter();
 
     const fetchProgramData = async () => {
@@ -47,6 +48,7 @@ export default function ProgramsPage() {
         if (selected) {
             setProgram(selected);
             setActiveModule(0);
+            setActiveLesson(0);
         }
     };
 
@@ -62,7 +64,9 @@ export default function ProgramsPage() {
         );
     }
 
-    const modules = program?.curriculum || [];
+    const modules = program?.modules && program.modules.length > 0
+        ? program.modules.map((m: any) => m.title)
+        : (program?.curriculum || []);
     const isEnrolled = !!program;
 
     return (
@@ -202,32 +206,46 @@ export default function ProgramsPage() {
                             <div className="flex-1 min-w-0">
                                 {/* Video Player */}
                                 <div className="relative aspect-[16/9] bg-gray-900 rounded-[32px] overflow-hidden shadow-2xl mb-10 group border border-white/10">
-                                    {program.videoUrls && program.videoUrls.length > 0 ? (
-                                        <iframe
-                                            src={program.videoUrls[0].replace("watch?v=", "embed/")}
-                                            className="w-full h-full border-0"
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                            allowFullScreen
-                                        ></iframe>
-                                    ) : (
-                                        <>
-                                            <img
-                                                src={program.imageUrl || "https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=2072&q=80"}
-                                                alt="Course Video"
-                                                className="w-full h-full object-cover opacity-70 group-hover:opacity-50 transition-all duration-500 scale-105 group-hover:scale-100"
-                                            />
-                                            <div className="absolute inset-0 flex items-center justify-center">
-                                                <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-300">
-                                                    <Play className="w-8 h-8 text-blue-600 ml-1.5" fill="currentColor" />
+                                    {(() => {
+                                        const currentModule = program.modules?.[activeModule || 0];
+                                        const currentLesson = currentModule?.lessons?.[activeLesson];
+                                        const videoUrl = currentLesson?.videoUrl || program.videoUrls?.[0];
+
+                                        if (videoUrl) {
+                                            return (
+                                                <iframe
+                                                    src={videoUrl.replace("watch?v=", "embed/")}
+                                                    className="w-full h-full border-0"
+                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                    allowFullScreen
+                                                ></iframe>
+                                            );
+                                        }
+
+                                        return (
+                                            <>
+                                                <img
+                                                    src={program.imageUrl || "https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=2072&q=80"}
+                                                    alt="Course Video"
+                                                    className="w-full h-full object-cover opacity-70 group-hover:opacity-50 transition-all duration-500 scale-105 group-hover:scale-100"
+                                                />
+                                                <div className="absolute inset-0 flex items-center justify-center">
+                                                    <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-300">
+                                                        <Play className="w-8 h-8 text-blue-600 ml-1.5" fill="currentColor" />
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </>
-                                    )}
+                                            </>
+                                        );
+                                    })()}
 
                                     <div className="absolute bottom-10 left-10 text-white drop-shadow-lg pointer-events-none">
                                         <p className="text-sm font-bold !text-white/80 mb-2 uppercase tracking-widest">Now Playing</p>
                                         <h2 className="text-4xl font-extrabold tracking-tight !text-white">
-                                            {activeModule !== null ? modules[activeModule] : "Course Introduction"}
+                                            {activeModule !== null ? (
+                                                program.modules?.[activeModule]?.lessons?.[activeLesson]?.title || (modules[activeModule] || "Course Introduction")
+                                            ) : (
+                                                "Course Introduction"
+                                            )}
                                         </h2>
                                     </div>
 
@@ -240,28 +258,32 @@ export default function ProgramsPage() {
                                     <h2 className="text-2xl font-bold text-gray-900 mb-6">Description</h2>
                                     <p className="text-gray-500 text-lg leading-relaxed mb-10 font-medium">
                                         {activeModule !== null ? (
-                                            `In this module, we'll cover ${modules[activeModule]}. This is part of the ${program.name} curriculum. Explore the content and resources below to master these concepts.`
+                                            program.modules?.[activeModule]?.lessons?.[activeLesson]?.title ? (
+                                                `Now watching: ${program.modules[activeModule].lessons[activeLesson].title}. This is part of Module ${activeModule + 1} in the ${program.name} curriculum.`
+                                            ) : (
+                                                `In this module, we'll cover ${modules[activeModule]}. This is part of the ${program.name} curriculum. Explore the content and resources below to master these concepts.`
+                                            )
                                         ) : (
                                             "Please select a module from the course content sidebar to view details and lessons."
                                         )}
                                     </p>
 
-                                    <div className="grid md:grid-cols-2 gap-6">
+                                    <div className="grid md:grid-cols-2 gap-4">
                                         {[
                                             { name: "Lecture Slides.pdf", size: "2.4 MB" },
                                             { name: "Cheat Sheet.pdf", size: "1.1 MB" },
                                         ].map((resource) => (
-                                            <div key={resource.name} className="flex items-center justify-between p-6 bg-gray-50/50 rounded-2xl border border-gray-100 hover:border-blue-200 transition-all cursor-pointer group hover:bg-white hover:shadow-md">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-blue-600 shadow-sm border border-gray-50 group-hover:bg-blue-50 transition-colors">
-                                                        <FileText size={24} strokeWidth={1.5} />
+                                            <div key={resource.name} className="flex items-center justify-between p-4 bg-gray-50/50 rounded-2xl border border-gray-100 hover:border-blue-200 transition-all cursor-pointer group hover:bg-white hover:shadow-md">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-blue-600 shadow-sm border border-gray-50 group-hover:bg-blue-50 transition-colors">
+                                                        <FileText size={20} strokeWidth={1.5} />
                                                     </div>
                                                     <div>
-                                                        <p className="font-bold text-gray-900 text-sm group-hover:text-blue-600 transition-colors">{resource.name}</p>
-                                                        <p className="text-xs font-bold text-gray-400 mt-0.5">{resource.size}</p>
+                                                        <p className="font-bold text-gray-900 text-xs group-hover:text-blue-600 transition-colors tracking-tight">{resource.name}</p>
+                                                        <p className="text-[10px] font-bold text-gray-400 mt-0.5">{resource.size}</p>
                                                     </div>
                                                 </div>
-                                                <Download size={20} className="text-gray-400 group-hover:text-blue-600 transition-all" strokeWidth={2} />
+                                                <Download size={18} className="text-gray-400 group-hover:text-blue-600 transition-all" strokeWidth={2} />
                                             </div>
                                         ))}
                                     </div>
@@ -272,30 +294,86 @@ export default function ProgramsPage() {
                             <div className="w-full lg:w-96 shrink-0">
                                 <h3 className="text-2xl font-bold text-gray-900 mb-6 tracking-tight">Course Content</h3>
                                 <div className="space-y-4">
-                                    {modules.map((moduleTitle: string, idx: number) => (
-                                        <div key={idx} className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm transition-all hover:shadow-md">
-                                            <button
-                                                onClick={() => toggleModule(idx)}
-                                                className={`w-full flex items-center justify-between p-5 hover:bg-gray-50 transition-all text-left ${activeModule === idx ? 'bg-blue-50/30' : ''}`}
-                                            >
-                                                <span className={`font-bold text-[15px] leading-snug pr-4 ${activeModule === idx ? 'text-gray-900' : 'text-gray-600'}`}>
-                                                    Module {idx + 1}: {moduleTitle}
-                                                </span>
-                                                {activeModule === idx ? (
-                                                    <ChevronUp size={20} className="text-gray-900 shrink-0" strokeWidth={2.5} />
-                                                ) : (
-                                                    <ChevronDown size={20} className="text-gray-400 shrink-0" strokeWidth={2} />
-                                                )}
-                                            </button>
-                                            {activeModule === idx && (
-                                                <div className="border-t border-gray-50 bg-white">
-                                                    <div className="p-8 text-center bg-gray-50/50">
-                                                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest italic">Lessons coming soon</p>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
+                                    {modules.map((moduleTitle: string, idx: number) => {
+                                        const structuredModule = program.modules?.[idx];
+                                        const isExpanded = activeModule === idx;
+                                        return (
+                                            <div key={idx} className={`bg-white rounded-2xl border transition-all duration-300 shadow-sm hover:shadow-md overflow-hidden ${isExpanded ? 'border-gray-200' : 'border-gray-100'}`}>
+                                                <button
+                                                    onClick={() => toggleModule(idx)}
+                                                    className={`w-full flex items-center justify-between p-5 hover:bg-gray-50 transition-all text-left ${isExpanded ? 'bg-white' : ''}`}
+                                                >
+                                                    <span className={`font-bold text-[15px] leading-snug pr-4 transition-colors ${isExpanded ? 'text-gray-900' : 'text-gray-600'}`}>
+                                                        Module {idx + 1}: {structuredModule?.title || moduleTitle}
+                                                    </span>
+                                                    {isExpanded ? (
+                                                        <ChevronUp size={20} className="text-gray-900 shrink-0" strokeWidth={2.5} />
+                                                    ) : (
+                                                        <ChevronDown size={20} className="text-gray-400 shrink-0" strokeWidth={2} />
+                                                    )}
+                                                </button>
+
+                                                <AnimatePresence>
+                                                    {isExpanded && (
+                                                        <motion.div
+                                                            initial={{ height: 0, opacity: 0 }}
+                                                            animate={{ height: "auto", opacity: 1 }}
+                                                            exit={{ height: 0, opacity: 0 }}
+                                                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                                                            className="border-t border-gray-50 overflow-hidden"
+                                                        >
+                                                            {structuredModule && structuredModule.lessons?.length > 0 ? (
+                                                                <div className="flex flex-col bg-blue-50/10">
+                                                                    {structuredModule.lessons.map((lesson: any, lIdx: number) => {
+                                                                        const isActive = activeLesson === lIdx;
+                                                                        return (
+                                                                            <button
+                                                                                key={lIdx}
+                                                                                onClick={() => setActiveLesson(lIdx)}
+                                                                                className={`relative flex items-center gap-4 p-5 hover:bg-white transition-all text-left group ${isActive ? 'bg-blue-50/40' : ''}`}
+                                                                            >
+                                                                                <div className={`w-8 h-8 flex items-center justify-center shrink-0 transition-all ${isActive ? 'text-blue-600' : 'text-gray-400'}`}>
+                                                                                    {isActive ? (
+                                                                                        <Play size={18} fill="currentColor" strokeWidth={2} />
+                                                                                    ) : (
+                                                                                        <Lock size={18} strokeWidth={2} className="opacity-40" />
+                                                                                    )}
+                                                                                </div>
+                                                                                <div className="flex-1 min-w-0">
+                                                                                    <p className={`text-[14px] font-bold transition-colors ${isActive ? 'text-blue-600' : 'text-gray-500 group-hover:text-gray-700'}`}>
+                                                                                        {lesson.title}
+                                                                                    </p>
+                                                                                    <p className="text-[11px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">
+                                                                                        {lesson.duration}
+                                                                                    </p>
+                                                                                </div>
+
+                                                                                {/* Active Indicator Bar */}
+                                                                                {isActive && (
+                                                                                    <motion.div
+                                                                                        layoutId="active-bar"
+                                                                                        className="absolute right-0 top-0 bottom-0 w-1 bg-blue-600"
+                                                                                    />
+                                                                                )}
+
+                                                                                {lesson.isFree && !isActive && (
+                                                                                    <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">FREE</span>
+                                                                                )}
+                                                                            </button>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                            ) : (
+                                                                <div className="p-8 text-center bg-gray-50/50">
+                                                                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest italic">Lessons coming soon</p>
+                                                                </div>
+                                                            )}
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </motion.div>

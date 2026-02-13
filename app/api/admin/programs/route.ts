@@ -81,6 +81,8 @@ export async function POST(request: Request) {
         let calcTotalModules = Number(totalModules) || 0;
         let calcVideoLessons = Number(videoLessons) || 0;
         let calcResourcesCount = Number(resourcesCount) || 0;
+        let legacyCurriculum = curriculum || [];
+        let legacyVideoUrls = videoUrls || [];
 
         if (modules && Array.isArray(modules)) {
             calcTotalModules = modules.length;
@@ -88,6 +90,18 @@ export async function POST(request: Request) {
             calcResourcesCount = modules.reduce((acc: number, mod: any) =>
                 acc + (mod.lessons?.reduce((lAcc: number, lesson: any) => lAcc + (lesson.resources?.length || 0), 0) || 0), 0
             );
+
+            // Populate legacy fields if they are empty
+            if (legacyCurriculum.length === 0) {
+                legacyCurriculum = modules.map((mod: any) => mod.title);
+            }
+            if (legacyVideoUrls.length === 0) {
+                legacyVideoUrls = modules.flatMap((mod: any) =>
+                    (mod.lessons || [])
+                        .map((lesson: any) => lesson.videoUrl)
+                        .filter((url: string) => !!url)
+                );
+            }
         }
 
         const newProgram = new Program({
@@ -97,12 +111,12 @@ export async function POST(request: Request) {
             duration: duration || `${weeks} Weeks`,
             weeks: Number(weeks),
             skillLevel,
-            curriculum: curriculum || [],
+            curriculum: legacyCurriculum,
             imageUrl,
             totalModules: calcTotalModules,
             videoLessons: calcVideoLessons,
             resourcesCount: calcResourcesCount,
-            videoUrls: videoUrls || [],
+            videoUrls: legacyVideoUrls,
             resourceUrls: resourceUrls || [],
             modules: modules || [], // Store the detailed content
             isActive: true,
