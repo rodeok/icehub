@@ -35,7 +35,7 @@ export async function GET() {
 
         // 5. Recent successful payments for the metrics view (avatars)
         const recentSuccess = await Payment.find({ status: 'success' })
-            .populate('userId', 'fullName initial')
+            .populate('userId', 'fullName')
             .sort({ updatedAt: -1 })
             .limit(4)
             .lean();
@@ -58,7 +58,7 @@ export async function GET() {
     } catch (error: any) {
         console.error('Error fetching payment stats:', error);
         return NextResponse.json({
-            error: 'Failed to fetch payment stats',
+            error: error.message || 'Failed to fetch payment stats',
             totalRevenue: 0,
             pendingCount: 0,
             pendingValue: 0,
