@@ -15,6 +15,7 @@ import {
     Clock,
     MousePointer2,
     Loader2,
+    DeleteIcon,
     X
 } from 'lucide-react';
 
@@ -268,7 +269,7 @@ export default function AdminAnouncement() {
                                                 className="p-1.5 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-500 transition-colors"
                                                 title="Delete Announcement"
                                             >
-                                                <X size={16} />
+                                                <DeleteIcon size={16} />
                                             </button>
                                         </div>
                                     </div>

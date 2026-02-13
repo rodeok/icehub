@@ -40,9 +40,14 @@ const Dashboard: React.FC<DashboardProps> = ({
     instructorName = "Lead Instructor",
     program
 }) => {
-    const totalModules = program?.totalModules || 40;
-    const completedModules = Math.round((initialProgress / 100) * totalModules);
     const [progress, setProgress] = React.useState(initialProgress);
+    const [stats, setStats] = React.useState({
+        lessonsCompleted: 0,
+        hoursSpent: 0,
+        totalLessons: program?.totalModules * 4 || 40, // Estimate lessons per module
+        assignments: 0,
+        upcomingDeadlines: 0
+    });
     const [announcements, setAnnouncements] = React.useState<Announcement[]>([]);
 
     const trackActivity = async (id: string, type: 'view' | 'click') => {
@@ -71,6 +76,15 @@ const Dashboard: React.FC<DashboardProps> = ({
             const profileData = await profileRes.json();
             if (profileData.user && typeof profileData.user.progress === 'number') {
                 setProgress(profileData.user.progress);
+            }
+            if (profileData.stats) {
+                setStats({
+                    lessonsCompleted: profileData.stats.lessonsCompleted || 0,
+                    hoursSpent: profileData.stats.hoursSpent || 0,
+                    totalLessons: profileData.stats.totalLessons || 40,
+                    assignments: profileData.stats.assignments || 0,
+                    upcomingDeadlines: profileData.stats.upcomingDeadlines || 0
+                });
             }
         } catch (error) {
             console.error('Error fetching dashboard data:', error);
@@ -113,7 +127,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                                     <div className="w-4 h-4 rounded-full bg-green-50 flex items-center justify-center">
                                         <CheckCircle className="w-2.5 h-2.5 text-green-500" strokeWidth={4} />
                                     </div>
-                                    <span>{completedModules}/{totalModules} Modules</span>
+                                    <span>{stats.lessonsCompleted}/{stats.totalLessons} Lessons</span>
                                 </div>
                                 <div className="hidden sm:block w-1 h-1 rounded-full bg-gray-300" />
                                 <div className="flex items-center gap-1.5">
@@ -277,10 +291,10 @@ const Dashboard: React.FC<DashboardProps> = ({
             {/* Bottom Row: Stats Summary */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
-                    { label: 'Lessons Completed', value: '124', icon: CheckCircle, color: 'text-green-500', bg: 'bg-green-50' },
-                    { label: 'Hours Spent', value: '45.5', icon: Clock, color: 'text-blue-500', bg: 'bg-blue-50' },
-                    { label: 'Assignments', value: '12', icon: BookOpen, color: 'text-purple-500', bg: 'bg-purple-50' },
-                    { label: 'Upcoming Deadlines', value: '3', icon: Calendar, color: 'text-red-500', bg: 'bg-red-50' },
+                    { label: 'Lessons Completed', value: stats.lessonsCompleted.toString(), icon: CheckCircle, color: 'text-green-500', bg: 'bg-green-50' },
+                    { label: 'Hours Spent', value: stats.hoursSpent.toString(), icon: Clock, color: 'text-blue-500', bg: 'bg-blue-50' },
+                    { label: 'Assignments', value: stats.assignments.toString(), icon: BookOpen, color: 'text-purple-500', bg: 'bg-purple-50' },
+                    { label: 'Upcoming Deadlines', value: stats.upcomingDeadlines.toString(), icon: Calendar, color: 'text-red-500', bg: 'bg-red-50' },
                 ].map((stat, idx) => (
                     <div key={idx} className="bg-white rounded-[16px] p-4 shadow-sm border border-gray-100 flex flex-col gap-3 group hover:border-blue-100 transition-all">
                         <div className={`w-8 h-8 rounded-lg ${stat.bg} flex items-center justify-center transition-transform group-hover:scale-110`}>
