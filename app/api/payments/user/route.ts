@@ -18,6 +18,11 @@ export async function GET(req: NextRequest) {
 
         await connectDB();
 
+        // Ensure Program model is registered (prevents MissingSchemaError during population)
+        if (!process.env.SKIP_MODEL_TOUCH) {
+            const _touch = Program.modelName;
+        }
+
         // Fetch user's payments
         const payments = await Payment.find({ userId: session.user.id })
             .populate('programId', 'name price')
@@ -41,8 +46,8 @@ export async function GET(req: NextRequest) {
         const totalPaid = successfulPayments.reduce((sum, p) => sum + p.amount, 0);
 
         // Calculate total program fees
-        const totalFees = user.enrolledPrograms.reduce(
-            (sum: number, program: any) => sum + (program.price || 0),
+        const totalFees = (user.enrolledPrograms || []).reduce(
+            (sum: number, program: any) => sum + (program?.price || 0),
             0
         );
 
@@ -59,7 +64,7 @@ export async function GET(req: NextRequest) {
 
         return NextResponse.json({
             payments,
-            enrolledPrograms: user.enrolledPrograms,
+            enrolledPrograms: (user.enrolledPrograms || []).filter((p: any) => p !== null),
             unpaidPrograms,
             stats: {
                 totalFees,

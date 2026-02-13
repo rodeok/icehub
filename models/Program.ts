@@ -157,12 +157,8 @@ const ProgramSchema: Schema = new Schema(
     }
 );
 
-// In development, the model might be cached with an old schema.
-// This forces Mongoose to use the updated schema.
-if (mongoose.models.Program) {
-    delete (mongoose.models as any).Program;
-}
-
-const Program: Model<IProgram> = mongoose.model<IProgram>('Program', ProgramSchema);
+// Prevent model recompilation in development
+const Program: Model<IProgram> =
+    mongoose.models.Program || mongoose.model<IProgram>('Program', ProgramSchema);
 
 export default Program;

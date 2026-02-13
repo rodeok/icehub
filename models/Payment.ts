@@ -62,13 +62,8 @@ const PaymentSchema: Schema = new Schema(
     }
 );
 
-// Force model recompilation in dev mode to pick up schema changes
-if (process.env.NODE_ENV !== 'production') {
-    delete mongoose.models.Payment;
-}
-
+// Prevent model recompilation in development
 const Payment: Model<IPayment> =
-    mongoose.models.Payment ||
-    mongoose.model<IPayment>('Payment', PaymentSchema);
+    mongoose.models.Payment || mongoose.model<IPayment>('Payment', PaymentSchema);
 
 export default Payment;
