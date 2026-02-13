@@ -8,6 +8,10 @@ import crypto from 'crypto';
 export async function GET() {
     try {
         await connectDB();
+
+        // Ensure models are registered (especially on Vercel cold starts)
+        const _userModel = User.modelName;
+        const _programModel = Program.modelName;
         const certificates = await Certificate.find()
             .populate('userId', 'fullName email')
             .populate('programId', 'name weeks')

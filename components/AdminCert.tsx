@@ -184,7 +184,7 @@ export default function AdminCert() {
                                 name: "Sample Graduate",
                                 programName: "Fullstack Engineering",
                                 weeks: 12,
-                                certNumber: "ICEHUB-2026-SAMPLE",
+                                certNumber: "ICEHUB-2026-0001",
                                 issueDate: new Date().toLocaleDateString()
                             });
                             setIsPreviewOpen(true);
