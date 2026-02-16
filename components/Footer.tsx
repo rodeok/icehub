@@ -82,9 +82,9 @@ export default function NewsletterFooter() {
                 <div>
                     <h4 className="font-semibold !text-black">Company</h4>
                     <ul className="mt-4 space-y-3 text-sm text-gray-600">
-                        <li>About Us</li>
-                        <li>Careers</li>
-                        <li>Blog</li>
+                        <li><a href="/about" className="hover:text-blue-600 transition">About Us</a></li>
+                        {/* <li><a href="/careers" className="hover:text-blue-600 transition">Careers</a></li> */}
+                        <li><a href="/blogs" className="hover:text-blue-600 transition">Blog</a></li>
                     </ul>
                 </div>
 
@@ -92,7 +92,7 @@ export default function NewsletterFooter() {
                 <div>
                     <h4 className="font-semibold !text-black">Support</h4>
                     <ul className="mt-4 space-y-3 text-sm text-gray-600">
-                        <li>Help Center</li>
+                        <li><a href="https://chat.icehub-ng.com" className="hover:text-blue-600 transition">Help Center</a></li>
                         <li>Privacy Policy</li>
                         <li>Terms of Service</li>
                     </ul>
