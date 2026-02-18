@@ -203,6 +203,9 @@ export default function Navbar() {
             <li>
               <Link href="/services/start-incubation" onClick={() => setMobileMenuOpen(false)}>Startup Incubation</Link>
             </li>
+            <li>
+              <a href="https://chat.icehub-ng.com" target="_blank" className="nav-link cursor-pointer">Help Center</a>
+            </li>
           </ul>
 
           <div className="flex flex-col gap-3">
