@@ -121,6 +121,9 @@ export default function Navbar() {
               Blogs & Activities
             </Link>
           </li>
+          <li>
+            <a href="https://chat.icehub-ng.com" target="_blank" className="nav-link cursor-pointer">Help Center</a>
+          </li>
         </ul>
 
         {/* CTA Button - Desktop */}

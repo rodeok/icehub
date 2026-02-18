@@ -44,7 +44,7 @@ const courses = [
     {
         title: "Cybersecurity",
         description: "Learn to protect systems and networks using modern cybersecurity tools, techniques, and real-world security projects.",
-        image: "/images/cyber.png",
+        image: "/images/gggg.jpeg",
         link: "/courses/cyber-security"
     },
     {
@@ -56,19 +56,19 @@ const courses = [
     {
         title: "Artificial Intelligence",
         description: "Explore the world of AI and Machine Learning to build intelligent systems and data-driven solutions for the future.",
-        image: "/images/backend.png", // Reusing image as placeholder
+        image: "/images/ai.jpg", // Reusing image as placeholder
         link: "/courses/ai-ml"
     },
     {
         title: "Cloud Computing",
         description: "Learn to deploy and manage scalable applications on leading cloud platforms like AWS, Azure, and Google Cloud.",
-        image: "/images/frontend.png", // Reusing image as placeholder
+        image: "/images/cloud.jpg", // Reusing image as placeholder
         link: "/courses/cloud-computing"
     },
     {
         title: "Digital Marketing",
         description: "Master the art of online brand building and customer engagement through SEO, social media, and data-driven strategies.",
-        image: "/images/product.png", // Reusing image as placeholder
+        image: "/images/digital.jpg", // Reusing image as placeholder
         link: "/courses/digital-marketing"
     }
 ];

@@ -1,5 +1,6 @@
 
 import { Search, ArrowRight, Share2, Users, Handshake, Globe } from "lucide-react";
+import Image from "next/image";
 
 const filters = ["All Projects", "Completed", "Ongoing", "Community", "Tech", "Education"];
 
@@ -8,19 +9,19 @@ const projects = [
         title: "Chowflex",
         description: "A real-world food ordering app project by Ice Hub, showcasing how young innovators use modern tech to solve everyday problems through practical, user-centered design.",
         tags: ["Ecommerce", "Completed"],
-        imageText: "Chowflex Screenshot",
+        image: "/images/ChowflexPage.png",
     },
     {
         title: "Brandyeast",
         description: "Helping brands grow online through strategic digital positioning, creative storytelling, and data-driven growth solutions that build visibility, engagement, and long-term impact.",
         tags: ["Community", "Ongoing"],
-        imageText: "Brandyeast Screenshot",
+        image: "/images/BrandyeastLogo.png",
     },
     {
         title: "Download Tech Event",
         description: "A community-driven tech event designed to connect innovators, creatives, and local businesses, fostering collaboration, knowledge sharing, and growth within the local tech ecosystem.",
         tags: ["Tech", "Ongoing"],
-        imageText: "Download Tech Event",
+        image: "/images/DownloadTechEvent.png",
     },
 ];
 
@@ -59,8 +60,8 @@ export default function ProjectContent() {
                             <button
                                 key={filter}
                                 className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${filter === "All Projects"
-                                        ? "bg-[#1a73e8] text-white shadow-md shadow-blue-100"
-                                        : "bg-white text-slate-500 border border-slate-200 hover:border-blue-300"
+                                    ? "bg-[#1a73e8] text-white shadow-md shadow-blue-100"
+                                    : "bg-white text-slate-500 border border-slate-200 hover:border-blue-300"
                                     }`}
                             >
                                 {filter}
@@ -88,7 +89,12 @@ export default function ProjectContent() {
                             {/* Image Placeholder */}
                             <div className="aspect-[4/3] w-full bg-slate-100 overflow-hidden relative">
                                 <div className="h-full w-full flex items-center justify-center text-slate-400 font-bold group-hover:scale-110 transition-transform duration-500">
-                                    {project.imageText}
+                                    <Image
+                                        src={project.image}
+                                        alt={project.title}
+                                        fill
+                                        className="object-cover"
+                                    />
                                 </div>
                             </div>
 

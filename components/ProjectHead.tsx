@@ -1,4 +1,5 @@
 
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
 export default function ProjectHead() {
@@ -28,9 +29,12 @@ export default function ProjectHead() {
 
                         {/* Project Image Placeholder */}
                         <div className="relative aspect-[16/10] w-full bg-slate-200 rounded-2xl overflow-hidden shadow-inner">
-                            <div className="h-full w-full flex items-center justify-center text-slate-400 font-bold">
-                                Project Screenshot
-                            </div>
+                            <Image
+                                src="/images/ChowflexPage.png"
+                                alt="Chowflex Project Screenshot"
+                                fill
+                                className="object-cover"
+                            />
                         </div>
 
                         {/* Project Details */}
