@@ -34,7 +34,7 @@ const teamMembers = [
         name: "Onyekachukwu Ejimkeonye",
         role: "Senior Software Engineer/ Mobile App Dev Instructor",
         description: "Oversees daily operations, programs, and partnerships to ensure organizational excellence and long-term sustainability.",
-        img: "/images/1.png"
+        img: "/images/onyeka.png"
     },
     // {
     //     name: "Elosiuba Favour",
@@ -69,7 +69,7 @@ const TeamSection = () => {
                         >
                             {/* Avatar placeholder */}
                             <div className="flex-shrink-0">
-                                <Image src={member.img} alt="profile" width={40} height={40} />
+                                <Image src={member.img} alt="profile" width={40} height={40} className="rounded-full w-10 h-10 object-cover" />
                             </div>
 
                             {/* Info */}
