@@ -13,7 +13,7 @@ const partners = [
     {
         name: 'Partner 2',
         src: '/images/null.png',
-        width: 70,
+        width: 180,
         height: 70,
     },
     {
@@ -25,13 +25,13 @@ const partners = [
     {
         name: 'UNDP',
         src: '/images/undp.png',
-        width: 120,
+        width: 140,
         height: 60,
     },
     {
         name: 'Google',
         src: '/images/google.png',
-        width: 110,
+        width: 180,
         height: 40,
     },
 ];

@@ -11,7 +11,7 @@ const BookingModal = dynamic(() => import("./BookingModal"), {
 });
 
 // Define Plan interface
-interface Plan {
+export interface Plan {
     title: string;
     price: string;
     subPrices?: string[];
@@ -119,7 +119,7 @@ export default function WorkSpacePlan() {
     };
 
     return (
-        <section className="bg-white py-20 px-4 md:px-8 lg:px-20">
+        <section id="plans" className="bg-white py-20 px-4 md:px-8 lg:px-20">
             <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-16">
                     <h2 className="text-3xl md:text-5xl font-bold text-slate-900 mb-4">

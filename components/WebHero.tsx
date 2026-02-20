@@ -1,5 +1,6 @@
 
 import Link from "next/link";
+import Image from "next/image";
 import { Monitor, Smartphone, Cpu, Layout, ArrowRight } from "lucide-react";
 
 const services = [
@@ -64,11 +65,14 @@ export default function WebHero() {
 
                     <div className="relative">
                         {/* Big grey placeholder card */}
-                        <div className="aspect-square w-full rounded-[40px] bg-slate-200 lg:max-w-[550px] shadow-sm">
-                            {/* Image placeholder content */}
-                            <div className="flex h-full w-full items-center justify-center text-slate-400">
-                                <Monitor size={80} strokeWidth={1} />
-                            </div>
+                        <div className="aspect-square w-full rounded-[40px] bg-slate-200 lg:max-w-[550px] shadow-sm overflow-hidden relative">
+                            <Image
+                                src="/images/iccccc.jpeg"
+                                alt="Hero visualization"
+                                fill
+                                className="object-cover"
+                                priority
+                            />
                         </div>
                     </div>
                 </div>

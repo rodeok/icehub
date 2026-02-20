@@ -32,7 +32,7 @@ const courses = [
     {
         title: "Data Analytics",
         description: "Master the art of turning data into insights using tools like Excel, SQL, and Power BI to make smarter business decisions.",
-        image: "/images/data.png",
+        image: "/images/analysis.jpg",
         link: "/courses/data-analytics"
     },
     {

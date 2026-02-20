@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -16,8 +17,8 @@ const HeroSection = () => {
             image: "/images/icehubhero.jpg",
             layout: "overlay",
             buttons: [
-                { text: "Learn More", icon: "▸" },
-                { text: "Start Now", icon: "→" }
+                { text: "Learn More", icon: "▸", link: "/" },
+                { text: "Start Now", icon: "→", link: "/get-started" }
             ]
         },
         {
@@ -27,8 +28,8 @@ const HeroSection = () => {
             image: "/images/woman.png",
             layout: "split",
             buttons: [
-                { text: "Learn More", icon: "▸" },
-                { text: "Start Now", icon: "→" }
+                { text: "Learn More", icon: "▸", link: "/courses" },
+                { text: "Start Now", icon: "→", link: "/get-started" }
             ]
         }
     ];
@@ -106,12 +107,13 @@ const HeroSection = () => {
 
                                     <div className="flex flex-col sm:flex-row flex-wrap gap-4 md:gap-6">
                                         {slide.buttons.map((btn, btnIndex) => (
-                                            <button
+                                            <Link
                                                 key={btnIndex}
+                                                href={btn.link}
                                                 className="w-full sm:w-auto px-6 sm:px-8 md:px-10 py-3 md:py-4 bg-[#0a254d]/80 backdrop-blur-sm text-white border border-white/20 rounded-xl hover:bg-[#0d3166] transition-[background-color,transform] hover:scale-105 flex items-center justify-center gap-3 text-sm sm:text-base md:text-lg font-medium gpu"
                                             >
                                                 {btn.text} <span>{btn.icon}</span>
-                                            </button>
+                                            </Link>
                                         ))}
                                     </div>
                                 </div>
@@ -135,12 +137,13 @@ const HeroSection = () => {
 
                                     <div className="flex flex-col sm:flex-row flex-wrap gap-4 md:gap-6 justify-center lg:justify-start w-full">
                                         {slide.buttons.map((btn, btnIndex) => (
-                                            <button
+                                            <Link
                                                 key={btnIndex}
+                                                href={btn.link}
                                                 className="w-full sm:w-auto px-6 sm:px-8 md:px-10 py-3 md:py-4 bg-[#0a254d]/80 backdrop-blur-sm text-white border border-white/20 rounded-xl hover:bg-[#0d3166] transition-all hover:scale-105 flex items-center justify-center gap-3 text-sm sm:text-base md:text-lg font-medium"
                                             >
                                                 {btn.text} <span>{btn.icon}</span>
-                                            </button>
+                                            </Link>
                                         ))}
                                     </div>
                                 </div>

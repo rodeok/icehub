@@ -37,11 +37,15 @@ export async function GET(request: Request) {
             .populate('enrolledPrograms')
             .sort({ createdAt: -1 });
 
+        // Debug logging
+        console.log(`Fetched ${students.length} students`);
+
         return NextResponse.json({
             students: students.map(student => ({
                 name: student.fullName,
                 email: student.email,
                 id: student.uniqueCode || student._id.toString().substring(0, 8).toUpperCase(),
+                userId: student._id.toString(), // Explicit string conversion
                 program: (student.enrolledPrograms[0] as any)?.name || 'Not Enrolled',
                 cohort: (student.enrolledPrograms[0] as any)?.curriculum?.[0] || 'N/A', // Using first curriculum item as cohort for now
                 enrolled: new Date(student.createdAt).toLocaleDateString('en-US', {
@@ -49,7 +53,7 @@ export async function GET(request: Request) {
                     day: 'numeric',
                     year: 'numeric'
                 }),
-                status: student.isActive ? 'ACTIVE' : 'INACTIVE',
+                status: student.isActive ? 'ACTIVE' : 'INACTIVE', // Simplify status logic for now
                 initial: student.fullName.charAt(0).toUpperCase()
             })),
             total: students.length
