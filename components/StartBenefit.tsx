@@ -112,19 +112,15 @@ export default function StartBenefit() {
                         </div>
 
                         {/* Right Column: Video/Image Container */}
-                        <div className="relative group cursor-pointer">
-                            <div className="relative rounded-[3rem] overflow-hidden aspect-[4/4] shadow-2xl">
-                                <Image
-                                    src="/images/startupman.jpg"
-                                    alt="Anambra Startup Weekend"
-                                    fill
-                                    className="object-cover group-hover:scale-105 transition-transform duration-700"
-                                />
-                                <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                                    <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform shadow-white/20">
-                                        <Play className="text-[#1A73E8] fill-[#1A73E8] ml-1" size={32} />
-                                    </div>
-                                </div>
+                        <div className="relative group">
+                            <div className="relative rounded-[3rem] overflow-hidden aspect-video shadow-2xl">
+                                <iframe
+                                    src="https://www.youtube.com/embed/v0o11M5nhy8"
+                                    title="Anambra Startup Weekend"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    allowFullScreen
+                                    className="absolute inset-0 w-full h-full border-0"
+                                ></iframe>
                             </div>
 
                             {/* Subtle background glow */}

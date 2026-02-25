@@ -17,7 +17,7 @@ const HeroSection = () => {
             image: "/images/icehubhero.jpg",
             layout: "overlay",
             buttons: [
-                { text: "Learn More", icon: "▸", link: "/" },
+                { text: "Learn More", icon: "▸", link: "https://youtu.be/sVM9Hq5SPyI?si=FHtLd3srQxe67gZo", target: "_blank" },
                 { text: "Start Now", icon: "→", link: "/get-started" }
             ]
         },
@@ -28,7 +28,7 @@ const HeroSection = () => {
             image: "/images/woman.png",
             layout: "split",
             buttons: [
-                { text: "Learn More", icon: "▸", link: "/courses" },
+                { text: "Learn More", icon: "▸", link: "https://youtu.be/sVM9Hq5SPyI?si=FHtLd3srQxe67gZo", target: "_blank" },
                 { text: "Start Now", icon: "→", link: "/get-started" }
             ]
         }
@@ -106,10 +106,12 @@ const HeroSection = () => {
                                     </p>
 
                                     <div className="flex flex-col sm:flex-row flex-wrap gap-4 md:gap-6">
-                                        {slide.buttons.map((btn, btnIndex) => (
+                                        {slide.buttons.map((btn: any, btnIndex) => (
                                             <Link
                                                 key={btnIndex}
                                                 href={btn.link}
+                                                target={btn.target}
+                                                rel={btn.target === "_blank" ? "noopener noreferrer" : undefined}
                                                 className="w-full sm:w-auto px-6 sm:px-8 md:px-10 py-3 md:py-4 bg-[#0a254d]/80 backdrop-blur-sm text-white border border-white/20 rounded-xl hover:bg-[#0d3166] transition-[background-color,transform] hover:scale-105 flex items-center justify-center gap-3 text-sm sm:text-base md:text-lg font-medium gpu"
                                             >
                                                 {btn.text} <span>{btn.icon}</span>
@@ -136,10 +138,12 @@ const HeroSection = () => {
                                     </p>
 
                                     <div className="flex flex-col sm:flex-row flex-wrap gap-4 md:gap-6 justify-center lg:justify-start w-full">
-                                        {slide.buttons.map((btn, btnIndex) => (
+                                        {slide.buttons.map((btn: any, btnIndex) => (
                                             <Link
                                                 key={btnIndex}
                                                 href={btn.link}
+                                                target={btn.target}
+                                                rel={btn.target === "_blank" ? "noopener noreferrer" : undefined}
                                                 className="w-full sm:w-auto px-6 sm:px-8 md:px-10 py-3 md:py-4 bg-[#0a254d]/80 backdrop-blur-sm text-white border border-white/20 rounded-xl hover:bg-[#0d3166] transition-all hover:scale-105 flex items-center justify-center gap-3 text-sm sm:text-base md:text-lg font-medium"
                                             >
                                                 {btn.text} <span>{btn.icon}</span>
