@@ -27,11 +27,16 @@ export default function WorkSpaceLocation() {
                     {/* Right Column: Map View */}
                     <div className="relative">
                         <div className="aspect-[4/3] w-full bg-slate-200 rounded-[2.5rem] shadow-sm overflow-hidden border border-slate-100">
-                            <img
-                                src="/images/icelocale.jpeg"
-                                alt="Workspace Location Map"
-                                className="w-full h-full object-cover object-bottom hover:scale-105 transition-transform duration-700"
-                            />
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3967.660299697033!2d6.892684973988238!3d6.041263093944397!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x104397a2734440ef%3A0xe5b226e48b96ad2b!2sICE%20INNOVATION%20HUB!5e0!3m2!1sen!2sng!4v1772040902844!5m2!1sen!2sng"
+                                width="100%"
+                                height="100%"
+                                style={{ border: 0 }}
+                                allowFullScreen
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                                title="ICE Innovation Hub Location"
+                            ></iframe>
                         </div>
                     </div>
 
