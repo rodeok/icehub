@@ -153,25 +153,25 @@ export default function Navbar() {
         <div className="md:hidden bg-white border-t border-gray-100 shadow-lg absolute w-full left-0 top-[83px] z-50 py-6 px-6 flex flex-col gap-6 h-screen overflow-y-auto pb-24">
           <ul className="flex flex-col gap-6 text-lg font-medium text-gray-800">
             <li>
-              <Link href="/about" onClick={() => setMobileMenuOpen(false)}>About Us</Link>
+              <Link href="/about" className="transition-colors hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>About Us</Link>
             </li>
             <li>
-              <Link href="/courses" onClick={() => setMobileMenuOpen(false)}>Courses</Link>
+              <Link href="/courses" className="transition-colors hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>Courses</Link>
             </li>
 
             {/* Mobile Programmes Dropdown */}
             <li>
               <button
                 onClick={() => toggleMenu("programmes")}
-                className="flex items-center justify-between w-full"
+                className="flex items-center justify-between w-full transition-colors hover:text-blue-600"
               >
                 Programmes <ChevronDown size={16} className={`transition-transform ${openMenu === "programmes" ? "rotate-180" : ""}`} />
               </button>
               {openMenu === "programmes" && (
                 <ul className="mt-3 ml-4 flex flex-col gap-3 text-base text-gray-600">
-                  <li><Link href="/programmes/next-gen" onClick={() => setMobileMenuOpen(false)}>Next Gen Prep</Link></li>
-                  <li><Link href="/programmes/skit" onClick={() => setMobileMenuOpen(false)}>SKIT Program</Link></li>
-                  <li><Link href="/programmes/digital-literacy" onClick={() => setMobileMenuOpen(false)}>Digital Literacy</Link></li>
+                  <li><Link href="/programmes/next-gen" className="transition-colors hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>Next Gen Prep</Link></li>
+                  <li><Link href="/programmes/skit" className="transition-colors hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>SKIT Program</Link></li>
+                  <li><Link href="/programmes/digital-literacy" className="transition-colors hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>Digital Literacy</Link></li>
                 </ul>
               )}
             </li>
@@ -180,28 +180,28 @@ export default function Navbar() {
             <li>
               <button
                 onClick={() => toggleMenu("services")}
-                className="flex items-center justify-between w-full"
+                className="flex items-center justify-between w-full transition-colors hover:text-blue-600"
               >
                 Services <ChevronDown size={16} className={`transition-transform ${openMenu === "services" ? "rotate-180" : ""}`} />
               </button>
               {openMenu === "services" && (
                 <ul className="mt-3 ml-4 flex flex-col gap-3 text-base text-gray-600">
-                  <li><Link href="/courses" onClick={() => setMobileMenuOpen(false)}>Digital Skills</Link></li>
-                  <li><Link href="/services/web-software" onClick={() => setMobileMenuOpen(false)}>Web & Software Solution</Link></li>
-                  <li><Link href="/services/startup-incubation" onClick={() => setMobileMenuOpen(false)}>Startup Incubation</Link></li>
-                  <li><Link href="/services/workspace" onClick={() => setMobileMenuOpen(false)}>Workspace</Link></li>
+                  <li><Link href="/courses" className="transition-colors hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>Digital Skills</Link></li>
+                  <li><Link href="/services/web-software" className="transition-colors hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>Web & Software Solution</Link></li>
+                  <li><Link href="/services/startup-incubation" className="transition-colors hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>Startup Incubation</Link></li>
+                  <li><Link href="/services/workspace" className="transition-colors hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>Workspace</Link></li>
                 </ul>
               )}
             </li>
 
             <li>
-              <Link href="/projects" onClick={() => setMobileMenuOpen(false)}>Projects</Link>
+              <Link href="/projects" className="transition-colors hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>Projects</Link>
             </li>
             <li>
-              <Link href="/blogs" onClick={() => setMobileMenuOpen(false)}>Blogs & Activities</Link>
+              <Link href="/blogs" className="transition-colors hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>Blogs & Activities</Link>
             </li>
             <li>
-              <Link href="/services/start-incubation" onClick={() => setMobileMenuOpen(false)}>Startup Incubation</Link>
+              <Link href="/services/start-incubation" className="transition-colors hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>Startup Incubation</Link>
             </li>
             <li>
               <a href="https://chat.icehub-ng.com" target="_blank" className="nav-link cursor-pointer">Help Center</a>
@@ -251,7 +251,7 @@ function DropdownItem({
     <li>
       <Link
         href={href}
-        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-blue-600 transition-colors"
       >
         {children}
       </Link>
