@@ -220,7 +220,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                                 Watch Intro
                                 <Play className="w-3.5 h-3.5 fill-white" />
                             </button>
-                            <Link href="/dashboard/programs" className="bg-gray-50 hover:bg-gray-100 transition-all text-gray-700 px-6 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2">
+                            <Link href={program?._id ? `/dashboard/programs/${program._id}` : "/dashboard/programs"} className="bg-gray-50 hover:bg-gray-100 transition-all text-gray-700 px-6 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2">
                                 Curriculum
                                 <BookOpen className="w-3.5 h-3.5" />
                             </Link>
@@ -267,7 +267,11 @@ const Dashboard: React.FC<DashboardProps> = ({
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {program.curriculum.map((item: string, idx: number) => (
-                            <div key={idx} className="bg-white rounded-[20px] p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all group cursor-pointer">
+                            <Link
+                                key={idx}
+                                href={program?._id ? `/dashboard/programs/${program._id}` : "#"}
+                                className="bg-white rounded-[20px] p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all group cursor-pointer block"
+                            >
                                 <div className="flex justify-between items-start mb-4">
                                     <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                                         <BookOpen className="w-5 h-5" />
@@ -282,7 +286,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                                     </div>
                                     <ArrowRight className="w-3.5 h-3.5 text-blue-600 transition-transform group-hover:translate-x-1" />
                                 </div>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 </div>

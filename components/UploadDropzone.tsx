@@ -6,8 +6,8 @@ import { Upload, X, FileText, Video, Image as ImageIcon, Loader2, CheckCircle2 }
 import Image from 'next/image';
 
 interface UploadDropzoneProps {
-    onUploadSuccess: (url: string) => void;
-    type: 'image' | 'video' | 'pdf';
+    onUploadSuccess: (url: string, originalFilename?: string) => void;
+    type: 'image' | 'video' | 'pdf' | 'document';
     label: string;
     description?: string;
     currentValue?: string;
@@ -57,7 +57,7 @@ export default function UploadDropzone({
             xhr.onload = () => {
                 if (xhr.status === 200) {
                     const response = JSON.parse(xhr.responseText);
-                    onUploadSuccess(response.secure_url);
+                    onUploadSuccess(response.secure_url, response.original_filename);
                     setIsUploading(false);
                 } else {
                     const response = JSON.parse(xhr.responseText);
@@ -85,13 +85,56 @@ export default function UploadDropzone({
             ? { 'image/*': ['.jpeg', '.jpg', '.png', '.webp'] }
             : type === 'video'
                 ? { 'video/*': ['.mp4', '.mov', '.avi', '.mkv'] }
-                : { 'application/pdf': ['.pdf'] },
+                : type === 'document'
+                    ? {
+                        'application/pdf': ['.pdf'],
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+                        'application/vnd.openxmlformats-officedocument.presentationml.presentation': ['.pptx']
+                    }
+                    : { 'application/pdf': ['.pdf'] },
         multiple: false,
         disabled: isUploading
     });
 
     const Icon = type === 'image' ? ImageIcon : type === 'video' ? Video : FileText;
-    const accentColor = type === 'image' ? 'blue' : type === 'video' ? 'purple' : 'green';
+
+    // Hardcode mapped classes instead of dynamic templates so Tailwind v4 parses them correctly
+    const STYLES = {
+        image: {
+            borderOnDrag: 'border-blue-400 bg-blue-50/50',
+            bgLight: 'bg-blue-50',
+            textMain: 'text-blue-600',
+            borderLight: 'border-blue-100',
+            stroke: 'stroke-blue-600',
+            groupHoverText: 'group-hover:text-blue-600'
+        },
+        video: {
+            borderOnDrag: 'border-purple-400 bg-purple-50/50',
+            bgLight: 'bg-purple-50',
+            textMain: 'text-purple-600',
+            borderLight: 'border-purple-100',
+            stroke: 'stroke-purple-600',
+            groupHoverText: 'group-hover:text-purple-600'
+        },
+        document: {
+            borderOnDrag: 'border-orange-400 bg-orange-50/50',
+            bgLight: 'bg-orange-50',
+            textMain: 'text-orange-600',
+            borderLight: 'border-orange-100',
+            stroke: 'stroke-orange-600',
+            groupHoverText: 'group-hover:text-orange-600'
+        },
+        pdf: {
+            borderOnDrag: 'border-green-400 bg-green-50/50',
+            bgLight: 'bg-green-50',
+            textMain: 'text-green-600',
+            borderLight: 'border-green-100',
+            stroke: 'stroke-green-600',
+            groupHoverText: 'group-hover:text-green-600'
+        }
+    };
+
+    const styles = STYLES[type];
 
     return (
         <div className="space-y-4">
@@ -112,7 +155,7 @@ export default function UploadDropzone({
                 {...getRootProps()}
                 className={`
                     relative border-2 border-dashed rounded-[2rem] p-8 flex flex-col items-center justify-center gap-4 cursor-pointer transition-all min-h-[160px]
-                    ${isDragActive ? `border-${accentColor}-400 bg-${accentColor}-50/50` : 'border-gray-100 hover:border-gray-200 hover:bg-gray-50/50'}
+                    ${isDragActive ? styles.borderOnDrag : 'border-gray-100 hover:border-gray-200 hover:bg-gray-50/50'}
                     ${isUploading ? 'pointer-events-none' : ''}
                     ${error ? 'border-red-200 bg-red-50/30' : ''}
                 `}
@@ -131,8 +174,8 @@ export default function UploadDropzone({
                                 </div>
                             </div>
                         ) : (
-                            <div className={`p-6 bg-white rounded-3xl border border-${accentColor}-100 shadow-sm flex items-center gap-4 w-full`}>
-                                <div className={`p-3 bg-${accentColor}-50 text-${accentColor}-600 rounded-xl`}>
+                            <div className={`p-6 bg-white rounded-3xl border shadow-sm flex items-center gap-4 w-full ${styles.borderLight}`}>
+                                <div className={`p-3 rounded-xl ${styles.bgLight} ${styles.textMain}`}>
                                     <CheckCircle2 size={24} />
                                 </div>
                                 <div className="flex-1 min-w-0">
@@ -148,7 +191,7 @@ export default function UploadDropzone({
                             <svg className="h-full w-full" viewBox="0 0 36 36">
                                 <circle className="stroke-gray-100" strokeWidth="3" fill="transparent" r="16" cx="18" cy="18" />
                                 <circle
-                                    className={`stroke-${accentColor}-600 transition-all duration-300`}
+                                    className={`transition-all duration-300 ${styles.stroke}`}
                                     strokeWidth="3"
                                     strokeDasharray={`${progress}, 100`}
                                     strokeLinecap="round"
@@ -157,14 +200,14 @@ export default function UploadDropzone({
                                 />
                             </svg>
                             <div className="absolute inset-0 flex items-center justify-center">
-                                <span className={`text-[10px] font-black text-${accentColor}-600`}>{progress}%</span>
+                                <span className={`text-[10px] font-black ${styles.textMain}`}>{progress}%</span>
                             </div>
                         </div>
-                        <p className={`text-xs font-bold text-${accentColor}-600 animate-pulse`}>Uploading your {type}...</p>
+                        <p className={`text-xs font-bold animate-pulse ${styles.textMain}`}>Uploading your {type}...</p>
                     </div>
                 ) : (
                     <>
-                        <div className={`p-4 bg-gray-50 rounded-2xl text-gray-400 group-hover:text-${accentColor}-600 transition-colors`}>
+                        <div className={`p-4 bg-gray-50 rounded-2xl text-gray-400 transition-colors ${styles.groupHoverText}`}>
                             <Icon size={32} />
                         </div>
                         <div className="text-center">

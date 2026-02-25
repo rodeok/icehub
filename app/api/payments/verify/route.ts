@@ -121,7 +121,10 @@ export async function POST(req: NextRequest) {
         // Update user's enrolled programs and program count only if program was selected
         if (session?.user?.id && programId) {
             await User.findByIdAndUpdate(session.user.id, {
-                $addToSet: { enrolledPrograms: programId },
+                $addToSet: {
+                    enrolledPrograms: programId,
+                    paidPrograms: programId
+                },
             });
 
             await Program.findByIdAndUpdate(programId, {

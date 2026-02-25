@@ -46,9 +46,16 @@ export default function ProgramsPage() {
         if (!selectedProgramId) return;
         const selected = availablePrograms.find(p => p._id === selectedProgramId);
         if (selected) {
-            setProgram(selected);
-            setActiveModule(0);
-            setActiveLesson(0);
+            if (selected.price && selected.price > 0) {
+                // Redirect to payment if the course is not free
+                router.push(`/dashboard/payment?programId=${selected._id}`);
+            } else {
+                // Free courses instantly enroll (frontend state update)
+                // TODO: You may want to call an API to persist enrollment
+                setProgram(selected);
+                setActiveModule(0);
+                setActiveLesson(0);
+            }
         }
     };
 
@@ -184,7 +191,10 @@ export default function ProgramsPage() {
                                         disabled={!selectedProgramId}
                                         className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-white px-8 py-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-200 group active:scale-[0.98]"
                                     >
-                                        Enroll in Course
+                                        {selectedProgramId && availablePrograms.find(p => p._id === selectedProgramId)?.price > 0
+                                            ? `Buy Now - ₦${availablePrograms.find(p => p._id === selectedProgramId)?.price.toLocaleString()}`
+                                            : 'Enroll for Free'
+                                        }
                                         <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                     </button>
                                 </motion.div>
@@ -264,7 +274,7 @@ export default function ProgramsPage() {
                                                 `In this module, we'll cover ${modules[activeModule]}. This is part of the ${program.name} curriculum. Explore the content and resources below to master these concepts.`
                                             )
                                         ) : (
-                                            "Please select a module from the course content sidebar to view details and lessons."
+                                            program.description || "Please select a module from the course content sidebar to view details and lessons."
                                         )}
                                     </p>
 

@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AuthLayout from "@/components/AuthLayout";
-import { User, Mail, BookOpen, Lock, Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+import { User, Mail, BookOpen, Lock, Eye, EyeOff, ChevronDown } from "lucide-react";
+import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
 
 export default function SignupPage() {
@@ -15,9 +15,28 @@ export default function SignupPage() {
         fullName: "",
         email: "",
         password: "",
-        course: "",
+        courseId: "",
     });
+    const [programs, setPrograms] = useState<any[]>([]);
     const router = useRouter();
+
+    useEffect(() => {
+        const fetchPrograms = async () => {
+            try {
+                const res = await fetch("/api/programs");
+                const data = await res.json();
+                if (data.programs) {
+                    setPrograms(data.programs);
+                    if (data.programs.length > 0) {
+                        setFormData(prev => ({ ...prev, courseId: data.programs[0]._id }));
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to fetch programs", err);
+            }
+        };
+        fetchPrograms();
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -35,8 +54,7 @@ export default function SignupPage() {
                     fullName: formData.fullName,
                     email: formData.email,
                     password: formData.password,
-                    // We're storing course interest but not enrolling yet
-                    // In a real app you might want to create an enrollment here or redirect to payment
+                    programId: formData.courseId,
                 }),
             });
 
@@ -128,25 +146,32 @@ export default function SignupPage() {
                     </div>
                 </div>
 
-                {/* Course */}
+                {/* Course Selection */}
                 <div>
                     <label className="block text-sm font-bold text-gray-700 mb-1.5">
-                        Course
+                        Selected Course
                     </label>
                     <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <BookOpen className="h-5 w-5 text-gray-400" />
                         </div>
-                        <input
-                            type="text"
-                            value={formData.course}
+                        <select
+                            value={formData.courseId}
                             onChange={(e) =>
-                                setFormData({ ...formData, course: e.target.value })
+                                setFormData({ ...formData, courseId: e.target.value })
                             }
-                            placeholder="Enter your course of interest"
-                            className="block w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-blue-500 transition-all outline-none text-gray-900 text-sm"
+                            className="block w-full pl-11 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-blue-500 transition-all outline-none text-gray-900 text-sm appearance-none cursor-pointer"
                             required
-                        />
+                        >
+                            {programs.map((p) => (
+                                <option key={p._id} value={p._id}>
+                                    {p.name}
+                                </option>
+                            ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-gray-400">
+                            <ChevronDown size={18} />
+                        </div>
                     </div>
                 </div>
 

@@ -17,7 +17,8 @@ export async function GET() {
 
         const user = await User.findById(session.user.id)
             .select('-password')
-            .populate('enrolledPrograms');
+            .populate('enrolledPrograms')
+            .populate({ path: 'paidPrograms', strictPopulate: false });
 
         if (!user) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });

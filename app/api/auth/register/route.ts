@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
         await connectDB();
 
         const body = await req.json();
-        const { fullName, email, password, phoneNumber, address, experienceLevel } =
+        const { fullName, email, password, phoneNumber, address, experienceLevel, programId } =
             body;
 
         // Validation
@@ -44,6 +44,7 @@ export async function POST(req: NextRequest) {
             address,
             experienceLevel: experienceLevel || 'beginner',
             uniqueCode,
+            enrolledPrograms: programId ? [programId] : [],
         });
 
         return NextResponse.json(

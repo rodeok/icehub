@@ -34,9 +34,10 @@ interface Resource {
 interface Lesson {
     title: string;
     duration: string;
-    videoUrl?: string; // Video URL associated with the lesson
+    videoUrl?: string; // YouTube Video URL associated with the lesson
     isFree: boolean;
     resources: Resource[];
+    isFetchingMetadata?: boolean; // UI state for fetching
 }
 
 interface Module {
@@ -51,6 +52,8 @@ export default function AdminProgram() {
     const [error, setError] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [editingId, setEditingId] = useState<string | null>(null);
+    const [isFetchingCourse, setIsFetchingCourse] = useState(false);
 
     // Form state
     const [formData, setFormData] = useState({
@@ -86,16 +89,20 @@ export default function AdminProgram() {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            const response = await fetch('/api/admin/programs', {
-                method: 'POST',
+            const url = editingId ? `/api/admin/programs/${editingId}` : '/api/admin/programs';
+            const method = editingId ? 'PUT' : 'POST';
+
+            const response = await fetch(url, {
+                method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
             });
             if (!response.ok) {
                 const data = await response.json();
-                throw new Error(data.error || 'Failed to create program');
+                throw new Error(data.error || `Failed to ${editingId ? 'update' : 'create'} program`);
             }
             setIsModalOpen(false);
+            setEditingId(null);
             fetchPrograms();
             // Reset form
             setFormData({
@@ -111,6 +118,31 @@ export default function AdminProgram() {
             alert(err.message);
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    const handleEditCourse = async (id: string) => {
+        setIsFetchingCourse(true);
+        try {
+            const response = await fetch(`/api/admin/programs/${id}`);
+            if (!response.ok) throw new Error('Failed to fetch course details');
+            const data = await response.json();
+            const course = data.program;
+            setEditingId(id);
+            setFormData({
+                name: course.name || '',
+                description: course.description || '',
+                category: course.category || 'frontend',
+                weeks: (course.weeks || '').toString(),
+                skillLevel: course.skillLevel || 'beginner',
+                imageUrl: course.imageUrl || '',
+                modules: course.modules || [],
+            });
+            setIsModalOpen(true);
+        } catch (err: any) {
+            alert(err.message);
+        } finally {
+            setIsFetchingCourse(false);
         }
     };
 
@@ -157,6 +189,55 @@ export default function AdminProgram() {
         setFormData({ ...formData, modules: newModules });
     };
 
+    const addResource = (moduleIndex: number, lessonIndex: number, resource: Resource) => {
+        const newModules = [...formData.modules];
+        if (!newModules[moduleIndex].lessons[lessonIndex].resources) {
+            newModules[moduleIndex].lessons[lessonIndex].resources = [];
+        }
+        newModules[moduleIndex].lessons[lessonIndex].resources.push(resource);
+        setFormData({ ...formData, modules: newModules });
+    };
+
+    const removeResource = (moduleIndex: number, lessonIndex: number, resourceIndex: number) => {
+        const newModules = [...formData.modules];
+        newModules[moduleIndex].lessons[lessonIndex].resources.splice(resourceIndex, 1);
+        setFormData({ ...formData, modules: newModules });
+    };
+
+    const fetchYouTubeMetadata = async (moduleIndex: number, lessonIndex: number, url: string) => {
+        if (!url) return;
+
+        updateLesson(moduleIndex, lessonIndex, 'isFetchingMetadata', true);
+
+        try {
+            const response = await fetch('/api/admin/youtube', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url })
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || 'Failed to fetch YouTube metadata');
+            }
+
+            const data = await response.json();
+
+            // Auto-fill title and duration
+            if (data.title) updateLesson(moduleIndex, lessonIndex, 'title', data.title);
+            if (data.duration) updateLesson(moduleIndex, lessonIndex, 'duration', data.duration);
+
+            alert('Metadata fetched successfully!');
+        } catch (error: any) {
+            console.error('Error fetching YouTube metadata:', error);
+            alert(error.message);
+            // Optionally clear the invalid URL
+            // updateLesson(moduleIndex, lessonIndex, 'videoUrl', '');
+        } finally {
+            updateLesson(moduleIndex, lessonIndex, 'isFetchingMetadata', false);
+        }
+    };
+
     if (loading && programs.length === 0) {
         return (
             <div className="flex h-[400px] items-center justify-center">
@@ -193,7 +274,19 @@ export default function AdminProgram() {
                     <p className="text-gray-500 mt-1">Create, edit and manage educational content and program structures.</p>
                 </div>
                 <button
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={() => {
+                        setEditingId(null);
+                        setFormData({
+                            name: '',
+                            description: '',
+                            category: 'frontend',
+                            weeks: '',
+                            skillLevel: 'beginner',
+                            imageUrl: '',
+                            modules: [],
+                        });
+                        setIsModalOpen(true);
+                    }}
                     className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all"
                 >
                     <Plus size={18} /> New Program
@@ -272,7 +365,11 @@ export default function AdminProgram() {
                                     <span className={`text-[10px] font-black tracking-wider ${course.statusColor}`}>{course.status}</span>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <button className="flex items-center gap-1.5 text-blue-600 text-xs font-bold hover:gap-2 transition-all">
+                                    <button
+                                        onClick={() => handleEditCourse(course.id)}
+                                        disabled={isFetchingCourse}
+                                        className="flex items-center gap-1.5 text-blue-600 text-xs font-bold hover:gap-2 transition-all disabled:opacity-50"
+                                    >
                                         Manage Course
                                         <ChevronRight size={14} />
                                     </button>
@@ -314,8 +411,8 @@ export default function AdminProgram() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
                     <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl my-8 overflow-hidden animate-in fade-in zoom-in duration-200">
                         <div className="p-6 border-b border-gray-50 flex justify-between items-center bg-white sticky top-0 z-10">
-                            <h2 className="text-2xl font-bold text-gray-900">Add New Program</h2>
-                            <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-gray-50 rounded-xl transition-colors">
+                            <h2 className="text-2xl font-bold text-gray-900">{editingId ? 'Edit Program' : 'Add New Program'}</h2>
+                            <button onClick={() => { setIsModalOpen(false); setEditingId(null); }} className="p-2 hover:bg-gray-50 rounded-xl transition-colors">
                                 <X size={20} className="text-gray-400" />
                             </button>
                         </div>
@@ -480,14 +577,61 @@ export default function AdminProgram() {
                                                             </button>
                                                         </div>
 
-                                                        {/* Video Upload per Lesson */}
-                                                        <div>
+                                                        {/* YouTube URL input per Lesson */}
+                                                        <div className="space-y-2">
+                                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">YouTube Video URL</label>
+                                                            <div className="flex gap-3">
+                                                                <input
+                                                                    type="text"
+                                                                    value={lesson.videoUrl || ''}
+                                                                    onChange={(e) => updateLesson(mIdx, lIdx, 'videoUrl', e.target.value)}
+                                                                    className="flex-1 bg-gray-50 border border-gray-100 rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-blue-100 outline-none"
+                                                                    placeholder="e.g. https://youtu.be/dQw4w9WgXcQ"
+                                                                />
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => fetchYouTubeMetadata(mIdx, lIdx, lesson.videoUrl || '')}
+                                                                    disabled={!lesson.videoUrl || lesson.isFetchingMetadata}
+                                                                    className="px-4 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-bold shadow-sm hover:bg-gray-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[130px]"
+                                                                >
+                                                                    {lesson.isFetchingMetadata ? <Loader2 size={16} className="animate-spin" /> : 'Fetch Metadata'}
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Resources Upload */}
+                                                        <div className="space-y-3 pt-4 mt-2 border-t border-gray-100">
+                                                            <div className="flex justify-between items-center">
+                                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Lesson Resources (Slides/PDF/DOCX)</label>
+                                                            </div>
+                                                            {lesson.resources && lesson.resources.length > 0 && (
+                                                                <div className="space-y-2 mb-4">
+                                                                    {lesson.resources.map((res: any, rIdx: number) => (
+                                                                        <div key={rIdx} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
+                                                                            <div className="flex items-center gap-3 overflow-hidden">
+                                                                                <FileText size={16} className="text-orange-500 flex-shrink-0" />
+                                                                                <a href={res.url} target="_blank" rel="noreferrer" className="text-sm font-bold text-gray-700 truncate hover:text-blue-600 transition-colors">
+                                                                                    {res.title}
+                                                                                </a>
+                                                                            </div>
+                                                                            <button type="button" onClick={() => removeResource(mIdx, lIdx, rIdx)} className="p-1.5 text-gray-400 hover:text-red-500 rounded-lg transition-colors">
+                                                                                <Trash2 size={14} />
+                                                                            </button>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            )}
                                                             <UploadDropzone
-                                                                type="video"
-                                                                label={lesson.videoUrl ? "Replace Video" : "Upload Video Lesson"}
-                                                                currentValue={lesson.videoUrl}
-                                                                onUploadSuccess={(url) => updateLesson(mIdx, lIdx, 'videoUrl', url)}
-                                                                onRemove={() => updateLesson(mIdx, lIdx, 'videoUrl', '')}
+                                                                type="document"
+                                                                label="Upload New Slide / Document"
+                                                                description="Accepts .pdf, .docx, .pptx files"
+                                                                onUploadSuccess={(url, originalFilename) => {
+                                                                    addResource(mIdx, lIdx, {
+                                                                        title: originalFilename || 'Untitled Document',
+                                                                        url,
+                                                                        type: 'document'
+                                                                    });
+                                                                }}
                                                             />
                                                         </div>
                                                     </div>
@@ -515,7 +659,7 @@ export default function AdminProgram() {
                             <div className="pt-8 border-t border-gray-50 flex gap-4 sticky bottom-0 bg-white pb-4">
                                 <button
                                     type="button"
-                                    onClick={() => setIsModalOpen(false)}
+                                    onClick={() => { setIsModalOpen(false); setEditingId(null); }}
                                     className="flex-1 px-8 py-4 border border-gray-100 rounded-[2rem] text-sm font-bold text-gray-500 hover:bg-gray-50 transition-all"
                                 >
                                     Cancel
@@ -526,7 +670,7 @@ export default function AdminProgram() {
                                     className="flex-3 px-12 py-4 bg-blue-600 text-white rounded-[2rem] text-sm font-bold shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                                 >
                                     {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <Plus size={18} />}
-                                    Create Program
+                                    {editingId ? 'Save Changes' : 'Create Program'}
                                 </button>
                             </div>
                         </form>

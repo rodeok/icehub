@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { Play, FileText, Download, CheckCircle, ChevronDown, ChevronUp, Lock } from "lucide-react";
 import { IProgram, IModule, ILesson } from "@/models/Program";
 import dynamic from 'next/dynamic';
@@ -28,9 +29,35 @@ export default function ProgramView({ program }: ProgramViewProps) {
     const [progressData, setProgressData] = useState<ProgressData>({});
     const playerRef = useRef<any>(null);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [hasPaid, setHasPaid] = useState<boolean | null>(null);
+    const [isLoadingPayment, setIsLoadingPayment] = useState(true);
+    const router = useRouter();
 
-    // Fetch user progress on mount
+    // Check payment status on mount
     useEffect(() => {
+        const checkPaymentStatus = async () => {
+            if (program.price === 0) {
+                setHasPaid(true);
+                setIsLoadingPayment(false);
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/user/profile');
+                if (res.ok) {
+                    const data = await res.json();
+                    const isPaid = data.user?.paidPrograms?.some((p: any) =>
+                        (p._id || p) === program._id
+                    );
+                    setHasPaid(!!isPaid);
+                }
+            } catch (error) {
+                console.error("Failed to check payment status", error);
+            } finally {
+                setIsLoadingPayment(false);
+            }
+        };
+
         const fetchProgress = async () => {
             try {
                 const res = await fetch(`/api/programs/progress?programId=${program._id}`);
@@ -51,17 +78,18 @@ export default function ProgramView({ program }: ProgramViewProps) {
         };
 
         if (program._id) {
+            checkPaymentStatus();
             fetchProgress();
         }
-    }, [program._id]);
+    }, [program._id, program.price]);
 
     const toggleModule = (index: number) => {
         setActiveModuleIndex(activeModuleIndex === index ? null : index);
     };
 
     const handleLessonSelect = (lesson: ILesson) => {
-        if (!lesson.isFree && !program.isActive) { // Simple check for locked
-            // Logic for locked lesson (e.g. show toast)
+        if (!lesson.isFree && !hasPaid) {
+            // Handled by the gating UI, but let's be safe
             return;
         }
 
@@ -172,32 +200,75 @@ export default function ProgramView({ program }: ProgramViewProps) {
                 {/* Main Content */}
                 <div className="flex-1 min-w-0">
                     {/* Video Player */}
-                    <div className="relative aspect-[16/9] bg-gray-900 rounded-[32px] overflow-hidden shadow-2xl mb-10 group cursor-pointer border border-white/10">
-                        {currentLesson?.videoUrl ? (
-                            <ReactPlayer
-                                ref={playerRef}
-                                url={currentLesson.videoUrl}
-                                width="100%"
-                                height="100%"
-                                controls
-                                playing={isPlaying}
-                                onProgress={handleProgress}
-                                onStart={() => handleDuration(0)} // Trigger seek on start
-                                onEnded={handleEnded}
-                                config={{
-                                    youtube: {
-                                        playerVars: { showinfo: 1 }
-                                    }
-                                }}
-                            />
-                        ) : (
-                            <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
-                                <p className="text-white">Select a lesson to start learning</p>
+                    <div
+                        className="relative aspect-[16/9] bg-gray-900 rounded-[32px] overflow-hidden shadow-2xl mb-10 group border border-white/10"
+                        onContextMenu={(e) => e.preventDefault()}
+                    >
+                        <div className={`w-full h-full transition-all duration-700 ${(hasPaid === false && currentLesson && !currentLesson.isFree) ? 'blur-2xl scale-105 pointer-events-none' : ''}`}>
+                            {currentLesson?.videoUrl ? (
+                                <>
+                                    <ReactPlayer
+                                        ref={playerRef}
+                                        url={currentLesson.videoUrl}
+                                        width="100%"
+                                        height="100%"
+                                        controls
+                                        playing={isPlaying && hasPaid !== false}
+                                        onProgress={handleProgress}
+                                        onStart={() => handleDuration(0)}
+                                        onEnded={handleEnded}
+                                        config={{
+                                            youtube: {
+                                                playerVars: {
+                                                    showinfo: 0,
+                                                    rel: 0,
+                                                    modestbranding: 1,
+                                                    fs: 0,
+                                                    disablekb: 1,
+                                                    iv_load_policy: 3,
+                                                }
+                                            }
+                                        }}
+                                    />
+                                    <div
+                                        className="absolute inset-0 z-10 bg-transparent"
+                                        onClick={() => setIsPlaying(!isPlaying)}
+                                        onContextMenu={(e) => e.preventDefault()}
+                                    />
+                                </>
+                            ) : (
+                                <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
+                                    <p className="text-white">Select a lesson to start learning</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Paywall Overlay */}
+                        {hasPaid === false && currentLesson && !currentLesson.isFree && (
+                            <div className="absolute inset-0 z-30 flex items-center justify-center p-6 sm:p-12">
+                                <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+                                <div className="relative bg-white/90 backdrop-blur-xl p-8 rounded-[32px] shadow-2xl border border-white/20 max-w-md w-full text-center space-y-6 transform animate-in fade-in zoom-in duration-300">
+                                    <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto text-white shadow-lg shadow-blue-200">
+                                        <Lock size={32} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <h3 className="text-2xl font-black text-gray-900 tracking-tight">Access Restricted</h3>
+                                        <p className="text-gray-500 font-medium text-sm leading-relaxed">
+                                            This premium content requires a one-time payment. Invest in your growth and get lifetime access to all course materials.
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={() => router.push(`/dashboard/payment?programId=${program._id}`)}
+                                        className="w-full bg-blue-600 hover:bg-blue-700 transition-all text-white py-4 rounded-2xl font-black text-sm uppercase tracking-wider shadow-xl shadow-blue-100 active:scale-95"
+                                    >
+                                        Enroll Now - ₦{program.price?.toLocaleString()}
+                                    </button>
+                                </div>
                             </div>
                         )}
 
                         {currentLesson && !isPlaying && (
-                            <div className="absolute bottom-10 left-10 text-white drop-shadow-lg pointer-events-none">
+                            <div className="absolute bottom-10 left-10 text-white drop-shadow-lg pointer-events-none z-20">
                                 <p className="text-sm font-bold !text-white/80 mb-2 uppercase tracking-widest">Now Playing</p>
                                 <h2 className="text-4xl font-extrabold tracking-tight !text-white">{currentLesson.title}</h2>
                             </div>
@@ -267,7 +338,7 @@ export default function ProgramView({ program }: ProgramViewProps) {
                                             <div className="py-0">
                                                 {module.lessons.map((lesson, idx) => {
                                                     const isActive = currentLesson === lesson;
-                                                    const isLocked = !lesson.isFree; // Simplification for now
+                                                    const isLocked = !lesson.isFree && !hasPaid;
 
                                                     const lessonId = (lesson as any)._id; // Needs casting if not strictly typed
                                                     const progress = lessonId ? progressData[lessonId] : null;

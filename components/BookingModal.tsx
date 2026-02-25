@@ -46,11 +46,16 @@ export default function BookingModal({ plan, onClose, onSuccess }: BookingModalP
     const [availability, setAvailability] = useState<{ available: boolean; availableSlots: number; maxCapacity: number; reason?: string } | null>(null);
     const [currentPrice, setCurrentPrice] = useState(plan.price);
 
-    const availableTimeSlots = [
-        { label: "09:00 AM - 05:00 PM" },
-        { label: "09:00 AM - 01:00 PM" },
-        { label: "01:00 PM - 05:00 PM" },
-    ];
+    const availableTimeSlots = plan.title === "Board Room"
+        ? [
+            { label: "Half day 9:00 AM - 12:00 PM" },
+            { label: "Full Day 9:00 AM - 4:00 PM" },
+        ]
+        : [
+            { label: "09:00 AM - 05:00 PM" },
+            { label: "09:00 AM - 01:00 PM" },
+            { label: "01:00 PM - 05:00 PM" },
+        ];
 
     useEffect(() => {
         // Update price based on activeTab

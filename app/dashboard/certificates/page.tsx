@@ -89,7 +89,9 @@ export default function CertificatesPage() {
                         scale: 2, // Higher quality
                         useCORS: true,
                         logging: false,
-                        backgroundColor: '#ffffff'
+                        backgroundColor: '#ffffff',
+                        width: 1123,
+                        windowWidth: 1123
                     });
 
                     const imgData = canvas.toDataURL('image/png');
@@ -201,7 +203,7 @@ export default function CertificatesPage() {
             {/* Hidden Certificate Preview for PDF Generation */}
             {tempCertData && (
                 <div className="fixed top-0 left-0 -z-50 opacity-0 pointer-events-none">
-                    <div ref={certificateRef}>
+                    <div ref={certificateRef} style={{ width: '1123px' }}>
                         <CertificatePreview
                             studentName={tempCertData.studentName}
                             programName={tempCertData.programName}

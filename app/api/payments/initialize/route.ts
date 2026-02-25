@@ -59,21 +59,44 @@ export async function POST(req: NextRequest) {
             callback_url: `${process.env.NEXT_PUBLIC_ICEHUB_URL}/dashboard/payment?verify=true`,
         };
 
-        const response = await fetch('https://api.paystack.co/transaction/initialize', {
-            method: 'POST',
-            headers: {
-                Authorization: `Bearer ${paystackSecretKey}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(paystackData),
-        }).catch((fetchError) => {
-            // Handle network/connection errors
-            console.error('Paystack API connection error:', fetchError);
-            throw new Error(
-                'Unable to connect to Paystack. Please check your internet connection or try again later. ' +
-                'If this persists, contact support.'
-            );
-        });
+        // Initialize Paystack transaction with retry logic and longer timeout
+        let response;
+        let retries = 3;
+        let lastError = null;
+
+        while (retries > 0) {
+            try {
+                response = await fetch('https://api.paystack.co/transaction/initialize', {
+                    method: 'POST',
+                    headers: {
+                        Authorization: `Bearer ${paystackSecretKey}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(paystackData),
+                    // Increase timeout to 30s for slow connections
+                    signal: AbortSignal.timeout(30000)
+                });
+                // If we get here without an exception, the connection succeeded
+                break;
+            } catch (fetchError: any) {
+                lastError = fetchError;
+                console.warn(`Paystack API connection attempt failed. Retries left: ${retries - 1}. Error:`, fetchError.message);
+                retries--;
+                if (retries === 0) {
+                    console.error('All Paystack initialization attempts failed:', fetchError);
+                    throw new Error(
+                        'Unable to connect to Paystack after multiple attempts. Please check your internet connection or try again later. ' +
+                        'If this persists, contact support.'
+                    );
+                }
+                // Wait 1.5 seconds before retrying
+                await new Promise(resolve => setTimeout(resolve, 1500));
+            }
+        }
+
+        if (!response) {
+            throw new Error('Failed to establish connection to Paystack payment gateway');
+        }
 
         const data = await response.json();
 

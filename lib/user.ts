@@ -11,7 +11,10 @@ export const getCachedUser = cache(async () => {
 
     try {
         await connectDB();
-        let user = await User.findById(session.user.id).populate('enrolledPrograms').lean();
+        let user = await User.findById(session.user.id)
+            .populate('enrolledPrograms')
+            .populate({ path: 'paidPrograms', strictPopulate: false })
+            .lean();
 
         if (!user) return null;
 
@@ -22,7 +25,10 @@ export const getCachedUser = cache(async () => {
                 user._id,
                 { uniqueCode },
                 { new: true }
-            ).populate('enrolledPrograms').lean();
+            )
+                .populate('enrolledPrograms')
+                .populate({ path: 'paidPrograms', strictPopulate: false })
+                .lean();
             return JSON.parse(JSON.stringify(updatedUser));
         }
 

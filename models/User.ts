@@ -11,6 +11,7 @@ export interface IUser extends Document {
     emergencyContactPhone?: string;
     experienceLevel?: 'beginner' | 'intermediate' | 'advanced';
     enrolledPrograms: mongoose.Types.ObjectId[];
+    paidPrograms: mongoose.Types.ObjectId[];
     uniqueCode: string;
     progress: number;
     createdAt: Date;
@@ -60,6 +61,12 @@ const UserSchema: Schema = new Schema(
                 ref: 'Program',
             },
         ],
+        paidPrograms: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'Program',
+            },
+        ],
         progress: {
             type: Number,
             default: 0,
@@ -84,6 +91,7 @@ const UserSchema: Schema = new Schema(
     },
     {
         timestamps: true,
+        strictPopulate: false,
     }
 );
 
