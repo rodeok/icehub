@@ -13,7 +13,8 @@ import {
     Megaphone,
     BarChart3,
     Settings,
-    LogOut
+    LogOut,
+    FileText
 } from 'lucide-react';
 
 
@@ -22,6 +23,11 @@ const sidebarItems = [
         title: 'Dashboard',
         icon: LayoutDashboard,
         href: '/admin',
+    },
+    {
+        title: 'Blogs',
+        icon: FileText,
+        href: '/admin/blogs',
     },
     {
         title: 'Students',
