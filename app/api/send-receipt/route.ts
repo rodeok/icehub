@@ -19,13 +19,13 @@ export async function POST(req: Request) {
     const qrCodeDataUrl = await QRCode.toDataURL(qrData);
 
     const { data, error } = await resend.emails.send({
-      from: 'onboarding@resend.dev',
+      from: 'blogmailnot@icehub-ng.com',
       to: [userData.email],
       subject: `Your Workspace Booking Receipt - ${userData.planTitle}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <img src="https://icehub11.vercel.app/images/icehub.png" style="height: 40px; object-fit: contain;" alt="ICE HUB Logo" />
+            <img src="https://icehub-ng.com/images/icehub.png" style="height: 40px; object-fit: contain;" alt="ICE HUB Logo" />
             <h2 style="color: #1a73e8; margin: 0;">Payment Received!</h2>
           </div>
           <p>Hello <strong>${userData.name}</strong>,</p>

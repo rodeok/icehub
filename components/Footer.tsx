@@ -1,9 +1,50 @@
 'use client';
 
 import Image from 'next/image';
+import { useState } from 'react';
 import { BsTwitterX, BsFacebook, BsLinkedin, BsYoutube } from "react-icons/bs";
 
 export default function NewsletterFooter() {
+    const [email, setEmail] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState('');
+    const [error, setError] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+    const handleSubscribe = async () => {
+        if (!email) {
+            setMessage('Please enter an email address.');
+            setError(true);
+            return;
+        }
+
+        setLoading(true);
+        setMessage('');
+        setError(false);
+
+        try {
+            const res = await fetch('/api/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                setShowSuccessModal(true);
+                setEmail('');
+            } else {
+                setMessage(data.error || 'Failed to subscribe.');
+                setError(true);
+            }
+        } catch (err) {
+            setMessage('An unexpected error occurred.');
+            setError(true);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <footer className="w-full bg-white">
             {/* Newsletter */}
@@ -21,16 +62,27 @@ export default function NewsletterFooter() {
                     {/* Right */}
                     <div className="w-full md:max-w-md">
                         <p className="text-sm mb-3 !text-white font-medium">Stay up to date</p>
-                        <div className="flex flex-col sm:flex-row bg-[#123F80] rounded-full sm:p-1 overflow-hidden gap-2 sm:gap-0 p-2 sm:p-1">
+                        <form onSubmit={(e) => { e.preventDefault(); handleSubscribe(); }} className="flex flex-col sm:flex-row bg-[#123F80] rounded-full sm:p-1 overflow-hidden gap-2 sm:gap-0 p-2 sm:p-1">
                             <input
                                 type="email"
                                 placeholder="Enter your email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 className="flex-1 bg-transparent px-4 py-2.5 sm:px-5 sm:py-0 text-sm sm:text-base !text-white placeholder-white placeholder:opacity-70 focus:outline-none"
                             />
-                            <button className="bg-blue-500 hover:bg-blue-600 active:scale-95 transition-all text-sm sm:text-base font-semibold px-5 py-2.5 sm:px-6 sm:py-3 rounded-full shadow-lg hover:shadow-xl">
-                                Subscribe
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="bg-blue-500 hover:bg-blue-600 active:scale-95 transition-all text-sm sm:text-base font-semibold px-5 py-2.5 sm:px-6 sm:py-3 rounded-full shadow-lg hover:shadow-xl disabled:opacity-50"
+                            >
+                                {loading ? 'Subscribing...' : 'Subscribe'}
                             </button>
-                        </div>
+                        </form>
+                        {message && (
+                            <p className={`mt-2 text-sm ${error ? 'text-red-300' : 'text-green-300'}`}>
+                                {message}
+                            </p>
+                        )}
                         <p className="mt-3 text-xs sm:text-sm !text-white opacity-80">
                             By subscribing you agree to our privacy policy
                         </p>
@@ -109,6 +161,37 @@ export default function NewsletterFooter() {
                     <span>ICE INNOVATION HUB. © 2025. All Rights Reserved</span>
                 </div>
             </div>
+
+            {/* Success Modal */}
+            {showSuccessModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl p-6 md:p-8 max-w-sm w-full shadow-2xl relative animate-in fade-in zoom-in duration-300">
+                        <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
+                            <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <h3 className="text-xl font-bold text-center text-gray-900 mb-2">Subscription Successful!</h3>
+                        <p className="text-center text-gray-600 mb-6">
+                            Thank you for subscribing to our newsletter. We'll keep you updated with the latest insights.
+                        </p>
+                        <button
+                            onClick={() => setShowSuccessModal(false)}
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition duration-200"
+                        >
+                            Continue
+                        </button>
+                        <button
+                            onClick={() => setShowSuccessModal(false)}
+                            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            )}
         </footer>
     );
 }
