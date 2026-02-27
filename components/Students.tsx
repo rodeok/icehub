@@ -17,7 +17,8 @@ import {
     Trash2,
     Ban,
     UserCheck,
-    Send
+    Send,
+    BookOpen
 } from 'lucide-react';
 
 export default function Students() {
@@ -27,6 +28,11 @@ export default function Students() {
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('All');
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+    // Edit Program Modal State
+    const [isEditProgramModalOpen, setIsEditProgramModalOpen] = useState(false);
+    const [editProgramData, setEditProgramData] = useState({ studentId: '', programId: '', cohort: '' });
+    const [isEditingProgram, setIsEditingProgram] = useState(false);
 
     // Email Modal State
     const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
@@ -45,7 +51,9 @@ export default function Students() {
         name: '',
         email: '',
         id: '',
+        password: '',
         programId: '',
+        cohort: '',
         enrolledOn: new Date().toISOString().split('T')[0]
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -148,13 +156,48 @@ export default function Students() {
                 name: '',
                 email: '',
                 id: '',
+                password: '',
                 programId: programs[0]?._id || '',
+                cohort: '',
                 enrolledOn: new Date().toISOString().split('T')[0]
             });
         } catch (err: any) {
             alert(err.message);
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    const handleOpenEditProgram = (student: any) => {
+        setEditProgramData({
+            studentId: student.userId || student.id,
+            programId: programs.find(p => p.name === student.program)?._id || programs[0]?._id || '',
+            cohort: student.cohort !== 'N/A' ? student.cohort : ''
+        });
+        setIsEditProgramModalOpen(true);
+        setActiveDropdown(null);
+    };
+
+    const handleEditProgramSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsEditingProgram(true);
+        try {
+            const response = await fetch(`/api/admin/students/${editProgramData.studentId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    programId: editProgramData.programId,
+                    cohort: editProgramData.cohort || ''
+                })
+            });
+
+            if (!response.ok) throw new Error('Failed to update program/cohort');
+            setIsEditProgramModalOpen(false);
+            fetchStudents();
+        } catch (err: any) {
+            alert(err.message);
+        } finally {
+            setIsEditingProgram(false);
         }
     };
 
@@ -382,6 +425,13 @@ export default function Students() {
                                                                 <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Actions</p>
                                                             </div>
                                                             <button
+                                                                onClick={() => handleOpenEditProgram(student)}
+                                                                className="w-full text-left px-4 py-2.5 text-sm font-medium text-blue-600 flex items-center gap-2 hover:bg-blue-50 transition-colors border-b border-gray-50"
+                                                            >
+                                                                <BookOpen size={14} />
+                                                                Edit Program / Cohort
+                                                            </button>
+                                                            <button
                                                                 onClick={() => handleStatusChange(student.userId || student.id, student.status)}
                                                                 className={`w-full text-left px-4 py-2.5 text-sm font-medium flex items-center gap-2 hover:bg-gray-50 transition-colors ${student.status === 'ACTIVE' ? 'text-orange-600' : 'text-green-600'}`}
                                                             >
@@ -536,16 +586,29 @@ export default function Students() {
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Email Address</label>
-                                <input
-                                    required
-                                    type="email"
-                                    placeholder="student@example.com"
-                                    value={formData.email}
-                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                    className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-100 outline-none"
-                                />
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Email Address</label>
+                                    <input
+                                        required
+                                        type="email"
+                                        placeholder="student@example.com"
+                                        value={formData.email}
+                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                        className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-100 outline-none"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Password</label>
+                                    <input
+                                        required
+                                        type="password"
+                                        placeholder="Enter password"
+                                        value={formData.password}
+                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                        className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-100 outline-none"
+                                    />
+                                </div>
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -564,15 +627,26 @@ export default function Students() {
                                     </select>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Enrolled On</label>
+                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Cohort</label>
                                     <input
-                                        required
-                                        type="date"
-                                        value={formData.enrolledOn}
-                                        onChange={(e) => setFormData({ ...formData, enrolledOn: e.target.value })}
+                                        type="text"
+                                        placeholder="e.g. Fall 2026"
+                                        value={formData.cohort}
+                                        onChange={(e) => setFormData({ ...formData, cohort: e.target.value })}
                                         className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-100 outline-none"
                                     />
                                 </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Enrolled On</label>
+                                <input
+                                    required
+                                    type="date"
+                                    value={formData.enrolledOn}
+                                    onChange={(e) => setFormData({ ...formData, enrolledOn: e.target.value })}
+                                    className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-100 outline-none"
+                                />
                             </div>
 
                             <div className="pt-4 flex gap-3">
@@ -590,6 +664,64 @@ export default function Students() {
                                 >
                                     {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <UserPlus size={18} />}
                                     Add Student
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Edit Program & Cohort Modal */}
+            {isEditProgramModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+                        <div className="p-6 border-b border-gray-50 flex justify-between items-center">
+                            <h2 className="text-xl font-bold text-gray-900">Edit Program & Cohort</h2>
+                            <button onClick={() => setIsEditProgramModalOpen(false)} className="p-2 hover:bg-gray-50 rounded-xl transition-colors">
+                                <X size={20} className="text-gray-400" />
+                            </button>
+                        </div>
+                        <form onSubmit={handleEditProgramSubmit} className="p-6 space-y-5">
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Program</label>
+                                <select
+                                    required
+                                    value={editProgramData.programId}
+                                    onChange={(e) => setEditProgramData({ ...editProgramData, programId: e.target.value })}
+                                    className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-100 outline-none"
+                                >
+                                    <option value="" disabled>Select program</option>
+                                    {programs.map(p => (
+                                        <option key={p._id} value={p._id}>{p.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Cohort</label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g. Fall 2026"
+                                    value={editProgramData.cohort}
+                                    onChange={(e) => setEditProgramData({ ...editProgramData, cohort: e.target.value })}
+                                    className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-100 outline-none"
+                                />
+                            </div>
+
+                            <div className="pt-4 flex gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsEditProgramModalOpen(false)}
+                                    className="flex-1 px-6 py-3 border border-gray-100 rounded-2xl text-sm font-bold text-gray-500 hover:bg-gray-50 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isEditingProgram}
+                                    className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-2xl text-sm font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                                >
+                                    {isEditingProgram ? <Loader2 size={18} className="animate-spin" /> : <CheckCircle2 size={18} />}
+                                    Save Changes
                                 </button>
                             </div>
                         </form>

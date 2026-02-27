@@ -13,6 +13,7 @@ export interface IUser extends Document {
     enrolledPrograms: mongoose.Types.ObjectId[];
     paidPrograms: mongoose.Types.ObjectId[];
     uniqueCode: string;
+    cohort?: string;
     progress: number;
     createdAt: Date;
     updatedAt: Date;
@@ -87,6 +88,10 @@ const UserSchema: Schema = new Schema(
             type: String,
             unique: true,
             sparse: true,
+        },
+        cohort: {
+            type: String,
+            trim: true,
         },
     },
     {

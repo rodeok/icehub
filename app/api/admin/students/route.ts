@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 import Program from '@/models/Program';
+import { hashPassword } from '@/lib/bcrypt';
 
 export async function GET(request: Request) {
     try {
@@ -47,7 +48,7 @@ export async function GET(request: Request) {
                 id: student.uniqueCode || student._id.toString().substring(0, 8).toUpperCase(),
                 userId: student._id.toString(), // Explicit string conversion
                 program: (student.enrolledPrograms[0] as any)?.name || 'Not Enrolled',
-                cohort: (student.enrolledPrograms[0] as any)?.curriculum?.[0] || 'N/A', // Using first curriculum item as cohort for now
+                cohort: student.cohort || (student.enrolledPrograms[0] as any)?.curriculum?.[0] || 'N/A', // Using explicit cohort if set or first curriculum item
                 enrolled: new Date(student.createdAt).toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
@@ -68,10 +69,10 @@ export async function POST(request: Request) {
     try {
         await connectDB();
         const body = await request.json();
-        const { name, email, id, programId, enrolledOn } = body;
+        const { name, email, id, programId, enrolledOn, password, cohort } = body;
 
         // Basic validation
-        if (!name || !email || !id) {
+        if (!name || !email || !id || !password) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
@@ -81,12 +82,15 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Student with this email or ID already exists' }, { status: 400 });
         }
 
+        const hashedPassword = await hashPassword(password);
+
         const newUser = new User({
             fullName: name,
             email,
             uniqueCode: id,
-            password: 'defaultPassword123', // Admin created students get a default password
+            password: hashedPassword, // Admin created students get a defined password
             enrolledPrograms: programId ? [programId] : [],
+            cohort: cohort || '',
             createdAt: enrolledOn ? new Date(enrolledOn) : new Date(),
             isActive: true
         });

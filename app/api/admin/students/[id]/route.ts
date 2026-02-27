@@ -39,13 +39,35 @@ export async function PATCH(
         await connectDB();
         const { id } = await params;
         const body = await request.json();
-        const { action } = body; // expect action: 'suspend' | 'activate'
+        const { action, programId, cohort } = body; // expect action: 'suspend' | 'activate' or we can check for program updates
 
         let query: any = {};
         if (ObjectId.isValid(id)) {
             query._id = id;
         } else {
             query.uniqueCode = id;
+        }
+
+        // Handle specific update vs action
+        if (programId !== undefined || cohort !== undefined) {
+            const updateFields: any = {};
+            if (programId) updateFields.enrolledPrograms = [programId];
+            if (cohort !== undefined) updateFields.cohort = cohort;
+
+            const updatedUser = await User.findOneAndUpdate(
+                query,
+                { $set: updateFields },
+                { new: true }
+            );
+
+            if (!updatedUser) {
+                return NextResponse.json({ error: 'User not found' }, { status: 404 });
+            }
+
+            return NextResponse.json({
+                message: 'User program/cohort updated successfully',
+                user: updatedUser
+            });
         }
 
         if (!['suspend', 'activate'].includes(action)) {
