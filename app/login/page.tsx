@@ -122,12 +122,20 @@ function LoginForm() {
                 </button>
 
                 {/* Don't have an account? */}
-                <p className="text-center text-sm font-medium text-gray-900 mt-8">
-                    Don't have an account?{" "}
-                    <Link href="/get-started" className="text-blue-600 hover:underline font-bold">
-                        Sign Up
-                    </Link>
-                </p>
+                <div className="flex flex-col items-center gap-2 mt-8">
+                    <p className="text-center text-sm font-medium text-gray-900">
+                        Don't have an account?{" "}
+                        <Link href="/get-started" className="text-blue-600 hover:underline font-bold">
+                            Sign Up
+                        </Link>
+                    </p>
+                    <p className="text-center text-sm font-medium text-gray-900">
+                        Are you an instructor?{" "}
+                        <Link href="/tutor/login" className="text-blue-600 hover:underline font-bold">
+                            Tutor Login
+                        </Link>
+                    </p>
+                </div>
             </form>
         </AuthLayout>
     );

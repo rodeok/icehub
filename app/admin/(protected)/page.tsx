@@ -30,6 +30,7 @@ interface DashboardData {
     enrollmentData: any[];
     recentActivity: any[];
     performanceData: any[];
+    availableCourses: any[];
 }
 
 export default function AdminDashboard() {
@@ -80,7 +81,7 @@ export default function AdminDashboard() {
         );
     }
 
-    const { stats, enrollmentData, recentActivity, performanceData } = data;
+    const { stats, enrollmentData, recentActivity, performanceData, availableCourses } = data;
 
     const getStatIcon = (title: string) => {
         switch (title) {
@@ -254,23 +255,36 @@ export default function AdminDashboard() {
                     </div>
                 </div>
 
-                {/* Hub Utilization */}
-                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                    <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-lg font-bold text-gray-900">Hub Utilization</h2>
-                        <div className="p-1 rounded-full bg-green-50 text-green-500">
-                            <CheckCircle2 size={16} />
+                {/* Available Courses / Programs */}
+                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
+                    <div className="flex justify-between items-center mb-6 border-b border-gray-50 pb-4">
+                        <h2 className="text-lg font-bold text-gray-900">Available Courses</h2>
+                        <div className="p-1 rounded-full bg-blue-50 text-blue-500">
+                            <BookOpen size={16} />
                         </div>
                     </div>
 
-                    <div className="space-y-6">
-                        <UtilizationItem label="Capacity" value={82} color="bg-blue-600" />
-                        <UtilizationItem label="Instructor Load" value={65} color="bg-purple-500" />
-                        <UtilizationItem label="Storage Used" value={48} color="bg-orange-500" />
+                    <div className="space-y-4 overflow-y-auto max-h-[300px] custom-scrollbar pr-2">
+                        {availableCourses && availableCourses.length > 0 ? (
+                            availableCourses.map((course: any, idx: number) => (
+                                <div key={idx} className="flex justify-between items-center p-3 hover:bg-gray-50 rounded-xl transition-all border border-gray-50">
+                                    <div>
+                                        <h4 className="text-sm font-bold text-gray-900 line-clamp-1">{course.name}</h4>
+                                        <p className="text-xs text-gray-500 mt-1 flex items-center gap-2">
+                                            <span className={`px-2 py-0.5 rounded-md ${course.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{course.isActive ? 'Active' : 'Draft'}</span>
+                                            <span>• {course.enrolledCount} Students</span>
+                                        </p>
+                                    </div>
+                                    <span className="text-xs font-bold text-blue-600 capitalize bg-blue-50 px-2 py-1 rounded-lg">{course.skillLevel}</span>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-sm text-gray-400 italic text-center py-4">No courses available.</p>
+                        )}
                     </div>
 
-                    <button className="w-full mt-10 py-3 rounded-xl bg-gray-50 text-sm font-bold text-gray-900 hover:bg-gray-100 transition-colors">
-                        View System Logs
+                    <button className="w-full mt-4 py-3 rounded-xl bg-gray-50 text-sm font-bold text-gray-900 hover:bg-gray-100 transition-colors">
+                        View Complete Catalog
                     </button>
                 </div>
             </div>

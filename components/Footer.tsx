@@ -2,8 +2,8 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
-import { BsTwitterX, BsFacebook, BsLinkedin, BsYoutube } from "react-icons/bs";
-
+import { BsTwitterX, BsFacebook, BsLinkedin, BsInstagram } from "react-icons/bs";
+import Link from 'next/link';
 export default function NewsletterFooter() {
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
@@ -104,18 +104,18 @@ export default function NewsletterFooter() {
 
                     {/* Socials */}
                     <div className="flex gap-3 mt-6">
-                        <a className="p-2 bg-black text-white rounded">
+                        <Link href="https://x.com/ICEHub_Africa" className="p-2 bg-black text-white rounded">
                             <BsTwitterX />
-                        </a>
-                        <a className="p-2 bg-blue-600 text-white rounded">
+                        </Link>
+                        <Link href="https://www.facebook.com/share/1BG6j1vRsR/" className="p-2 bg-blue-600 text-white rounded">
                             <BsFacebook />
-                        </a>
-                        <a className="p-2 bg-blue-700 text-white rounded">
+                        </Link>
+                        <Link href="https://www.linkedin.com/company/ice-hubnigeria/" className="p-2 bg-blue-700 text-white rounded">
                             <BsLinkedin size={16} />
-                        </a>
-                        <a className="p-2 bg-red-600 text-white rounded">
-                            <BsYoutube size={16} />
-                        </a>
+                        </Link>
+                        <Link href="https://www.instagram.com/ice_innovation_hub?igsh=MXZmZmVwd3Nhamtsag==" className="p-2 bg-red-600 text-white rounded">
+                            <BsInstagram size={16} />
+                        </Link>
                     </div>
                 </div>
 

@@ -22,6 +22,8 @@ export default function AdminInstructor() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formData, setFormData] = useState({
         fullName: '',
+        username: '',
+        password: '',
         specialty: 'frontend',
         email: '',
         role: 'Instructor',
@@ -29,6 +31,15 @@ export default function AdminInstructor() {
         imageUrl: '',
         cohorts: [] as string[]
     });
+
+    const generateCredentials = () => {
+        const randomString = Math.random().toString(36).substring(2, 8);
+        setFormData(prev => ({
+            ...prev,
+            username: prev.fullName ? prev.fullName.toLowerCase().replace(/\s+/g, '') + Math.floor(Math.random() * 100) : `instructor${randomString}`,
+            password: `Pass@${Math.random().toString(36).substring(2, 8)}`
+        }));
+    };
 
     const categories = [
         'frontend',
@@ -79,6 +90,8 @@ export default function AdminInstructor() {
             // Reset form
             setFormData({
                 fullName: '',
+                username: '',
+                password: '',
                 specialty: 'frontend',
                 email: '',
                 role: 'Instructor',
@@ -251,12 +264,20 @@ export default function AdminInstructor() {
                                 <h2 className="text-3xl font-bold text-gray-900">Hire Instructor</h2>
                                 <p className="text-gray-500 mt-1 font-medium text-sm">Fill in the details to add a new mentor.</p>
                             </div>
-                            <button
-                                onClick={() => setIsModalOpen(false)}
-                                className="p-3 hover:bg-gray-100 rounded-2xl transition-colors text-gray-400"
-                            >
-                                <X size={24} />
-                            </button>
+                            <div className="flex gap-2 items-center">
+                                <button
+                                    onClick={generateCredentials}
+                                    className="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-bold hover:bg-blue-100 transition-colors"
+                                >
+                                    Auto-Generate Login
+                                </button>
+                                <button
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="p-3 hover:bg-gray-100 rounded-2xl transition-colors text-gray-400"
+                                >
+                                    <X size={24} />
+                                </button>
+                            </div>
                         </div>
 
                         {/* Scrollable Form Body */}
@@ -283,6 +304,31 @@ export default function AdminInstructor() {
                                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                             className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                                             placeholder="john@example.com"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Username</label>
+                                        <input
+                                            type="text"
+                                            required
+                                            value={formData.username}
+                                            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                                            placeholder="Auto-generate or type..."
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Password</label>
+                                        <input
+                                            type="text"
+                                            required
+                                            value={formData.password}
+                                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                                            placeholder="Auto-generate or type..."
                                         />
                                     </div>
                                 </div>

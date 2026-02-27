@@ -3,6 +3,8 @@ import mongoose, { Schema, Document, Model } from 'mongoose';
 export interface IInstructor extends Document {
     _id: mongoose.Types.ObjectId;
     fullName: string;
+    username: string;
+    password?: string;
     specialty: string;
     email: string;
     role: string;
@@ -24,6 +26,16 @@ const InstructorSchema: Schema = new Schema(
             type: String,
             required: [true, 'Full name is required'],
             trim: true,
+        },
+        username: {
+            type: String,
+            required: [true, 'Username is required'],
+            unique: true,
+            trim: true,
+        },
+        password: {
+            type: String,
+            required: false, // Optional temporarily to support existing instructors without passwords
         },
         specialty: {
             type: String,

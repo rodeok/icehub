@@ -35,11 +35,6 @@ const sidebarItems = [
         href: '/admin/students',
     },
     {
-        title: 'Programs / Courses',
-        icon: BookOpen,
-        href: '/admin/programs',
-    },
-    {
         title: 'Instructors',
         icon: User,
         href: '/admin/instructors',

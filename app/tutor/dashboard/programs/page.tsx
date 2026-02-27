@@ -1,5 +1,5 @@
 import AdminProgram from '@/components/AdminProgram';
 
-export default function ProgramsPage() {
+export default function TutorProgramsPage() {
     return <AdminProgram />;
 }

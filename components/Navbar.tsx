@@ -24,8 +24,8 @@ export default function Navbar() {
     setOpenMenu(openMenu === menu ? null : menu);
   };
 
-  // Do not show the navbar on dashboard or admin routes
-  if (pathname?.startsWith('/dashboard') || pathname?.startsWith('/admin')) {
+  // Do not show the navbar on dashboard, admin, or tutor routes
+  if (pathname?.startsWith('/dashboard') || pathname?.startsWith('/admin') || pathname?.startsWith('/tutor')) {
     return null;
   }
 

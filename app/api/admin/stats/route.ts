@@ -72,7 +72,7 @@ export async function GET() {
             }))
         ].sort((a, b) => b.time.getTime() - a.time.getTime()).slice(0, 5);
 
-        // 4. Program Performance
+        // 4. Program Performance (keep existing)
         const programPerformance = await Program.find({ isActive: true })
             .select('name enrolledCount category')
             .sort({ enrolledCount: -1 })
@@ -87,6 +87,11 @@ export async function GET() {
             isPositive: true
         }));
 
+        // 5. All Available Courses/Programs for dashboard view
+        const availableCourses = await Program.find({})
+            .select('name description category skillLevel enrolledCount createdAt isActive price weeks duration')
+            .sort({ createdAt: -1 });
+
         return NextResponse.json({
             stats: [
                 { title: 'Total Students', value: totalStudents.toLocaleString(), trend: '+0%', isPositive: true },
@@ -99,7 +104,8 @@ export async function GET() {
                 ...act,
                 time: formatTimeAgo(act.time)
             })),
-            performanceData
+            performanceData,
+            availableCourses: availableCourses
         });
     } catch (error: any) {
         console.error('Error fetching dashboard stats:', error);
