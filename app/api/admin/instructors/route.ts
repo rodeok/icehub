@@ -54,7 +54,7 @@ export async function POST(request: Request) {
             const loginUrl = 'https://icehub-ng.com/tutor/login'; // Update appropriately
 
             await resend.emails.send({
-                from: 'ICE HUB Admin <blogmailnot@icehub-ng.com>',
+                from: 'ICE HUB Admin <blog@icehub-ng.com>',
                 to: newInstructor.email,
                 subject: 'Welcome to ICE HUB! Your Tutor Credentials',
                 html: `

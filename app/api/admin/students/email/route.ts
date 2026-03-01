@@ -13,7 +13,7 @@ export async function POST(request: Request) {
         }
 
         const { data, error } = await resend.emails.send({
-            from: 'IceHub Admin <blogmailnot@icehub-ng.com>', // Replace with your verified sender
+            from: 'IceHub Admin <blog@icehub-ng.com>', // Replace with your verified sender
             to: [to],
             subject: subject,
             html: `<div style="font-family: sans-serif; color: #333;">

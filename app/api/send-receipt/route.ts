@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     const qrCodeDataUrl = await QRCode.toDataURL(qrData);
 
     const { data, error } = await resend.emails.send({
-      from: 'blogmailnot@icehub-ng.com',
+      from: 'blog@icehub-ng.com',
       to: [userData.email],
       subject: `Your Workspace Booking Receipt - ${userData.planTitle}`,
       html: `

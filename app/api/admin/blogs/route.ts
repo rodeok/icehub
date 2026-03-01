@@ -59,8 +59,8 @@ export async function POST(req: NextRequest) {
                 const blogUrl = `https://icehub-ng.com/blogs/${newBlog.slug}`; // Update with the actual production domain later if needed
 
                 await resend.emails.send({
-                    from: 'blogmailnot@icehub-ng.com',
-                    to: ['blogmailnot@icehub-ng.com'], // Send to the sender to prevent exposing all emails
+                    from: 'blog@icehub-ng.com',
+                    to: ['blog@icehub-ng.com'], // Send to the sender to prevent exposing all emails
                     bcc: subscriberEmails,
                     subject: `New Blog Post from ICE HUB: ${newBlog.title}`,
                     html: `
