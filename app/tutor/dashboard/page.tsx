@@ -1,12 +1,33 @@
 import React from 'react';
 import { Users, BookOpen, GraduationCap, CheckCircle } from 'lucide-react';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import connectDB from '@/lib/mongodb';
+import Instructor from '@/models/Instructor';
 
-export default function TutorDashboard() {
+export default async function TutorDashboard() {
+    const session = await getServerSession(authOptions);
+    let instructorData = null;
+
+    if (session?.user && (session.user as any).role === 'tutor') {
+        try {
+            await connectDB();
+            instructorData = await Instructor.findById((session.user as any).id).lean();
+        } catch (error) {
+            console.error('Error fetching tutor stats:', error);
+        }
+    }
+
+    const studentsCount = instructorData?.studentsCount || 0;
+    const activeProgramsCount = instructorData?.cohorts?.length || 0;
+    const coursesCount = instructorData?.coursesCount || 0;
+    const averageRating = instructorData?.rating || 0;
+
     const stats = [
-        { label: 'Total Students', value: '1,248', change: '+12%', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
-        { label: 'Active Programs', value: '4', change: 'Steady', icon: BookOpen, color: 'text-indigo-600', bg: 'bg-indigo-50' },
-        { label: 'Courses Taught', value: '12', change: '+2', icon: GraduationCap, color: 'text-purple-600', bg: 'bg-purple-50' },
-        { label: 'Average Rating', value: '4.9', change: '+0.1', icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-50' },
+        { label: 'Total Students', value: studentsCount.toLocaleString(), change: 'Steady', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
+        { label: 'Active Programs', value: activeProgramsCount.toString(), change: 'Steady', icon: BookOpen, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+        { label: 'Courses Taught', value: coursesCount.toString(), change: 'Steady', icon: GraduationCap, color: 'text-purple-600', bg: 'bg-purple-50' },
+        { label: 'Average Rating', value: averageRating.toFixed(1), change: 'Steady', icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-50' },
     ];
 
     return (
