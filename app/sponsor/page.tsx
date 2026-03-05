@@ -351,7 +351,7 @@ export default function SponsorPage() {
                                         </svg>
                                     </div>
                                     <h3 className="text-[#333333] font-bold text-[20px] mb-2">Message us</h3>
-                                    <p className="text-[#888888] text-[16px]">support@midas.com</p>
+                                    <p className="text-[#888888] text-[16px]">support@icehub-ng.com</p>
                                 </div>
 
                                 {/* Call us */}
@@ -373,7 +373,8 @@ export default function SponsorPage() {
                                         </svg>
                                     </div>
                                     <h3 className="text-[#333333] font-bold text-[20px] mb-2">Address</h3>
-                                    <p className="text-[#888888] text-[16px]">1618 Lamington Dr, 262.</p>
+                                    <p className="text-[#888888] text-[16px]">No. 290 Old Onitsha Road, Bethel Building,
+                                        Uruagu, Nnewi, Anambra State</p>
                                 </div>
                             </div>
                         </div>
