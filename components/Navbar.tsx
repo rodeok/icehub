@@ -122,7 +122,7 @@ export default function Navbar() {
             </Link>
           </li>
           <li>
-            <a href="https://chat.icehub-ng.com" target="_blank" className="nav-link cursor-pointer">Help Center</a>
+            <Link href="/sponsor" className="nav-link cursor-pointer">Sponsor a student</Link>
           </li>
         </ul>
 
@@ -204,7 +204,7 @@ export default function Navbar() {
               <Link href="/services/start-incubation" className="transition-colors hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>Startup Incubation</Link>
             </li>
             <li>
-              <a href="https://chat.icehub-ng.com" target="_blank" className="nav-link cursor-pointer">Help Center</a>
+              <Link href="https://www.figma.com/proto/vJOI8A3mrPRk0sMiRcHJw0/I.C.E-Website?node-id=59012-1517&starting-point-node-id=58811%3A4712" target="_blank" className="nav-link cursor-pointer" onClick={() => setMobileMenuOpen(false)}>Sponsor a student</Link>
             </li>
           </ul>
 
