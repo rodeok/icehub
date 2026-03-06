@@ -7,6 +7,7 @@ export default function SponsorPage() {
     const [hasCandidate, setHasCandidate] = useState('yes');
     const [specificCourse, setSpecificCourse] = useState('no');
     const [donationMethod, setDonationMethod] = useState('bank');
+    const [isChatOpen, setIsChatOpen] = useState(false);
 
     // Form state
     const [formData, setFormData] = useState({
@@ -61,20 +62,49 @@ export default function SponsorPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#fafafb] font-sans pb-20">
-            <div className="max-w-[1300px] mx-auto pt-16 px-5 sm:px-8 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+        <div className="min-h-screen bg-[#fafafb] font-sans pb-10 md:pb-20 overflow-x-hidden">
+            <div className="max-w-[1300px] mx-auto pt-10 md:pt-16 px-4 sm:px-6 lg:px-12 flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-16 items-start">
 
                 {/* Left Column */}
                 <div className="flex flex-col xl:pr-8">
-                    <h1 className="text-[44px] md:text-[52px] lg:text-[60px] font-extrabold text-[#333333] leading-[1.1] mb-5">
-                        <span className="text-[#3ebdf8]">Join</span> our <span className="text-[#3ebdf8]">cause</span> in shaping the future of <br className="hidden md:block" /><span className="text-[#3ebdf8]">tech education</span>
+                    <h1 className="text-[30px] md:text-[42px] lg:text-[50px] font-extrabold text-[#333333] leading-[1.1] mb-5">
+                        <span className="text-[#3ebdf8]">Join</span> our <span className="text-[#3ebdf8]">cause</span> in <br className="hidden md:block" />
+                        shaping the future of <br className="hidden md:block" />
+                        <span className="text-[#3ebdf8]">tech education</span>
                     </h1>
                     <p className="text-[#555555] text-lg font-semibold mb-3">
                         We are always available to follow up on your concerns and inquiries
                     </p>
-                    <a href="#" className="text-[#3ebdf8] text-[17px] font-semibold mb-10 hover:underline">
-                        Learn More
-                    </a>
+                    <div className="mb-10 inline-block relative mt-2">
+                        <div className="absolute -top-3 -right-6 animate-bounce bg-[#ff5a5f] text-white text-[12px] font-bold px-3 py-1 rounded-full shadow-lg z-10 whitespace-nowrap">
+                            Chat Now! 💬
+                        </div>
+                        <button
+                            onClick={(e) => { e.preventDefault(); setIsChatOpen(true); }}
+                            className="group relative flex items-center justify-center gap-2 bg-gradient-to-r from-[#3ebdf8] to-[#1da2e0] text-white px-5 py-2.5 rounded-full font-semibold text-[14px] shadow-[0_6px_16px_-6px_rgba(62,189,248,0.6)] hover:shadow-[0_10px_20px_-6px_rgba(62,189,248,0.7)] hover:-translate-y-1 transition-all duration-300 focus:outline-none overflow-hidden"
+                        >
+                            <span className="absolute flex h-full w-full inset-0 rounded-full group-hover:animate-ping opacity-20 bg-white duration-1000"></span>
+
+                            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5 relative z-10 animate-pulse"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                                />
+                            </svg>
+
+                            <span className="relative z-10">Learn More</span>
+                        </button>
+                    </div>
 
                     <div className="w-full relative shadow-sm h-auto">
                         <img
@@ -148,7 +178,7 @@ export default function SponsorPage() {
                             </div>
 
                             {/* Email and Phone */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="flex flex-col sm:grid sm:grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label className="block mb-2 text-[#6c6c6c] font-bold text-[15px]">Email Address</label>
                                     <input
@@ -178,7 +208,7 @@ export default function SponsorPage() {
                             {/* Candidate Sponsor */}
                             <div>
                                 <label className="block mb-3 text-[#6c6c6c] font-bold text-[15px]">Do you have a candidate you wish to sponsor</label>
-                                <div className="flex gap-[14px] w-full sm:w-[220px]">
+                                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                                     <button
                                         type="button"
                                         onClick={() => setHasCandidate('yes')}
@@ -209,7 +239,7 @@ export default function SponsorPage() {
                             {/* Specific Course */}
                             <div>
                                 <label className="block mb-3 text-[#6c6c6c] font-bold text-[15px]">Is there a specific course you would like to sponsor a student in ?</label>
-                                <div className="flex gap-[14px] w-full sm:w-[220px]">
+                                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                                     <button
                                         type="button"
                                         onClick={() => setSpecificCourse('yes')}
@@ -334,14 +364,14 @@ export default function SponsorPage() {
 
             {/* Contact Section */}
             {supportType === 'any' && (
-                <div className="w-full flex justify-center pb-20 mt-20">
-                    <div className="max-w-[1000px] w-full px-5 sm:px-8">
-                        <div className="bg-[#f5f5f5] rounded-[32px] p-8 md:p-12">
-                            <h2 className="text-[#646464] text-[22px] font-bold text-center mb-10">
+                <div className="w-full flex justify-center pb-10 md:pb-20 mt-12 md:mt-20">
+                    <div className="max-w-[1000px] w-full px-4 sm:px-6 md:px-8">
+                        <div className="bg-[#f5f5f5] rounded-[24px] md:rounded-[32px] p-6 md:p-12">
+                            <h2 className="text-[#646464] text-[18px] md:text-[22px] font-bold text-center mb-6 md:mb-10 px-2 lg:px-0">
                                 Contact Us for more on collaborations and support
                             </h2>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 {/* Message us */}
                                 <div className="bg-white rounded-[32px] p-8 flex flex-col items-center justify-center shadow-sm text-center transform transition-transform hover:-translate-y-1">
                                     <div className="w-[72px] h-[72px] rounded-full bg-[#dff0fa] flex items-center justify-center mb-5 text-[#3abef8]">
@@ -366,7 +396,7 @@ export default function SponsorPage() {
                                 </div>
 
                                 {/* Address */}
-                                <div className="bg-white rounded-[32px] p-8 flex flex-col items-center justify-center shadow-sm text-center transform transition-transform hover:-translate-y-1 sm:col-span-2 md:col-span-1 sm:w-1/2 md:w-full mx-auto">
+                                <div className="bg-white rounded-[24px] md:rounded-[32px] p-6 md:p-8 flex flex-col items-center justify-center shadow-sm text-center transform transition-transform hover:-translate-y-1">
                                     <div className="w-[72px] h-[72px] rounded-full bg-[#dff0fa] flex items-center justify-center mb-5 text-[#3abef8]">
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
                                             <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
@@ -377,6 +407,39 @@ export default function SponsorPage() {
                                         Uruagu, Nnewi, Anambra State</p>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Chat Modal */}
+            {isChatOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden relative animate-in fade-in zoom-in duration-200">
+                        {/* Header */}
+                        <div className="flex justify-between items-center p-4 border-b border-gray-100 bg-white">
+                            <h3 className="font-bold text-lg text-gray-800 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#3ebdf8]" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd" />
+                                </svg>
+                                Support Chat
+                            </h3>
+                            <button
+                                onClick={() => setIsChatOpen(false)}
+                                className="text-gray-400 hover:text-gray-700 hover:bg-gray-100 p-2 rounded-full transition-colors focus:outline-none"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        {/* IFrame */}
+                        <div className="flex-1 bg-gray-50">
+                            <iframe
+                                src="https://icebot11.vercel.app/"
+                                className="w-full h-full border-none"
+                                title="IceHub Chat"
+                            />
                         </div>
                     </div>
                 </div>
