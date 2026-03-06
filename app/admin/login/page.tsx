@@ -7,6 +7,8 @@ import { Lock, User } from 'lucide-react';
 export default function AdminLogin() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [token, setToken] = useState('');
+    const [requires2FA, setRequires2FA] = useState(false);
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
@@ -20,7 +22,7 @@ export default function AdminLogin() {
             const res = await fetch('/api/admin/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify({ username, password, token }),
             });
 
             const data = await res.json();
@@ -28,6 +30,9 @@ export default function AdminLogin() {
             if (res.ok && data.success) {
                 router.push('/admin');
                 router.refresh();
+            } else if (res.ok && data.requires2FA) {
+                setRequires2FA(true);
+                setError('');
             } else {
                 setError(data.message || 'Invalid credentials');
             }
@@ -55,36 +60,56 @@ export default function AdminLogin() {
 
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                     <div className="space-y-4 rounded-md shadow-sm">
-                        <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                                <User size={20} />
+                        {!requires2FA ? (
+                            <>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                        <User size={20} />
+                                    </div>
+                                    <input
+                                        id="username"
+                                        name="username"
+                                        type="text"
+                                        required
+                                        className="block w-full rounded-xl border-gray-300 py-3 pl-10 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-gray-50 border"
+                                        placeholder="Username"
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                    />
+                                </div>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                        <Lock size={20} />
+                                    </div>
+                                    <input
+                                        id="password"
+                                        name="password"
+                                        type="password"
+                                        required
+                                        className="block w-full rounded-xl border-gray-300 py-3 pl-10 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-gray-50 border"
+                                        placeholder="Password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                    />
+                                </div>
+                            </>
+                        ) : (
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                    <Lock size={20} />
+                                </div>
+                                <input
+                                    id="token"
+                                    name="token"
+                                    type="text"
+                                    required
+                                    className="block w-full rounded-xl border-gray-300 py-3 pl-10 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-gray-50 border"
+                                    placeholder="6-digit 2FA Code"
+                                    value={token}
+                                    onChange={(e) => setToken(e.target.value)}
+                                />
                             </div>
-                            <input
-                                id="username"
-                                name="username"
-                                type="text"
-                                required
-                                className="block w-full rounded-xl border-gray-300 py-3 pl-10 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-gray-50 border"
-                                placeholder="Username"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                            />
-                        </div>
-                        <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                                <Lock size={20} />
-                            </div>
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                required
-                                className="block w-full rounded-xl border-gray-300 py-3 pl-10 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-gray-50 border"
-                                placeholder="Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                        </div>
+                        )}
                     </div>
 
                     {error && (

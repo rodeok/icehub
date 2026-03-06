@@ -120,9 +120,7 @@ const BookingSchema: Schema = new Schema(
 
 // Index for efficient queries
 BookingSchema.index({ startDate: 1, endDate: 1 });
-BookingSchema.index({ planTitle: 1, bookingStatus: 1 });
 BookingSchema.index({ email: 1 });
-BookingSchema.index({ paymentReference: 1 });
 
 const Booking: Model<IBooking> =
     mongoose.models.Booking || mongoose.model<IBooking>('Booking', BookingSchema);

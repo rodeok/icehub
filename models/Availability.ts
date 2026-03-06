@@ -121,8 +121,6 @@ const AvailabilitySchema: Schema = new Schema(
     }
 );
 
-// Index for efficient queries
-AvailabilitySchema.index({ planTitle: 1 });
 
 const Availability: Model<IAvailability> =
     mongoose.models.Availability || mongoose.model<IAvailability>('Availability', AvailabilitySchema);

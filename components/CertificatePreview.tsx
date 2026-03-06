@@ -6,45 +6,36 @@ import Image from 'next/image';
 interface CertificateProps {
     studentName: string;
     programName: string;
-    weeks: number;
     issueDate: string;
+    weeks: number;
     certNumber: string;
 }
 
 export default function CertificatePreview({
     studentName,
     programName,
-    weeks,
     issueDate,
+    weeks,
     certNumber,
 }: CertificateProps) {
     const colors = {
-        primary: '#1a2b4b',
-        secondary: '#facc15',
-        accent: '#94a3b8',
-        textMain: '#111827',
-        textSecondary: '#4b5563',
-        background: '#ffffff',
+        primary: '#1e293b',    // Deep Navy
+        secondary: '#fbbf24',  // Gold/Yellow
+        accent: '#94a3b8',     // Slate Grey
+        textMain: '#000000',
     };
 
     return (
         <div
             id="certificate-to-print"
-            className="w-full max-w-[1123px] aspect-[1.414/1] relative overflow-hidden bg-white shadow-2xl mx-auto flex font-serif"
-            style={{
-                color: colors.textMain,
-                '--background': '#ffffff',
-                '--foreground': '#000000',
-                '--color-background': '#ffffff',
-                '--color-foreground': '#000000',
-            } as React.CSSProperties}
+            className="w-full max-w-[1123px] aspect-[1.414/1] relative overflow-hidden bg-white shadow-2xl mx-auto flex"
         >
-            {/* Left Content Area */}
-            <div className="w-[65%] h-full p-16 flex flex-col justify-between relative z-10">
+            {/* 1. TEXT CONTENT AREA (Left 65%) */}
+            <div className="w-[65%] h-full p-16 pr-8 flex flex-col relative z-20 bg-white">
 
-                {/* Header Section */}
-                <div>
-                    <div className="relative w-28 h-28 mb-4">
+                {/* Logo & Date */}
+                <div className="mb-10">
+                    <div className="relative w-24 h-24 mb-4">
                         <Image
                             src="/images/icehub.png"
                             alt="IceHub Logo"
@@ -53,112 +44,98 @@ export default function CertificatePreview({
                             priority
                         />
                     </div>
-                    <p className="text-sm font-sans font-medium" style={{ color: colors.textMain }}>
-                        Date of issue: {issueDate}
+                    <p className="text-sm font-sans text-gray-700">
+                        Date of issue: <span className="font-medium">{issueDate}</span>
                     </p>
                 </div>
 
-                {/* Title Section */}
-                <div className="mt-8">
-                    <h1 className="text-2xl tracking-[0.25em] uppercase font-medium" style={{ color: colors.textMain }}>
-                        CERTIFICATION OF ACHIEVEMENT
+                {/* Title */}
+                <div className="mb-12">
+                    <h1 className="text-2xl tracking-[0.25em] font-serif uppercase text-gray-800">
+                        Certification of Achievement
                     </h1>
                 </div>
 
-                {/* Main Body Section */}
-                <div className="flex-grow flex flex-col justify-center -mt-12">
-                    <p className="text-xl font-sans font-bold mb-10" style={{ color: colors.textMain }}>
+                {/* Main Body */}
+                <div className="flex-grow flex flex-col justify-center">
+                    <p className="text-xl font-serif mb-8 italic">
                         This is to certify that
                     </p>
 
-                    <div>
-                        {/* Student Name */}
-                        <h2
-                            className="text-5xl font-bold font-serif leading-tight mb-4"
-                            style={{ color: colors.textMain, minHeight: '1.2em' }}
-                        >
+                    <div className="mb-10">
+                        <h2 className="text-5xl font-serif font-bold text-black mb-4">
                             {studentName}
                         </h2>
-
-                        {/* Yellow Decoration */}
-                        <div className="flex gap-1.5 mb-8 mt-2">
-                            {[...Array(35)].map((_, i) => (
+                        {/* The Yellow Dotted Divider */}
+                        <div className="flex gap-1.5 w-full max-w-md">
+                            {[...Array(30)].map((_, i) => (
                                 <div
                                     key={i}
-                                    className="w-1.5 h-1.5 rounded-sm"
+                                    className="w-1.5 h-1.5 rounded-sm flex-shrink-0"
                                     style={{ backgroundColor: colors.secondary }}
                                 />
                             ))}
                         </div>
+                    </div>
 
-                        <div>
-                            <p className="text-xl font-sans font-medium mb-4" style={{ color: colors.textMain }}>
-                                has demonstrated understanding in
-                            </p>
-                            <h3 className="text-4xl font-bold font-serif leading-tight" style={{ color: colors.textMain }}>
-                                {programName}
-                            </h3>
-                        </div>
+                    <div className="space-y-2">
+                        <p className="text-xl font-serif">
+                            has demonstrated understanding in
+                        </p>
+                        <h3 className="text-4xl font-serif font-bold text-gray-900">
+                            {programName}
+                        </h3>
                     </div>
                 </div>
 
                 {/* Signature Section */}
                 <div className="mt-auto">
-                    <div className="w-80 relative">
-                        {/* Signature Image */}
-                        <div className="h-28 w-full relative mb-1">
+                    <div className="w-72">
+                        <div className="h-20 w-full relative mb-1">
                             <Image
                                 src="/images/signature.png"
                                 alt="Signature"
                                 fill
                                 className="object-contain object-left-bottom"
-                                priority
                             />
                         </div>
-
-                        {/* Signature Line */}
-                        <div className="h-[2px] w-full mb-3 bg-black"></div>
-
-                        {/* Signatory Info */}
-                        <p className="text-lg font-bold uppercase tracking-wider" style={{ color: colors.textMain }}>
+                        <div className="h-[2px] w-full bg-black mb-3"></div>
+                        <p className="text-lg font-bold uppercase tracking-wider font-serif">
                             EMETI ISAAC .C
                         </p>
-                        <p className="text-sm font-bold" style={{ color: colors.textMain }}>
+                        <p className="text-sm font-bold text-gray-600 italic">
                             On Behalf of ICEHUB
                         </p>
                     </div>
                 </div>
             </div>
 
-            {/* Right Decorative Area (Background Shapes) */}
-            <div className="w-[35%] h-full relative overflow-hidden bg-white">
-                {/* Light Grey Pattern (Bottom) */}
+            {/* 2. DECORATIVE AREA (Right 35%) */}
+            {/* The overflow-hidden here ensures the "boxes" stay contained */}
+            <div className="w-[35%] h-full relative overflow-hidden bg-white border-l border-gray-100">
+
+                {/* Large Slate/Grey Shape (Bottom Layer) */}
                 <div
-                    className="absolute top-[50%] right-[15%] w-[110%] h-[90%] transform -rotate-[45deg] z-10"
+                    className="absolute top-[40%] right-[-10%] w-[120%] h-[80%] rotate-[-45deg] z-0"
                     style={{ backgroundColor: colors.accent }}
                 />
 
-                {/* Dark Blue Pattern (Middle) */}
+                {/* Main Navy Box (Middle Layer) */}
                 <div
-                    className="absolute top-[5%] right-[-15%] w-[130%] h-[120%] transform -rotate-[45deg] z-20"
+                    className="absolute top-[-10%] right-[-20%] w-[130%] h-[110%] rotate-[-45deg] z-10"
                     style={{ backgroundColor: colors.primary }}
                 />
 
-                {/* Yellow Pattern (Top) */}
+                {/* Yellow Accent Box (Top Layer) */}
                 <div
-                    className="absolute top-[20%] right-[-5%] w-[100%] h-[70%] transform -rotate-[45deg] z-30"
+                    className="absolute top-[20%] right-[-5%] w-[90%] h-[60%] rotate-[-45deg] z-20 shadow-xl"
                     style={{ backgroundColor: colors.secondary }}
                 />
 
-                {/* Small Accent Diamonds */}
+                {/* Floating Yellow Diamond (Matches image position) */}
                 <div
-                    className="absolute top-[65%] left-[0%] w-12 h-12 transform rotate-45 z-40 shadow-md"
+                    className="absolute top-[65%] left-[5%] w-10 h-10 rotate-45 z-30 shadow-md"
                     style={{ backgroundColor: colors.secondary }}
-                />
-
-                <div
-                    className="absolute top-[15%] right-[25%] w-16 h-16 transform rotate-45 z-40 shadow-md"
-                    style={{ backgroundColor: colors.primary }}
                 />
             </div>
         </div>

@@ -3,7 +3,7 @@ import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import SessionProvider from "@/components/SessionProvider";
 import Navbar from "@/components/Navbar";
-
+import { isDynamicServerError } from "next/dist/client/components/hooks-server-context";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -36,6 +36,9 @@ export default async function RootLayout({
   try {
     session = await getServerSession(authOptions);
   } catch (error) {
+    if (isDynamicServerError(error)) {
+      throw error;
+    }
     console.error("Failed to fetch session:", error);
     session = null;
   }
