@@ -65,8 +65,9 @@ export default function StandalonePaymentPage() {
 
         try {
             setProcessing(true);
+            const percentage = paymentOption === "full" ? 100 : 60;
             const totalPayable = Math.round(program.price + 10000);
-            const amount = Math.round(totalPayable * 0.6);
+            const amount = Math.round((totalPayable * percentage) / 100);
 
             const res = await fetch("/api/payments/initialize", {
                 method: "POST",
@@ -74,7 +75,7 @@ export default function StandalonePaymentPage() {
                 body: JSON.stringify({
                     programId: program._id,
                     customAmount: amount,
-                    paymentType: "initial",
+                    paymentType: paymentOption,
                 }),
             });
 
@@ -166,29 +167,72 @@ export default function StandalonePaymentPage() {
 
                     <div className="space-y-4 mb-8">
                         {/* Option 1: Initial */}
-                        <div
-                            className="block relative p-6 rounded-3xl border-2 transition-all border-blue-600 bg-blue-50/30"
+                        <label
+                            className={`block relative p-6 rounded-3xl border-2 transition-all cursor-pointer group ${paymentOption === "initial"
+                                    ? "border-blue-600 bg-blue-50/30"
+                                    : "border-gray-100 hover:border-gray-200"
+                                }`}
                         >
+                            <input
+                                type="radio"
+                                name="payment"
+                                className="hidden"
+                                checked={paymentOption === "initial"}
+                                onChange={() => setPaymentOption("initial")}
+                            />
                             <div className="flex justify-between items-start">
                                 <div>
-                                    <span className="text-xs font-black text-blue-600 uppercase tracking-widest mb-1 block">Step 1: Enrollment</span>
-                                    <h3 className="text-lg font-bold text-gray-900">Initial Deposit (60%)</h3>
-                                    <p className="text-gray-500 text-xs font-medium mt-1">Required to access student dashboard</p>
+                                    <span className="text-xs font-black text-blue-600 uppercase tracking-widest mb-1 block">Flexible</span>
+                                    <h3 className="text-lg font-bold text-gray-900">Installment Plan</h3>
+                                    <p className="text-gray-500 text-xs font-medium mt-1">Pay 60% now, balance later</p>
                                 </div>
                                 <div className="text-right">
                                     <span className="text-2xl font-black text-gray-900 leading-none">N{initialAmount.toLocaleString()}</span>
                                 </div>
                             </div>
-                            <div className="absolute -top-2 -right-2 bg-blue-600 text-white rounded-full p-1 shadow-lg">
-                                <CheckCircle2 size={16} />
+                            {paymentOption === "initial" && (
+                                <div className="absolute -top-2 -right-2 bg-blue-600 text-white rounded-full p-1 shadow-lg">
+                                    <CheckCircle2 size={16} />
+                                </div>
+                            )}
+                        </label>
+
+                        {/* Option 2: Full */}
+                        <label
+                            className={`block relative p-6 rounded-3xl border-2 transition-all cursor-pointer group ${paymentOption === "full"
+                                    ? "border-blue-600 bg-blue-50/30"
+                                    : "border-gray-100 hover:border-gray-200"
+                                }`}
+                        >
+                            <input
+                                type="radio"
+                                name="payment"
+                                className="hidden"
+                                checked={paymentOption === "full"}
+                                onChange={() => setPaymentOption("full")}
+                            />
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <span className="text-xs font-black text-green-600 uppercase tracking-widest mb-1 block">Recommended</span>
+                                    <h3 className="text-lg font-bold text-gray-900">Full Tuition</h3>
+                                    <p className="text-gray-500 text-xs font-medium mt-1">Single upfront payment</p>
+                                </div>
+                                <div className="text-right">
+                                    <span className="text-2xl font-black text-gray-900 leading-none">N{fullAmount.toLocaleString()}</span>
+                                </div>
                             </div>
-                        </div>
+                            {paymentOption === "full" && (
+                                <div className="absolute -top-2 -right-2 bg-blue-600 text-white rounded-full p-1 shadow-lg">
+                                    <CheckCircle2 size={16} />
+                                </div>
+                            )}
+                        </label>
                     </div>
 
                     <div className="bg-gray-50 rounded-2xl p-4 flex gap-3 mb-8 border border-gray-100">
                         <Info size={18} className="text-blue-500 shrink-0 mt-0.5" />
                         <p className="text-[11px] leading-relaxed text-gray-600 font-medium">
-                            Initial enrollment requires a 60% deposit (including N10k reg fee). After confirming, you can pay the remaining 40% balance here in your dashboard.
+                            Tuition includes a mandatory N10,000 registration fee. Upon successful payment, you'll be automatically redirected to your student dashboard to start your training.
                         </p>
                     </div>
 
@@ -204,7 +248,7 @@ export default function StandalonePaymentPage() {
                             </>
                         ) : (
                             <>
-                                Pay 60% Enrollment Fee
+                                {paymentOption === "full" ? "Complete Enrollment" : "Pay Initial Deposit"}
                                 <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                             </>
                         )}
