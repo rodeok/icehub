@@ -156,23 +156,28 @@ export async function POST(req: NextRequest) {
 
         // Send confirmation email via Resend
         try {
+            const amountPaid = verifyData.data.amount / 100;
+            const isFullPayment = program && amountPaid >= program.price;
+            const paymentStatusText = isFullPayment ? 'Full Payment' : 'Part Payment';
+
             const emailSubject = program
-                ? `Enrollment Confirmed: ${program.name}`
+                ? `Enrollment Confirmed: ${program.name} (${paymentStatusText})`
                 : `Payment Received - Select Your Program`;
 
             const emailBody = program ? `
                 <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-                    <h2 style="color: #1D63ED;">Enrollment Successful!</h2>
+                    <h2 style="color: #1D63ED;">Signup Successful!</h2>
                     <p>Hello <strong>${userName}</strong>,</p>
                     <p>Thank you for enrolling in <strong>${program.name}</strong> at ICEHub.</p>
+                    <p>This email confirms that you have successfully signed up and made a <strong>${paymentStatusText.toLowerCase()}</strong>.</p>
                     <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
                     <h3>Enrollment Summary</h3>
                     <table style="width: 100%; text-align: left;">
                         <tr><th>Course:</th><td>${program.name}</td></tr>
-                        <tr><th>Amount Paid:</th><td>₦${(verifyData.data.amount / 100).toLocaleString()}</td></tr>
+                        <tr><th>Amount Paid:</th><td>₦${amountPaid.toLocaleString()}</td></tr>
                         <tr><th>Reference:</th><td>${reference}</td></tr>
                         <tr><th>Learning Mode:</th><td>${learningMode || 'To be confirmed'}</td></tr>
-                        <tr><th>Status:</th><td>Paid</td></tr>
+                        <tr><th>Payment Status:</th><td><strong>${paymentStatusText}</strong></td></tr>
                     </table>
                     <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
                     <p>We'll reach out to you shortly with more details about your class schedule.</p>
@@ -182,13 +187,13 @@ export async function POST(req: NextRequest) {
                 <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
                     <h2 style="color: #1D63ED;">Payment Received!</h2>
                     <p>Hello <strong>${userName}</strong>,</p>
-                    <p>Thank you for your payment of <strong>₦${(verifyData.data.amount / 100).toLocaleString()}</strong>.</p>
+                    <p>Thank you for your payment of <strong>₦${amountPaid.toLocaleString()}</strong>.</p>
                     <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
                     <h3>Payment Summary</h3>
                     <table style="width: 100%; text-align: left;">
-                        <tr><th>Amount Paid:</th><td>₦${(verifyData.data.amount / 100).toLocaleString()}</td></tr>
+                        <tr><th>Amount Paid:</th><td>₦${amountPaid.toLocaleString()}</td></tr>
                         <tr><th>Reference:</th><td>${reference}</td></tr>
-                        <tr><th>Status:</th><td>Paid</td></tr>
+                        <tr><th>Status:</th><td>Success</td></tr>
                     </table>
                     <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
                     <p><strong>Next Step:</strong> Please log in to your dashboard to select the program you'd like to enroll in with this payment.</p>
@@ -197,7 +202,7 @@ export async function POST(req: NextRequest) {
             `;
 
             await resend.emails.send({
-                from: 'ICEHub Enrollment <onboarding@resend.dev>',
+                from: 'ICEHub Enrollment <blog@icehub-ng.com>',
                 to: userEmail,
                 subject: emailSubject,
                 html: emailBody,
