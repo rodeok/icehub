@@ -69,7 +69,9 @@ export async function POST(request: Request) {
             resourcesCount,
             videoUrls,
             resourceUrls,
-            modules // New structured content
+            modules, // New structured content
+            introVideoUrl,
+            introThumbnailUrl
         } = body;
 
         // Basic validation
@@ -120,7 +122,9 @@ export async function POST(request: Request) {
             resourceUrls: resourceUrls || [],
             modules: modules || [], // Store the detailed content
             isActive: true,
-            enrolledCount: 0
+            enrolledCount: 0,
+            introVideoUrl,
+            introThumbnailUrl
         });
 
         await newProgram.save();

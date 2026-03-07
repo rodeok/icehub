@@ -44,7 +44,7 @@ const Dashboard: React.FC<DashboardProps> = ({
     const [stats, setStats] = React.useState({
         lessonsCompleted: 0,
         hoursSpent: 0,
-        totalLessons: program?.totalModules * 4 || 40, // Estimate lessons per module
+        totalLessons: program?.videoLessons || 0, // Use actual count or 0
         assignments: 0,
         upcomingDeadlines: 0
     });
@@ -81,7 +81,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                 setStats({
                     lessonsCompleted: profileData.stats.lessonsCompleted || 0,
                     hoursSpent: profileData.stats.hoursSpent || 0,
-                    totalLessons: profileData.stats.totalLessons || 40,
+                    totalLessons: profileData.stats.totalLessons || 0,
                     assignments: profileData.stats.assignments || 0,
                     upcomingDeadlines: profileData.stats.upcomingDeadlines || 0
                 });
@@ -134,7 +134,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                                     <div className="w-4 h-4 rounded-full bg-blue-50 flex items-center justify-center">
                                         <ArrowUpRight className="w-2.5 h-2.5 text-blue-600" strokeWidth={4} />
                                     </div>
-                                    <span>Current stage: Frontend Dev</span>
+                                    <span>Current stage: {programName}</span>
                                 </div>
                             </div>
                         </div>
@@ -194,7 +194,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                 <div className="lg:col-span-2 bg-white rounded-[20px] overflow-hidden shadow-sm border border-gray-100 flex flex-col md:flex-row group transition-all hover:shadow-md">
                     <div className="md:w-48 lg:w-56 relative shrink-0">
                         <img
-                            src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+                            src={program?.introThumbnailUrl || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"}
                             alt="Course Introduction"
                             className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
@@ -216,10 +216,15 @@ const Dashboard: React.FC<DashboardProps> = ({
                         </div>
 
                         <div className="mt-6 flex gap-3">
-                            <button className="bg-blue-600 hover:bg-blue-700 transition-all text-white px-6 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 group/btn shadow-lg shadow-blue-100">
+                            <a
+                                href={program?.introVideoUrl || "#"}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-blue-600 hover:bg-blue-700 transition-all text-white px-6 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 group/btn shadow-lg shadow-blue-100"
+                            >
                                 Watch Intro
                                 <Play className="w-3.5 h-3.5 fill-white" />
-                            </button>
+                            </a>
                             <Link href={program?._id ? `/dashboard/programs/${program._id}` : "/dashboard/programs"} className="bg-gray-50 hover:bg-gray-100 transition-all text-gray-700 px-6 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2">
                                 Curriculum
                                 <BookOpen className="w-3.5 h-3.5" />

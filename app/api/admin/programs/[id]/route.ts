@@ -67,7 +67,9 @@ export async function PUT(
             resourcesCount,
             videoUrls,
             resourceUrls,
-            modules
+            modules,
+            introVideoUrl,
+            introThumbnailUrl
         } = body;
 
         // Calculate stats from modules if provided
@@ -112,7 +114,9 @@ export async function PUT(
                 resourcesCount: calcResourcesCount,
                 videoUrls: legacyVideoUrls,
                 resourceUrls: resourceUrls || [],
-                modules: modules || []
+                modules: modules || [],
+                introVideoUrl,
+                introThumbnailUrl
             },
             { new: true }
         );

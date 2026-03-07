@@ -77,6 +77,30 @@ export default function AdminCert() {
                     scale: 2, // High resolution
                     useCORS: true,
                     logging: false,
+                    backgroundColor: '#ffffff',
+                    onclone: (clonedDoc) => {
+                        // Deep sanitization for html2canvas parsing errors
+                        // Modern color functions (lab, oklch, oklab) crash the html2canvas parser
+                        const styleTags = clonedDoc.getElementsByTagName('style');
+                        for (let i = 0; i < styleTags.length; i++) {
+                            try {
+                                const css = styleTags[i].innerHTML;
+                                if (css.includes('lab(') || css.includes('oklch(') || css.includes('oklab(')) {
+                                    styleTags[i].innerHTML = css
+                                        .replace(/lab\([^)]+\)/g, '#000000')
+                                        .replace(/oklch\([^)]+\)/g, '#000000')
+                                        .replace(/oklab\([^)]+\)/g, '#000000');
+                                }
+                            } catch (e) { }
+                        }
+
+                        // Crucial fix for "Unsupported color function lab" error
+                        const clonedElement = clonedDoc.getElementById('certificate-to-print');
+                        if (clonedElement) {
+                            clonedElement.style.setProperty('--color-background', '#ffffff');
+                            clonedElement.style.setProperty('--color-foreground', '#000000');
+                        }
+                    }
                 });
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF('l', 'mm', 'a4');
@@ -88,6 +112,7 @@ export default function AdminCert() {
                 pdf.save(`certificate_${data.name.replace(/\s+/g, '_')}.pdf`);
             } catch (err) {
                 console.error('PDF Generation failed:', err);
+                alert('Failed to generate PDF. Please try again or contact support.');
             }
         }, 500);
     };

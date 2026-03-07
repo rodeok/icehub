@@ -63,6 +63,8 @@ export default function AdminProgram() {
         weeks: '',
         skillLevel: 'beginner',
         imageUrl: '',
+        introVideoUrl: '',
+        introThumbnailUrl: '',
         modules: [] as Module[], // Structured modules
     });
 
@@ -112,6 +114,8 @@ export default function AdminProgram() {
                 weeks: '',
                 skillLevel: 'beginner',
                 imageUrl: '',
+                introVideoUrl: '',
+                introThumbnailUrl: '',
                 modules: [],
             });
         } catch (err: any) {
@@ -136,6 +140,8 @@ export default function AdminProgram() {
                 weeks: (course.weeks || '').toString(),
                 skillLevel: course.skillLevel || 'beginner',
                 imageUrl: course.imageUrl || '',
+                introVideoUrl: course.introVideoUrl || '',
+                introThumbnailUrl: course.introThumbnailUrl || '',
                 modules: course.modules || [],
             });
             setIsModalOpen(true);
@@ -283,6 +289,8 @@ export default function AdminProgram() {
                             weeks: '',
                             skillLevel: 'beginner',
                             imageUrl: '',
+                            introVideoUrl: '',
+                            introThumbnailUrl: '',
                             modules: [],
                         });
                         setIsModalOpen(true);
@@ -497,6 +505,35 @@ export default function AdminProgram() {
                                     onUploadSuccess={(url) => setFormData({ ...formData, imageUrl: url })}
                                     onRemove={() => setFormData({ ...formData, imageUrl: '' })}
                                 />
+                            </div>
+
+                            {/* Introduction Video Section */}
+                            <div className="space-y-6 pt-6 border-t border-gray-100">
+                                <h3 className="text-lg font-bold text-gray-900">Course Introduction (Optional)</h3>
+
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Introduction YouTube Link</label>
+                                        <input
+                                            type="text"
+                                            placeholder="e.g. https://www.youtube.com/watch?v=..."
+                                            className="w-full px-5 py-3.5 bg-gray-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-blue-100 outline-none transition-all font-medium"
+                                            value={formData.introVideoUrl}
+                                            onChange={(e) => setFormData({ ...formData, introVideoUrl: e.target.value })}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <UploadDropzone
+                                            type="image"
+                                            label="Intro Video Thumbnail"
+                                            description="This will show on the user dashboard intro card"
+                                            currentValue={formData.introThumbnailUrl}
+                                            onUploadSuccess={(url) => setFormData({ ...formData, introThumbnailUrl: url })}
+                                            onRemove={() => setFormData({ ...formData, introThumbnailUrl: '' })}
+                                        />
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Modules & Lessons Management */}

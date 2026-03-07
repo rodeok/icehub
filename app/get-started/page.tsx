@@ -76,7 +76,7 @@ export default function SignupPage() {
                 setError("Account created but failed to log in automatically.");
                 setTimeout(() => router.push("/login"), 2000);
             } else if (result?.ok) {
-                router.push("/dashboard");
+                router.push("/payment");
                 router.refresh();
             }
         } catch (err) {
@@ -173,6 +173,24 @@ export default function SignupPage() {
                             <ChevronDown size={18} />
                         </div>
                     </div>
+
+                    {/* Selected Course Details */}
+                    {formData.courseId && programs.find(p => p._id === formData.courseId) && (
+                        <div className="mt-3 p-4 bg-blue-50/50 rounded-xl border border-blue-100 flex justify-between items-center animate-in fade-in slide-in-from-top-2 duration-300">
+                            <div className="space-y-1">
+                                <p className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Tuition Fee</p>
+                                <p className="text-lg font-black text-gray-900">
+                                    N{programs.find(p => p._id === formData.courseId).price.toLocaleString()}
+                                </p>
+                            </div>
+                            <div className="text-right space-y-1">
+                                <p className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Duration</p>
+                                <p className="text-sm font-bold text-gray-700">
+                                    {programs.find(p => p._id === formData.courseId).duration}
+                                </p>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Password */}

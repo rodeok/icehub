@@ -43,22 +43,25 @@ export async function GET(req: NextRequest) {
 
         // Calculate payment statistics
         const successfulPayments = payments.filter(p => p.status === 'success');
-        const totalPaid = successfulPayments.reduce((sum, p) => sum + p.amount, 0);
+        const totalPaid = Math.round(successfulPayments.reduce((sum, p) => sum + p.amount, 0));
+
+        const REGISTRATION_FEE = 10000;
 
         // Calculate total program fees
-        const totalFees = (user.enrolledPrograms || []).reduce(
+        let totalFees = (user.enrolledPrograms || []).reduce(
             (sum: number, program: any) => sum + (program?.price || 0),
             0
         );
 
-        const outstandingBalance = totalFees - totalPaid;
+        // Add registration fee if user has any enrolled programs or has made payments
+        if ((user.enrolledPrograms && user.enrolledPrograms.length > 0) || totalPaid > 0) {
+            totalFees += REGISTRATION_FEE;
+        }
 
-        // Fixed price per program
-        const PROGRAM_PRICE = 450000;
+        const outstandingBalance = Math.round(Math.max(totalFees - totalPaid, 0));
 
-        // Users can now pay without enrolling first
-        // unpaidPrograms will be empty array if no programs enrolled or if fully paid
-        const unpaidPrograms = (totalPaid < PROGRAM_PRICE && user.enrolledPrograms.length > 0)
+        // unpaidPrograms will be empty array if fully paid
+        const unpaidPrograms = (totalPaid < totalFees && user.enrolledPrograms.length > 0)
             ? user.enrolledPrograms
             : [];
 
@@ -66,6 +69,7 @@ export async function GET(req: NextRequest) {
             payments,
             enrolledPrograms: (user.enrolledPrograms || []).filter((p: any) => p !== null),
             unpaidPrograms,
+            registrationFee: REGISTRATION_FEE,
             stats: {
                 totalFees,
                 totalPaid,

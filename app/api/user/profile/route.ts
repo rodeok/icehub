@@ -77,8 +77,7 @@ export async function GET() {
         }
 
         // Default if no programs found
-        if (totalLessonsCount === 0) totalLessonsCount = 40;
-        if (assignmentsCount === 0) assignmentsCount = 12;
+        if (assignmentsCount === 0) assignmentsCount = 0;
 
         // Calculate granular progress percentage
         const progressPercentage = totalLessonsCount > 0

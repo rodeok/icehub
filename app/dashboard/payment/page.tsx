@@ -30,6 +30,7 @@ interface PaymentData {
     payments: Payment[];
     enrolledPrograms: any[];
     unpaidPrograms: any[];
+    registrationFee?: number;
     stats: {
         totalFees: number;
         totalPaid: number;
@@ -56,8 +57,9 @@ export default function PaymentPage() {
     const [error, setError] = useState<string | null>(null);
     const [processingPayment, setProcessingPayment] = useState(false);
     const [selectedPaymentOption, setSelectedPaymentOption] = useState<PaymentOption>('initial');
+    const [isVerifying, setIsVerifying] = useState(false);
+    const verificationAttempted = React.useRef(false);
 
-    const PROGRAM_PRICE = 450000; // Fixed price as requested
 
     const paymentOptions: PaymentAmountOption[] = [
         {
@@ -91,6 +93,12 @@ export default function PaymentPage() {
 
             const data = await res.json();
             setPaymentData(data);
+
+            // Auto-select the logical next payment step
+            const initialDeposit = Math.round((data.stats.totalFees * 60) / 100);
+            const hasPaidInitial = data.stats.totalPaid >= (initialDeposit - 100);
+            setSelectedPaymentOption(hasPaidInitial ? 'balance' : 'initial');
+
             setError(null);
         } catch (err: any) {
             console.error('Error fetching payment data:', err);
@@ -111,13 +119,17 @@ export default function PaymentPage() {
         const verify = searchParams.get('verify');
         const reference = searchParams.get('reference');
 
-        if (verify === 'true' && reference) {
+        if (verify === 'true' && reference && !verificationAttempted.current) {
             verifyPayment(reference);
         }
     }, [searchParams]);
 
     const verifyPayment = async (reference: string) => {
+        if (verificationAttempted.current) return;
+        verificationAttempted.current = true;
+
         try {
+            setIsVerifying(true);
             const res = await fetch('/api/payments/verify', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -131,26 +143,32 @@ export default function PaymentPage() {
                 // Refresh payment data
                 await fetchPaymentData();
                 router.replace('/dashboard/payment');
-                alert('Payment successful! Your enrollment has been confirmed.');
+                alert('Payment successful! Your account has been updated.');
+            } else {
+                const data = await res.json();
+                throw new Error(data.error || 'Verification failed');
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error('Verification error:', err);
+            setError(err.message || 'Failed to verify payment');
+        } finally {
+            setIsVerifying(false);
         }
     };
 
     const handleMakePayment = async () => {
         const selectedOption = paymentOptions.find(opt => opt.id === selectedPaymentOption);
 
-        if (!selectedOption) return;
+        if (!selectedOption || !paymentData) return;
 
         // Calculate payment amount based on selected option
-        const paymentAmount = Math.round((PROGRAM_PRICE * selectedOption.percentage) / 100);
+        const paymentAmount = Math.round((paymentData.stats.totalFees * selectedOption.percentage) / 100);
 
         // Check if balance payment is available
         if (selectedPaymentOption === 'balance') {
-            const initialPaymentAmount = Math.round((PROGRAM_PRICE * 60) / 100); // 60% = 270,000
+            const initialPaymentAmount = Math.round((paymentData.stats.totalFees * 60) / 100);
 
-            if (!paymentData || paymentData.stats.totalPaid < initialPaymentAmount) {
+            if (paymentData.stats.totalPaid < initialPaymentAmount) {
                 alert('You need to make the initial payment (60%) first before paying the balance.');
                 return;
             }
@@ -159,12 +177,12 @@ export default function PaymentPage() {
         try {
             setProcessingPayment(true);
 
-            // Payment without program - user will select program after payment
+            // Payment with program ID from context if available
             const res = await fetch('/api/payments/initialize', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    programId: null, // No program selected yet
+                    programId: paymentData?.unpaidPrograms[0]?._id || null,
                     customAmount: paymentAmount,
                     paymentType: selectedPaymentOption,
                 }),
@@ -229,10 +247,21 @@ export default function PaymentPage() {
         );
     }
 
-    const { stats, payments } = paymentData;
+    const { stats, payments, registrationFee } = paymentData;
+    const totalProgramFees = stats.totalFees - (registrationFee || 0);
 
     return (
-        <div className="space-y-8 pb-12">
+        <div className="space-y-8 pb-12 relative">
+            {/* Verification Overlay */}
+            {isVerifying && (
+                <div className="fixed inset-0 z-50 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center">
+                    <div className="bg-white p-8 rounded-[32px] shadow-2xl border border-gray-100 flex flex-col items-center gap-4 max-w-sm text-center">
+                        <Loader2 className="h-10 w-10 animate-spin text-blue-600" />
+                        <h3 className="text-xl font-bold text-gray-900">Verifying Payment</h3>
+                        <p className="text-gray-500 text-sm">Please wait while we confirm your transaction with the bank...</p>
+                    </div>
+                </div>
+            )}
             {/* Header */}
             <div>
                 <h1 className="text-3xl font-bold text-gray-900">Payment Management</h1>
@@ -250,7 +279,23 @@ export default function PaymentPage() {
                         <div className="flex justify-between items-center transition-all hover:translate-x-1">
                             <span className="text-sm font-medium text-gray-400">Total Program Fee</span>
                             <span className="text-xl font-black text-gray-900 tracking-tight">
-                                {formatCurrency(PROGRAM_PRICE)}
+                                {formatCurrency(totalProgramFees)}
+                            </span>
+                        </div>
+
+                        {registrationFee && (
+                            <div className="flex justify-between items-center transition-all hover:translate-x-1">
+                                <span className="text-sm font-medium text-gray-400">Registration Fee</span>
+                                <span className="text-xl font-black text-gray-900 tracking-tight">
+                                    {formatCurrency(registrationFee)}
+                                </span>
+                            </div>
+                        )}
+
+                        <div className="flex justify-between items-center border-t border-gray-100 pt-6 transition-all hover:translate-x-1">
+                            <span className="text-sm font-bold text-gray-900">Total Payable</span>
+                            <span className="text-2xl font-black text-gray-900 tracking-tight">
+                                {formatCurrency(stats.totalFees)}
                             </span>
                         </div>
 
@@ -274,56 +319,62 @@ export default function PaymentPage() {
                                 <span className="text-sm font-bold">Outstanding Balance</span>
                             </div>
                             <span className="text-xl font-black tracking-tight">
-                                {formatCurrency(Math.max(PROGRAM_PRICE - stats.totalPaid, 0))}
+                                {formatCurrency(stats.outstandingBalance)}
                             </span>
                         </div>
                     </div>
 
                     {/* Payment Amount Selector */}
-                    {(PROGRAM_PRICE - stats.totalPaid) > 0 && (
+                    {stats.outstandingBalance > 0 && (
                         <div className="space-y-4">
                             <h3 className="text-base font-bold text-gray-900">Select Payment Amount</h3>
                             <div className="space-y-3">
-                                {paymentOptions.map((option) => {
-                                    const amount = Math.round((PROGRAM_PRICE * option.percentage) / 100);
-                                    const isDisabled = option.id === 'balance' && stats.totalPaid < Math.round((PROGRAM_PRICE * 60) / 100);
+                                {paymentOptions
+                                    .filter(option => {
+                                        const initialDeposit = Math.round((stats.totalFees * 60) / 100);
+                                        const hasPaidInitial = stats.totalPaid >= (initialDeposit - 100); // 100 buffer for rounding
 
-                                    return (
-                                        <label
-                                            key={option.id}
-                                            className={`flex items-start gap-4 p-4 rounded-2xl border-2 transition-all cursor-pointer ${selectedPaymentOption === option.id
-                                                ? 'border-blue-600 bg-blue-50/50'
-                                                : 'border-gray-100 bg-white hover:border-blue-200'
-                                                } ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                        >
-                                            <input
-                                                type="radio"
-                                                name="paymentOption"
-                                                value={option.id}
-                                                checked={selectedPaymentOption === option.id}
-                                                onChange={() => !isDisabled && setSelectedPaymentOption(option.id)}
-                                                disabled={isDisabled}
-                                                className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500"
-                                            />
-                                            <div className="flex-1">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-sm font-bold text-gray-900">{option.label}</span>
-                                                    <span className="text-lg font-black text-gray-900">{formatCurrency(amount)}</span>
+                                        if (hasPaidInitial) {
+                                            return option.id === 'balance';
+                                        } else {
+                                            return option.id === 'initial';
+                                        }
+                                    })
+                                    .map((option) => {
+                                        const amount = Math.round((stats.totalFees * option.percentage) / 100);
+
+                                        return (
+                                            <label
+                                                key={option.id}
+                                                className={`flex items-start gap-4 p-4 rounded-2xl border-2 transition-all cursor-pointer ${selectedPaymentOption === option.id
+                                                    ? 'border-blue-600 bg-blue-50/50'
+                                                    : 'border-gray-100 bg-white hover:border-blue-200'
+                                                    }`}
+                                            >
+                                                <input
+                                                    type="radio"
+                                                    name="paymentOption"
+                                                    value={option.id}
+                                                    checked={selectedPaymentOption === option.id}
+                                                    onChange={() => setSelectedPaymentOption(option.id)}
+                                                    className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500"
+                                                />
+                                                <div className="flex-1">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-sm font-bold text-gray-900">{option.label}</span>
+                                                        <span className="text-lg font-black text-gray-900">{formatCurrency(amount)}</span>
+                                                    </div>
+                                                    <p className="text-xs text-gray-500 mt-1 font-medium">{option.description}</p>
                                                 </div>
-                                                <p className="text-xs text-gray-500 font-medium mt-1">
-                                                    {option.description}
-                                                    {isDisabled && ' (Requires 60% initial payment first)'}
-                                                </p>
-                                            </div>
-                                        </label>
-                                    );
-                                })}
+                                            </label>
+                                        );
+                                    })}
                             </div>
                         </div>
                     )}
 
                     {/* Next Payment Alert */}
-                    {(PROGRAM_PRICE - stats.totalPaid) > 0 && (
+                    {stats.outstandingBalance > 0 && (
                         <div className="bg-blue-50/50 p-6 rounded-2xl border border-blue-100 flex items-start gap-4">
                             <div className="h-8 w-8 bg-blue-600 text-white rounded-full flex items-center justify-center shrink-0">
                                 <Info size={16} strokeWidth={3} />
@@ -339,8 +390,11 @@ export default function PaymentPage() {
 
                     <button
                         onClick={handleMakePayment}
-                        disabled={processingPayment || (paymentData && PROGRAM_PRICE - paymentData.stats.totalPaid <= 0)}
-                        className="w-full py-5 bg-blue-600 text-white rounded-[20px] text-base font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={processingPayment || stats.outstandingBalance < 1}
+                        className={`w-full py-5 rounded-[20px] text-base font-bold shadow-lg transition-all flex items-center justify-center gap-3 disabled:cursor-not-allowed ${stats.outstandingBalance < 1
+                            ? 'bg-green-100 text-green-600 shadow-none border border-green-200'
+                            : 'bg-blue-600 text-white shadow-blue-200 hover:bg-blue-700'
+                            }`}
                     >
                         {processingPayment ? (
                             <>
@@ -349,8 +403,17 @@ export default function PaymentPage() {
                             </>
                         ) : (
                             <>
-                                <CreditCard size={20} strokeWidth={2.5} />
-                                {(paymentData && PROGRAM_PRICE - paymentData.stats.totalPaid > 0) ? 'Make Payment' : 'All Paid'}
+                                {stats.outstandingBalance < 1 ? (
+                                    <>
+                                        <CheckCircle2 size={20} strokeWidth={2.5} />
+                                        Tuition Fully Paid
+                                    </>
+                                ) : (
+                                    <>
+                                        <CreditCard size={20} strokeWidth={2.5} />
+                                        Make Payment
+                                    </>
+                                )}
                             </>
                         )}
                     </button>

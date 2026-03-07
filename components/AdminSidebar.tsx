@@ -25,6 +25,11 @@ const sidebarItems = [
         href: '/admin',
     },
     {
+        title: 'Programs',
+        icon: BookOpen,
+        href: '/admin/programs',
+    },
+    {
         title: 'Blogs',
         icon: FileText,
         href: '/admin/blogs',

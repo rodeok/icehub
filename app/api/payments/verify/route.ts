@@ -81,9 +81,27 @@ export async function POST(req: NextRequest) {
         // Check if payment already recorded
         const existingPayment = await Payment.findOne({ reference });
         if (existingPayment) {
+            // Re-run the user update logic idempotently just in case the previous attempt 
+            // recorded the payment but failed to update the user record.
+            const finalUserId = session?.user?.id || existingPayment.userId || verifyData.data.metadata?.userId;
+            const finalProgramId = programId || existingPayment.programId || verifyData.data.metadata?.programId;
+
+            if (finalUserId && finalProgramId) {
+                await User.findByIdAndUpdate(finalUserId, {
+                    $addToSet: {
+                        enrolledPrograms: finalProgramId,
+                        paidPrograms: finalProgramId
+                    },
+                });
+
+                await Program.findByIdAndUpdate(finalProgramId, {
+                    $inc: { enrolledCount: 1 },
+                });
+            }
+
             return NextResponse.json(
-                { error: 'Payment already recorded' },
-                { status: 409 }
+                { message: 'Payment already verified', payment: existingPayment },
+                { status: 200 }
             );
         }
 
@@ -101,8 +119,8 @@ export async function POST(req: NextRequest) {
 
         // Create payment record
         const payment = await Payment.create({
-            userId: session?.user?.id || undefined,
-            programId: programId || undefined, // Optional - can be null
+            userId: session?.user?.id || verifyData.data.metadata?.userId || undefined,
+            programId: programId || verifyData.data.metadata?.programId || undefined,
             reference,
             amount: verifyData.data.amount / 100, // Paystack returns amount in kobo
             currency: verifyData.data.currency,
@@ -118,16 +136,20 @@ export async function POST(req: NextRequest) {
             },
         });
 
-        // Update user's enrolled programs and program count only if program was selected
-        if (session?.user?.id && programId) {
-            await User.findByIdAndUpdate(session.user.id, {
+        // Determine which programId and userId to use for user record updates
+        const finalUserId = session?.user?.id || verifyData.data.metadata?.userId;
+        const finalProgramId = programId || verifyData.data.metadata?.programId;
+
+        // Update user's enrolled programs and program count
+        if (finalUserId && finalProgramId) {
+            await User.findByIdAndUpdate(finalUserId, {
                 $addToSet: {
-                    enrolledPrograms: programId,
-                    paidPrograms: programId
+                    enrolledPrograms: finalProgramId,
+                    paidPrograms: finalProgramId
                 },
             });
 
-            await Program.findByIdAndUpdate(programId, {
+            await Program.findByIdAndUpdate(finalProgramId, {
                 $inc: { enrolledCount: 1 },
             });
         }

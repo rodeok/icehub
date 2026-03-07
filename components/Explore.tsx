@@ -7,69 +7,45 @@ import { motion } from 'framer-motion';
 const courses = [
     {
         title: "Front-End Web Development",
-        description: "Build responsive, user-friendly websites using HTML, CSS, JavaScript, and modern frameworks to kickstart your tech career.",
+        description: "Build responsive, user-friendly websites using HTML, CSS, JavaScript, and modern frameworks.",
         image: "/images/frontend.png",
         link: "/courses/frontend"
     },
     {
         title: "Back-End Development",
-        description: "Learn to build powerful, scalable server-side applications using Python, Node.js, and databases that drive modern web platforms.",
-        image: "/images/backend.png",
+        description: "Learn to build powerful mobile applications for iOS and Android.",
+        image: "/images/mobile.png",
         link: "/courses/backend"
     },
     {
         title: "Product (UI/UX) Design",
-        description: "Learn to design intuitive, user-centered digital products using tools like Figma and design principles that make great user experiences.",
+        description: "Master user experience and product design principles + 1 month Internship.",
         image: "/images/product.png",
         link: "/courses/product-design"
     },
     {
         title: "Mobile-App Development",
-        description: "Learn to create functional and engaging mobile apps for Android and iOS using modern frameworks and real-world projects.",
-        image: "/images/mobile.png",
+        description: "Drive growth through effective online marketing and ads.",
+        image: "/images/digital.jpg",
         link: "/courses/mobile-dev"
     },
     {
         title: "Data Analytics",
-        description: "Master the art of turning data into insights using tools like Excel, SQL, and Power BI to make smarter business decisions.",
-        image: "/images/analysis.jpg",
+        description: "Learn to build and manage professional websites with Wordpress.",
+        image: "/images/frontend.png",
         link: "/courses/data-analytics"
     },
     {
-        title: "Graphic Design",
-        description: "Learn to create stunning visuals and brand identities using tools like Photoshop, Illustrator, and Canva.",
-        image: "/images/graphics.png",
+        title: "Graphics Design",
+        description: "Master the art of turning data into insights using tools like SQL and Power BI.",
+        image: "/images/analysis.jpg",
         link: "/courses/graphics-design"
     },
     {
-        title: "Cybersecurity",
-        description: "Learn to protect systems and networks using modern cybersecurity tools, techniques, and real-world security projects.",
+        title: "Cyber Security / Ethical Hacking",
+        description: "Protect systems and networks from digital threats.",
         image: "/images/gggg.jpeg",
         link: "/courses/cyber-security"
-    },
-    {
-        title: "Digital Literacy",
-        description: "Gain essential computer skills and digital knowledge needed to navigate the modern world with confidence and ease.",
-        image: "/images/data.png", // Reusing image as placeholder
-        link: "/programmes/digital-literacy"
-    },
-    {
-        title: "Artificial Intelligence",
-        description: "Explore the world of AI and Machine Learning to build intelligent systems and data-driven solutions for the future.",
-        image: "/images/ai.jpg", // Reusing image as placeholder
-        link: "/courses/ai-ml"
-    },
-    {
-        title: "Cloud Computing",
-        description: "Learn to deploy and manage scalable applications on leading cloud platforms like AWS, Azure, and Google Cloud.",
-        image: "/images/cloud.jpg", // Reusing image as placeholder
-        link: "/courses/cloud-computing"
-    },
-    {
-        title: "Digital Marketing",
-        description: "Master the art of online brand building and customer engagement through SEO, social media, and data-driven strategies.",
-        image: "/images/digital.jpg", // Reusing image as placeholder
-        link: "/courses/digital-marketing"
     }
 ];
 
@@ -125,7 +101,7 @@ const Explore = () => {
                                     {course.description}
                                 </p>
                                 <a href={course.link} className="inline-flex items-center text-[#0052CC] text-sm font-bold mt-auto group/link">
-                                    Explore Course
+                                    Learn More
                                     <ArrowUpRight size={18} className="ml-1 transition-transform group-hover/link:translate-x-1 group-hover/link:-translate-y-1" />
                                 </a>
                             </div>

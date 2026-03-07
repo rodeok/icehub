@@ -91,7 +91,30 @@ export default function CertificatesPage() {
                         logging: false,
                         backgroundColor: '#ffffff',
                         width: 1123,
-                        windowWidth: 1123
+                        onclone: (clonedDoc) => {
+                            // Deep sanitization for html2canvas parsing errors
+                            // Modern color functions (lab, oklch, oklab) crash the html2canvas parser
+                            const styleTags = clonedDoc.getElementsByTagName('style');
+                            for (let i = 0; i < styleTags.length; i++) {
+                                try {
+                                    const css = styleTags[i].innerHTML;
+                                    if (css.includes('lab(') || css.includes('oklch(') || css.includes('oklab(')) {
+                                        styleTags[i].innerHTML = css
+                                            .replace(/lab\([^)]+\)/g, '#000000')
+                                            .replace(/oklch\([^)]+\)/g, '#000000')
+                                            .replace(/oklab\([^)]+\)/g, '#000000');
+                                    }
+                                } catch (e) {
+                                    // Silent catch for immutable styles
+                                }
+                            }
+
+                            const element = clonedDoc.getElementById('certificate-to-print');
+                            if (element) {
+                                element.style.setProperty('--color-background', '#ffffff');
+                                element.style.setProperty('--color-foreground', '#000000');
+                            }
+                        }
                     });
 
                     const imgData = canvas.toDataURL('image/png');

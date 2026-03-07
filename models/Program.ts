@@ -43,6 +43,8 @@ export interface IProgram extends Document {
     createdAt: Date;
     updatedAt: Date;
     price: number;
+    introVideoUrl?: string;
+    introThumbnailUrl?: string;
 }
 
 const ResourceSchema = new Schema({
@@ -82,12 +84,21 @@ const ProgramSchema: Schema = new Schema(
             enum: [
                 'frontend',
                 'backend',
+                'fullstack',
                 'mobile-dev',
                 'data-analytics',
+                'data-science',
                 'cyber-security',
+                'digital-marketing',
+                'video-editing',
                 'graphics-design',
                 'product-design',
+                'wordpress',
+                'ai-ml',
+                'devops',
+                'robotics',
                 'digital-literacy',
+                'networking',
                 'next-gen',
                 'skit',
             ],
@@ -150,6 +161,14 @@ const ProgramSchema: Schema = new Schema(
             required: false, // Optional for now
             default: 0,
             min: 0,
+        },
+        introVideoUrl: {
+            type: String,
+            trim: true,
+        },
+        introThumbnailUrl: {
+            type: String,
+            trim: true,
         },
     },
     {
