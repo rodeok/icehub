@@ -18,10 +18,16 @@ export async function GET(req: NextRequest) {
 
         await connectDB();
 
-        // Ensure Program model is registered (prevents MissingSchemaError during population)
+        // Ensure models are registered (prevents MissingSchemaError during population)
         if (!process.env.SKIP_MODEL_TOUCH) {
-            const _touch = Program.modelName;
+            const _touch1 = Program.modelName;
+            const _touch2 = User.modelName;
+            const _touch3 = Payment.modelName;
         }
+
+        console.log('[DEBUG] Payment API - User ID from session:', session.user.id);
+        const mongoUri = process.env.MONGODB_URI || 'not set';
+        console.log('[DEBUG] Payment API - DB Connected to:', mongoUri.substring(0, 20) + '...');
 
         // Fetch user's payments
         const payments = await Payment.find({ userId: session.user.id })
@@ -35,8 +41,9 @@ export async function GET(req: NextRequest) {
         );
 
         if (!user) {
+            console.error('[DEBUG] Payment API - User not found in DB for ID:', session.user.id);
             return NextResponse.json(
-                { error: 'User not found' },
+                { error: 'User not found', debugId: session.user.id },
                 { status: 404 }
             );
         }

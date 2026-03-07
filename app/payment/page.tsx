@@ -42,6 +42,10 @@ export default function StandalonePaymentPage() {
             const res = await fetch("/api/payments/user");
             const data = await res.json();
 
+            if (!res.ok) {
+                throw new Error(data.details || data.error || "Failed to fetch payment info");
+            }
+
             if (data.enrolledPrograms && data.enrolledPrograms.length > 0) {
                 setProgram(data.enrolledPrograms[0]);
 
@@ -53,8 +57,10 @@ export default function StandalonePaymentPage() {
                 // No enrollment? Send to get-started or programs
                 router.push("/courses");
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error("Error fetching payment info:", err);
+            // Setting a local error state if you want to show it in UI
+            // For now just alert or log
         } finally {
             setLoading(false);
         }
@@ -114,44 +120,43 @@ export default function StandalonePaymentPage() {
 
                 <div className="relative z-10">
                     <div className="flex items-center gap-3 mb-12">
-                        <Image src="/images/icehub.png" alt="ICE HUB" width={40} height={40} className="brightness-0 invert" />
-                        <span className="text-2xl font-black tracking-tight">ICE HUB</span>
+                        <Image src="/images/icehub.png" alt="ICE HUB" width={40} height={40} className="" />
+                        <span className="text-2xl font-black tracking-tight !text-white">ICE HUB</span>
                     </div>
 
                     <div className="space-y-6 max-w-lg">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-wider">
                             Step 2: Securing Your Spot
                         </div>
-                        <h1 className="text-4xl lg:text-5xl font-black leading-[1.1]">
+                        <h1 className="text-4xl lg:text-5xl font-black leading-[1.1] !text-white">
                             Welcome to the <span className="text-blue-500">Future</span> of Tech.
                         </h1>
-                        <p className="text-gray-400 text-lg leading-relaxed">
+                        <p className="!text-white text-lg leading-relaxed">
                             You're just one step away from joining {program?.name}. Complete your enrollment to gain full access to our curriculum, community, and expert mentorship.
                         </p>
                     </div>
 
-                    <div className="mt-12 space-y-4">
-                        {[
-                            "Full access to learning modules",
-                            "Direct mentorship from industry lead",
-                            "Community & Networking events",
-                            "Certification upon completion"
-                        ].map((item, i) => (
-                            <div key={i} className="flex items-center gap-3 text-gray-300">
-                                <div className="h-5 w-5 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
-                                    <CheckCircle2 size={14} />
-                                </div>
-                                <span className="font-medium">{item}</span>
+                    {/* Feature list items */}
+                    {[
+                        "Full access to learning modules",
+                        "Direct mentorship from industry lead",
+                        "Community & Networking events",
+                        "Certification upon completion"
+                    ].map((item, i) => (
+                        <div key={i} className="flex items-center gap-3 !text-white">
+                            <div className="h-5 w-5 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
+                                <CheckCircle2 size={14} />
                             </div>
-                        ))}
-                    </div>
+                            <span className="font-medium !text-white">{item}</span>
+                        </div>
+                    ))}
                 </div>
 
                 <div className="relative z-10 mt-16 pt-8 border-t border-white/10 flex items-center gap-4">
-                    <div className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400">
+                    <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center !text-white">
                         <ShieldCheck size={20} />
                     </div>
-                    <p className="text-xs text-gray-500 font-medium">
+                    <p className="text-xs !text-white font-medium">
                         Secure SSL Encryption. Your payment details are never stored on our servers.
                     </p>
                 </div>
@@ -169,8 +174,8 @@ export default function StandalonePaymentPage() {
                         {/* Option 1: Initial */}
                         <label
                             className={`block relative p-6 rounded-3xl border-2 transition-all cursor-pointer group ${paymentOption === "initial"
-                                    ? "border-blue-600 bg-blue-50/30"
-                                    : "border-gray-100 hover:border-gray-200"
+                                ? "border-blue-600 bg-blue-50/30"
+                                : "border-gray-100 hover:border-gray-200"
                                 }`}
                         >
                             <input
@@ -200,8 +205,8 @@ export default function StandalonePaymentPage() {
                         {/* Option 2: Full */}
                         <label
                             className={`block relative p-6 rounded-3xl border-2 transition-all cursor-pointer group ${paymentOption === "full"
-                                    ? "border-blue-600 bg-blue-50/30"
-                                    : "border-gray-100 hover:border-gray-200"
+                                ? "border-blue-600 bg-blue-50/30"
+                                : "border-gray-100 hover:border-gray-200"
                                 }`}
                         >
                             <input
