@@ -86,18 +86,20 @@ export default function PaymentPage() {
         try {
             setLoading(true);
             const res = await fetch('/api/payments/user');
+            const data = await res.json();
 
             if (!res.ok) {
-                throw new Error('Failed to fetch payment data');
+                throw new Error(data.details || data.error || 'Failed to fetch payment data');
             }
 
-            const data = await res.json();
             setPaymentData(data);
 
             // Auto-select the logical next payment step
-            const initialDeposit = Math.round((data.stats.totalFees * 60) / 100);
-            const hasPaidInitial = data.stats.totalPaid >= (initialDeposit - 100);
-            setSelectedPaymentOption(hasPaidInitial ? 'balance' : 'initial');
+            if (data.stats) {
+                const initialDeposit = Math.round((data.stats.totalFees * 60) / 100);
+                const hasPaidInitial = data.stats.totalPaid >= (initialDeposit - 100);
+                setSelectedPaymentOption(hasPaidInitial ? 'balance' : 'initial');
+            }
 
             setError(null);
         } catch (err: any) {

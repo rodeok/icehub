@@ -49,7 +49,10 @@ export async function GET(req: NextRequest) {
 
         // Calculate total program fees
         let totalFees = (user.enrolledPrograms || []).reduce(
-            (sum: number, program: any) => sum + (program?.price || 0),
+            (sum: number, program: any) => {
+                const price = program?.price || 0;
+                return sum + price;
+            },
             0
         );
 
@@ -65,7 +68,7 @@ export async function GET(req: NextRequest) {
             ? user.enrolledPrograms
             : [];
 
-        return NextResponse.json({
+        const responseData = {
             payments,
             enrolledPrograms: (user.enrolledPrograms || []).filter((p: any) => p !== null),
             unpaidPrograms,
@@ -76,11 +79,17 @@ export async function GET(req: NextRequest) {
                 outstandingBalance,
                 paymentsCount: payments.length,
             },
-        });
+        };
+
+        return NextResponse.json(responseData);
     } catch (error: any) {
-        console.error('Error fetching user payments:', error);
+        console.error('Detailed Error fetching user payments:', {
+            message: error.message,
+            stack: error.stack,
+            userId: (await getAuthSession())?.user?.id
+        });
         return NextResponse.json(
-            { error: 'Failed to fetch payment data' },
+            { error: 'Failed to fetch payment data', details: error.message },
             { status: 500 }
         );
     }

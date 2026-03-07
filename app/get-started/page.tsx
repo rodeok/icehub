@@ -230,7 +230,7 @@ export default function SignupPage() {
                         disabled={loading}
                         className="w-full bg-[#186ADE] hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-md transition-all disabled:bg-blue-400 disabled:cursor-not-allowed"
                     >
-                        {loading ? "Creating Account..." : "Create Account"}
+                        {loading ? "Redirecting to payment page..." : "Proceed to pay"}
                     </button>
                 </div>
 
