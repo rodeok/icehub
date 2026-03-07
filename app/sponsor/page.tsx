@@ -106,12 +106,70 @@ export default function SponsorPage() {
                         </button>
                     </div>
 
-                    <div className="w-full relative shadow-sm h-auto">
+                    <div className="w-full relative shadow-sm h-auto mb-8">
                         <img
                             src="https://images.unsplash.com/photo-1549692520-acc6669e2f0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
                             alt="Student"
                             className="w-full h-auto object-cover max-h-[500px]"
                         />
+                    </div>
+
+                    <div className="space-y-8 text-[#555555] animate-fade-in gpu mt-8">
+                        {/* Header / Intro Card with Glassmorphism */}
+                        <div className="relative group">
+                            <div className="absolute -inset-1 bg-gradient-to-r from-[#3ebdf8] to-[#1da2e0] rounded-2xl blur opacity-10 group-hover:opacity-20 transition duration-1000 group-hover:duration-200"></div>
+                            <div className="relative bg-white/80 backdrop-blur-sm border border-white rounded-2xl p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                                <h3 className="text-[26px] md:text-[30px] font-black text-[#333333] mb-4 bg-gradient-to-r from-[#3ebdf8] to-[#1da2e0] bg-clip-text text-transparent">
+                                    Here’s the deal.
+                                </h3>
+                                <p className="text-lg md:text-xl font-medium text-[#444444] leading-relaxed mb-6">
+                                    Joining our valued community of sponsors means making a significant decision to help create a positive change in a young person’s life.
+                                </p>
+                                <div className="h-px w-20 bg-[#3ebdf8]/30 mb-6"></div>
+                                <p className="text-lg leading-relaxed text-[#666666]">
+                                    You can support our mission by providing full scholarships to one or more prospective candidates. A full scholarship entails covering the entire course fee, or you can choose to donate any amount.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Benefits Card */}
+                        <div className="bg-white rounded-[24px] p-6 md:p-10 border border-gray-100 shadow-[0_20px_50px_rgba(8,_112,_184,_0.05)] relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-[#3ebdf8]/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+
+                            <h3 className="text-[22px] font-bold text-[#333333] mb-8 flex items-center gap-3">
+                                <span className="w-8 h-8 rounded-lg bg-[#3ebdf8]/10 flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#3ebdf8]" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M5 5a3 3 0 015-2.236A3 3 0 0114.83 6H16a2 2 0 110 4h-5V9a1 1 0 10-2 0v1H4a2 2 0 110-4h1.17C5.06 5.687 5 5.35 5 5zm4 1V5a1 1 0 10-1 1h1zm3 0a1 1 0 10-1-1v1h1z" clipRule="evenodd" />
+                                        <path d="M9 11H3v5a2 2 0 002 2h4v-7zM11 18h4a2 2 0 002-2v-5h-6v7z" />
+                                    </svg>
+                                </span>
+                                What's in it for you?
+                            </h3>
+
+                            <ul className="grid gap-4">
+                                {[
+                                    { label: 'Recognition', desc: 'A thank-you email confirming your sponsorship and your name featured on our Donor Wall of Fame.' },
+                                    { label: 'Access to Talent', desc: 'Priority access to outstanding graduates for internships or full-time roles.' },
+                                    { label: 'Impact Updates', desc: 'Quarterly updates on students’ learning progress and achievements.' },
+                                    { label: 'Mentorship Opportunities', desc: 'Opportunity to guide and mentor emerging tech talents.' },
+                                    { label: 'Meaningful Impact', desc: 'The satisfaction of giving back and transforming lives.' }
+                                ].map((item, idx) => (
+                                    <li key={idx} className="group/item flex items-start gap-4 p-4 rounded-xl hover:bg-[#3ebdf8]/5 transition-all duration-300 border border-transparent hover:border-[#3ebdf8]/20">
+                                        <div className="mt-1 flex-shrink-0">
+                                            <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center group-hover/item:scale-110 transition-transform">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div className="text-lg">
+                                            <span className="font-bold text-[#333333] group-hover/item:text-[#3ebdf8] transition-colors">{item.label}:</span>
+                                            <span className="text-[#666666] ml-2 block sm:inline">{item.desc}</span>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                     </div>
                 </div>
 
@@ -334,7 +392,7 @@ export default function SponsorPage() {
                                     </div>
                                     <div className="flex justify-between items-center px-1">
                                         <span className="text-[#6c6c6c] text-[16px] font-medium">Account Name</span>
-                                        <span className="text-[#646464] text-[16px] font-medium">IceHub Entrepries</span>
+                                        <span className="text-[#646464] text-[16px] font-medium">Ice Integrated Services</span>
                                     </div>
                                     <div className="flex justify-between items-center px-1">
                                         <span className="text-[#6c6c6c] text-[16px] font-medium">Bank Name</span>
@@ -381,7 +439,7 @@ export default function SponsorPage() {
                                         </svg>
                                     </div>
                                     <h3 className="text-[#333333] font-bold text-[20px] mb-2">Message us</h3>
-                                    <p className="text-[#888888] text-[16px]">support@icehub-ng.com</p>
+                                    <p className="text-[#888888] text-[16px]">contact@icehub-ng.com</p>
                                 </div>
 
                                 {/* Call us */}
@@ -392,7 +450,7 @@ export default function SponsorPage() {
                                         </svg>
                                     </div>
                                     <h3 className="text-[#333333] font-bold text-[20px] mb-2">Call us</h3>
-                                    <p className="text-[#888888] text-[16px]">(+61) 7 7010-1111</p>
+                                    <p className="text-[#888888] text-[16px]">+2347015815801</p>
                                 </div>
 
                                 {/* Address */}
