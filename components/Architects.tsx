@@ -4,13 +4,13 @@ const teamMembers = [
         name: "Isaac C. Emeti",
         role: "Founder & CEO",
         description: "Leads ICE Hub's vision, strategy, and growth, driving innovation and community impact across all initiatives.",
-        img: "/images/1.png"
+        img: "/images/Isaac.png"
     },
     {
         name: "Chiamaka Blessing Emeti",
         role: "COO",
         description: "Oversees daily operations, programs, and partnerships to ensure organizational excellence and long-term sustainability.",
-        img: "/images/1.png"
+        img: "/images/Chiamaka.png"
     },
     {
         name: "Okpala Jane Ifeoma",
@@ -22,13 +22,13 @@ const teamMembers = [
         name: "Joshua Ikegwuonu",
         role: "Business Development Executive",
         description: "Builds strategic partnerships, drives growth opportunities, and expands ICE Hub's influence within the tech ecosystem.",
-        img: "/images/1.png"
+        img: "/images/joshua.png"
     },
     {
         name: "Chimdindu Praise Ezulike",
         role: "Lead Designer/Product Design Instructor",
         description: "Crafts user-centered digital experiences and trains aspiring designers to build innovative, industry-ready products.",
-        img: "/images/1.png"
+        img: "/images/pic1.png"
     },
     {
         name: "Onyekachukwu Ejimkeonye",
