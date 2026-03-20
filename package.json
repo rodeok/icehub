@@ -25,7 +25,7 @@
     "next-auth": "^4.24.13",
     "next-cloudinary": "^6.17.5",
     "qrcode": "^1.5.4",
-    "ragged-chat-sdk": "^1.0.4",
+    "ragged-chat-sdk": "^1.1.0",
     "react": "19.2.3",
     "react-datepicker": "^9.1.0",
     "react-dom": "19.2.3",

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Play, FileText, Download, CheckCircle, ChevronDown, ChevronUp, Lock } from "lucide-react";
 import { IProgram, IModule, ILesson } from "@/models/Program";
+import { safeHref } from "@/utils/safeUrl";
 import dynamic from 'next/dynamic';
 
 // Use dynamic import for ReactPlayer to avoid SSR issues
@@ -289,7 +290,7 @@ export default function ProgramView({ program }: ProgramViewProps) {
                                     {currentLesson.resources.map((resource, idx) => (
                                         <a
                                             key={idx}
-                                            href={resource.url}
+                                            href={safeHref(resource.url)}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="flex items-center justify-between p-6 bg-gray-50/50 rounded-2xl border border-gray-100 hover:border-blue-200 transition-all cursor-pointer group hover:bg-white hover:shadow-md"

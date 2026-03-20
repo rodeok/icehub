@@ -23,6 +23,7 @@ import {
 import Image from 'next/image';
 import { CldUploadWidget } from 'next-cloudinary';
 import UploadDropzone from './UploadDropzone';
+import { safeHref } from '@/utils/safeUrl';
 
 interface Resource {
     title: string;
@@ -647,7 +648,7 @@ export default function AdminProgram() {
                                                                         <div key={rIdx} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
                                                                             <div className="flex items-center gap-3 overflow-hidden">
                                                                                 <FileText size={16} className="text-orange-500 flex-shrink-0" />
-                                                                                <a href={res.url} target="_blank" rel="noreferrer" className="text-sm font-bold text-gray-700 truncate hover:text-blue-600 transition-colors">
+                                                                                <a href={safeHref(res.url)} target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-gray-700 truncate hover:text-blue-600 transition-colors">
                                                                                     {res.title}
                                                                                 </a>
                                                                             </div>

@@ -36,13 +36,6 @@ const teamMembers = [
         description: "Oversees daily operations, programs, and partnerships to ensure organizational excellence and long-term sustainability.",
         img: "/images/onyeka.png"
     },
-    // {
-    //     name: "Elosiuba Favour",
-    //     role: "Full stack Software Engineer",
-    //     description: "Oversees daily operations, programs, and partnerships to ensure organizational excellence and long-term sustainability.",
-    //     img: "/images/1.png"
-    // },
-
 ];
 
 const TeamSection = () => {

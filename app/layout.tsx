@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import SessionProvider from "@/components/SessionProvider";
 import Navbar from "@/components/Navbar";
+import RaggedChatBootstrap from "@/components/RaggedChatBootstrap";
 import { isDynamicServerError } from "next/dist/client/components/hooks-server-context";
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -49,6 +50,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased`}
       >
         <SessionProvider session={session}>
+          <RaggedChatBootstrap />
           <Navbar />
           <main>{children}</main>
         </SessionProvider>

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { safeHref } from '@/utils/safeUrl';
 
 const HeroSection = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -64,7 +65,7 @@ const HeroSection = () => {
                         /* Layout 1: Background Overlay (Slide 1) */
                         <div className="relative w-full h-full flex items-center">
                             {/* Background Image */}
-                            <div className="absolute inset-0 z-0">
+                            <div className="absolute inset-0 z-0 pointer-events-none">
                                 <Image
                                     src={slide.image}
                                     alt={slide.highlight}
@@ -76,7 +77,7 @@ const HeroSection = () => {
 
                             {/* Blue Curve Overlay */}
                             <div
-                                className="absolute inset-0 z-10"
+                                className="absolute inset-0 z-10 pointer-events-none"
                                 style={{
                                     background: `
                                         radial-gradient(
@@ -109,7 +110,7 @@ const HeroSection = () => {
                                         {slide.buttons.map((btn: any, btnIndex) => (
                                             <Link
                                                 key={btnIndex}
-                                                href={btn.link}
+                                                href={safeHref(btn.link, '/')}
                                                 target={btn.target}
                                                 rel={btn.target === "_blank" ? "noopener noreferrer" : undefined}
                                                 className="w-full sm:w-auto px-6 sm:px-8 md:px-10 py-3 md:py-4 bg-[#0a254d]/80 backdrop-blur-sm text-white border border-white/20 rounded-xl hover:bg-[#0d3166] transition-[background-color,transform] hover:scale-105 flex items-center justify-center gap-3 text-sm sm:text-base md:text-lg font-medium gpu"
@@ -141,7 +142,7 @@ const HeroSection = () => {
                                         {slide.buttons.map((btn: any, btnIndex) => (
                                             <Link
                                                 key={btnIndex}
-                                                href={btn.link}
+                                                href={safeHref(btn.link, '/')}
                                                 target={btn.target}
                                                 rel={btn.target === "_blank" ? "noopener noreferrer" : undefined}
                                                 className="w-full sm:w-auto px-6 sm:px-8 md:px-10 py-3 md:py-4 bg-[#0a254d]/80 backdrop-blur-sm text-white border border-white/20 rounded-xl hover:bg-[#0d3166] transition-all hover:scale-105 flex items-center justify-center gap-3 text-sm sm:text-base md:text-lg font-medium"

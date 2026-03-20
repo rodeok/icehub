@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { ArrowUpRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { safeHref } from '@/utils/safeUrl';
 
 const courses = [
     {
@@ -46,6 +47,13 @@ const courses = [
         description: "Protect systems and networks from digital threats.",
         image: "/images/gggg.jpeg",
         link: "/courses/cyber-security"
+    }
+    ,
+    {
+        title: "Artificial Intelligence",
+        description: "Master Machine Learning, Neural Networks, and Natural Language Processing to build future-ready AI solutions.",
+        image: "/images/art.jpg",
+        link: "/courses/artificial-intelligence"
     }
 ];
 
@@ -100,7 +108,7 @@ const Explore = () => {
                                 <p className="!text-black text-sm leading-relaxed mb-6 flex-grow">
                                     {course.description}
                                 </p>
-                                <a href={course.link} className="inline-flex items-center text-[#0052CC] text-sm font-bold mt-auto group/link">
+                                <a href={safeHref(course.link)} className="inline-flex items-center text-[#0052CC] text-sm font-bold mt-auto group/link">
                                     Learn More
                                     <ArrowUpRight size={18} className="ml-1 transition-transform group-hover/link:translate-x-1 group-hover/link:-translate-y-1" />
                                 </a>

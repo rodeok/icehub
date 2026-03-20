@@ -94,9 +94,6 @@ export default function Navbar() {
 
             {openMenu === "services" && (
               <Dropdown>
-                <DropdownItem href="/courses">
-                  Digital Skills
-                </DropdownItem>
                 <DropdownItem href="/services/web-software">
                   Web & Software Solution
                 </DropdownItem>
@@ -186,7 +183,7 @@ export default function Navbar() {
               </button>
               {openMenu === "services" && (
                 <ul className="mt-3 ml-4 flex flex-col gap-3 text-base text-gray-600">
-                  <li><Link href="/courses" className="transition-colors hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>Digital Skills</Link></li>
+                  {/* <li><Link href="/courses" className="transition-colors hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>Digital Skills</Link></li> */}
                   <li><Link href="/services/web-software" className="transition-colors hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>Web & Software Solution</Link></li>
                   <li><Link href="/services/startup-incubation" className="transition-colors hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>Startup Incubation</Link></li>
                   <li><Link href="/services/workspace" className="transition-colors hover:text-blue-600" onClick={() => setMobileMenuOpen(false)}>Workspace</Link></li>

@@ -15,6 +15,7 @@ import {
     Users,
     Zap
 } from 'lucide-react';
+import { safeHref } from '@/utils/safeUrl';
 
 interface DashboardProps {
     userName?: string;
@@ -217,7 +218,7 @@ const Dashboard: React.FC<DashboardProps> = ({
 
                         <div className="mt-6 flex gap-3">
                             <a
-                                href={program?.introVideoUrl || "#"}
+                                href={safeHref(program?.introVideoUrl)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="bg-blue-600 hover:bg-blue-700 transition-all text-white px-6 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 group/btn shadow-lg shadow-blue-100"

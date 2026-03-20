@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Play, FileText, Download, CheckCircle, Circle, ChevronDown, ChevronUp, BookOpen, Clock, ChevronRight, LayoutGrid, Lock } from "lucide-react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
+import { safeSrc } from "@/utils/safeUrl";
 
 export default function ProgramsPage() {
     const [program, setProgram] = useState<any>(null);
@@ -222,14 +223,18 @@ export default function ProgramsPage() {
                                         const videoUrl = currentLesson?.videoUrl || program.videoUrls?.[0];
 
                                         if (videoUrl) {
-                                            return (
-                                                <iframe
-                                                    src={videoUrl.replace("watch?v=", "embed/")}
-                                                    className="w-full h-full border-0"
-                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                    allowFullScreen
-                                                ></iframe>
-                                            );
+                                            const iframeSrc = safeSrc(videoUrl.replace("watch?v=", "embed/"));
+
+                                            if (iframeSrc) {
+                                                return (
+                                                    <iframe
+                                                        src={iframeSrc}
+                                                        className="w-full h-full border-0"
+                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                        allowFullScreen
+                                                    ></iframe>
+                                                );
+                                            }
                                         }
 
                                         return (
