@@ -21,20 +21,21 @@ export default function CoursesHero() {
                             Explore Our Programs
                         </div> */}
 
-                        <h1 className="text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tight text-black leading-[1.1]">
-                            Master the Digital <br />
+                        <h1 className="text-3xl md:text-4xl lg:text-6xl font-extrabold tracking-tight text-black leading-[1.1]">
+                            <span className="whitespace-nowrap">Master the Digital</span> <br />
                             World with Our <br />
-                            <span className="text-[#0D55BA]">Expert Led</span> Courses
+                            <span className="text-[#0D55BA]">Expert Led</span> <br />
+                            Courses
                         </h1>
 
                         <p className="mt-8 text-lg md:text-xl text-gray-700 leading-relaxed max-w-xl font-medium">
                             From frontend development to cybersecurity, gain the skills that industry leaders demand. Join a community of innovators and start your transformation today.
                         </p>
 
-                        <div className="mt-10 flex flex-wrap gap-5">
+                        <div className="mt-10 flex flex-row items-center gap-5 w-fit">
                             <Link
                                 href="/register"
-                                className="group inline-flex items-center justify-center gap-3 bg-[#07357A] px-10 py-4 text-base font-bold text-white shadow-xl hover:bg-[#05285d] transition-all rounded-xl"
+                                className="group inline-flex items-center justify-center gap-3 h-14 bg-[#07357A] px-10 text-base font-bold text-white shadow-xl hover:bg-[#05285d] transition-all rounded-xl whitespace-nowrap"
                             >
                                 Get Started
                                 <HiArrowNarrowRight className="text-2xl transition-transform group-hover:translate-x-1" />
@@ -42,7 +43,7 @@ export default function CoursesHero() {
 
                             <Link
                                 href="#courses-list"
-                                className="inline-flex items-center justify-center px-10 py-4 text-base font-bold text-[#07357A] border-2 border-[#07357A]/10 hover:border-[#07357A] transition-all rounded-xl"
+                                className="inline-flex items-center justify-center h-14 px-10 text-base font-bold text-[#07357A] border-2 border-[#07357A]/10 hover:border-[#07357A] transition-all rounded-xl whitespace-nowrap"
                             >
                                 View All Courses
                             </Link>
