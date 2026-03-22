@@ -5,25 +5,42 @@ import Program from '@/models/Program';
 import User from '@/models/User';
 import { getAuthSession } from '@/lib/auth';
 import { Resend } from 'resend';
+import { checkRateLimit } from '@/lib/rate-limit';
+import { validateRequest, paymentVerifySchema } from '@/lib/validation';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
     try {
+        // 1. Rate Limiting (20 requests per 10 minutes)
+        const rateLimitResponse = await checkRateLimit(req, {
+            endpoint: 'payment-verify',
+            limit: 20,
+            windowMs: 10 * 60 * 1000
+        });
+        if (rateLimitResponse) return rateLimitResponse;
+
+        // 2. Input Validation & Sanitization
+        const body = await req.json();
+        const { success, data, errorResponse } = await validateRequest(paymentVerifySchema, body);
+
+        if (!success) {
+            return NextResponse.json(errorResponse, { status: 400 });
+        }
+
+        const { reference, programId, fullName, email, phone, learningMode } = data as any;
+
         const session = await getAuthSession();
         await connectDB();
-
-        const body = await req.json();
-        const { reference, programId, fullName, email, phone, learningMode } = body;
 
         // Note: For guest enrollment, we rely on the email/name provided in the form
         const userEmail = session?.user?.email || email;
         const userName = session?.user?.name || fullName;
 
         // programId is now optional - payment can be made without program selection
-        if (!reference || !userEmail) {
+        if (!userEmail) {
             return NextResponse.json(
-                { error: 'Please provide payment reference and email' },
+                { error: 'Please provide email for verification' },
                 { status: 400 }
             );
         }

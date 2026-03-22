@@ -1,15 +1,39 @@
 import { Resend } from 'resend';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { checkRateLimit } from '@/lib/rate-limit';
+import { validateRequest, schemas } from '@/lib/validation';
+import { z } from 'zod';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function POST(req: Request) {
-    try {
-        const { name, email, phone, hasCandidate, specificCourse, message } = await req.json();
+const sponsorSchema = z.object({
+    name: schemas.name,
+    email: schemas.email,
+    phone: schemas.phone,
+    hasCandidate: z.boolean().optional(),
+    specificCourse: z.boolean().optional(),
+    message: z.string().max(1000).optional(),
+}).strict();
 
-        if (!name || !email || !phone) {
-            return NextResponse.json({ error: 'Name, email, and phone are required' }, { status: 400 });
+export async function POST(req: NextRequest) {
+    try {
+        // 1. Rate Limiting (5 requests per 60 minutes)
+        const rateLimitResponse = await checkRateLimit(req, {
+            endpoint: 'sponsor',
+            limit: 5,
+            windowMs: 60 * 60 * 1000
+        });
+        if (rateLimitResponse) return rateLimitResponse;
+
+        // 2. Input Validation & Sanitization
+        const body = await req.json();
+        const { success, data: validatedData, errorResponse } = await validateRequest(sponsorSchema, body);
+
+        if (!success) {
+            return NextResponse.json(errorResponse, { status: 400 });
         }
+
+        const { name, email, phone, hasCandidate, specificCourse, message } = validatedData as any;
 
         const { data, error } = await resend.emails.send({
             from: 'Sponsorship Inquiry <blog@icehub-ng.com>',

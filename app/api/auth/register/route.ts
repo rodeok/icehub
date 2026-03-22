@@ -3,22 +3,31 @@ import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 import { hashPassword } from '@/lib/bcrypt';
 import { generateUniqueUserCode } from '@/utils/generateCode';
+import { checkRateLimit } from '@/lib/rate-limit';
+import { validateRequest, registerSchema } from '@/lib/validation';
 
 export async function POST(req: NextRequest) {
     try {
-        await connectDB();
+        // 1. Rate Limiting (3 requests per 30 minutes)
+        const rateLimitResponse = await checkRateLimit(req, {
+            endpoint: 'register',
+            limit: 3,
+            windowMs: 30 * 60 * 1000
+        });
+        if (rateLimitResponse) return rateLimitResponse;
 
+        // 2. Input Validation & Sanitization
         const body = await req.json();
-        const { fullName, email, password, phoneNumber, address, experienceLevel, programId } =
-            body;
+        const { success, data, errorResponse } = await validateRequest(registerSchema, body);
 
-        // Validation
-        if (!fullName || !email || !password) {
-            return NextResponse.json(
-                { error: 'Please provide all required fields' },
-                { status: 400 }
-            );
+        if (!success) {
+            return NextResponse.json(errorResponse, { status: 400 });
         }
+
+        const { fullName, email, password, phoneNumber, address, experienceLevel, programId } =
+            data as any;
+
+        await connectDB();
 
         // Check if user already exists
         const existingUser = await User.findOne({ email: email.toLowerCase() });

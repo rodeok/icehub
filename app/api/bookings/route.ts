@@ -2,11 +2,21 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Booking from '@/models/Booking';
 import Availability from '@/models/Availability';
-import { isDateAvailable, hasBookingConflict } from '@/utils/bookingUtils';
+import { isDateAvailable } from '@/utils/bookingUtils';
+import { checkRateLimit } from '@/lib/rate-limit';
+import { validateRequest, bookingSchema } from '@/lib/validation';
 
 // GET /api/bookings - Fetch all bookings with optional filters
 export async function GET(request: NextRequest) {
     try {
+        // Rate limit search (30 requests per 10 minutes)
+        const rateLimitResponse = await checkRateLimit(request, {
+            endpoint: 'bookings-get',
+            limit: 30,
+            windowMs: 10 * 60 * 1000
+        });
+        if (rateLimitResponse) return rateLimitResponse;
+
         await dbConnect();
 
         const { searchParams } = new URL(request.url);
@@ -37,9 +47,22 @@ export async function GET(request: NextRequest) {
 // POST /api/bookings - Create a new booking
 export async function POST(request: NextRequest) {
     try {
-        await dbConnect();
+        // 1. Rate Limiting (10 requests per 10 minutes)
+        const rateLimitResponse = await checkRateLimit(request, {
+            endpoint: 'bookings-post',
+            limit: 10,
+            windowMs: 10 * 60 * 1000
+        });
+        if (rateLimitResponse) return rateLimitResponse;
 
+        // 2. Input Validation & Sanitization
         const body = await request.json();
+        const { success, data, errorResponse } = await validateRequest(bookingSchema, body);
+
+        if (!success) {
+            return NextResponse.json(errorResponse, { status: 400 });
+        }
+
         const {
             fullName,
             email,
@@ -52,15 +75,9 @@ export async function POST(request: NextRequest) {
             timeSlot,
             paymentReference,
             amount,
-        } = body;
+        } = data as any;
 
-        // Validate required fields
-        if (!fullName || !email || !phone || !planTitle || !selectedPrice || !bookingType || !startDate || !endDate || !paymentReference || !amount) {
-            return NextResponse.json(
-                { success: false, error: 'Missing required fields' },
-                { status: 400 }
-            );
-        }
+        await dbConnect();
 
         // Check if booking with same payment reference already exists
         const existingBooking = await Booking.findOne({ paymentReference });

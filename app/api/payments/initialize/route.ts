@@ -2,9 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthSession } from '@/lib/auth';
 import connectDB from '@/lib/mongodb';
 import Program from '@/models/Program';
+import { checkRateLimit } from '@/lib/rate-limit';
+import { validateRequest, paymentInitializeSchema } from '@/lib/validation';
 
 export async function POST(req: NextRequest) {
     try {
+        // 1. Rate Limiting (10 requests per 30 minutes)
+        const rateLimitResponse = await checkRateLimit(req, {
+            endpoint: 'payment-init',
+            limit: 10,
+            windowMs: 30 * 60 * 1000
+        });
+        if (rateLimitResponse) return rateLimitResponse;
+
         const session = await getAuthSession();
 
         if (!session?.user?.id) {
@@ -14,10 +24,17 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        await connectDB();
-
+        // 2. Input Validation & Sanitization
         const body = await req.json();
-        const { programId, customAmount, paymentType } = body;
+        const { success, data: validatedData, errorResponse } = await validateRequest(paymentInitializeSchema, body);
+
+        if (!success) {
+            return NextResponse.json(errorResponse, { status: 400 });
+        }
+
+        const { programId, customAmount, paymentType } = validatedData as any;
+
+        await connectDB();
 
         // Program ID is now optional - users can pay first, then choose program
         let program = null;
@@ -98,19 +115,19 @@ export async function POST(req: NextRequest) {
             throw new Error('Failed to establish connection to Paystack payment gateway');
         }
 
-        const data = await response.json();
+        const paystackResponse = await response.json();
 
-        if (!data.status) {
+        if (!paystackResponse.status) {
             return NextResponse.json(
-                { error: data.message || 'Failed to initialize payment' },
+                { error: paystackResponse.message || 'Failed to initialize payment' },
                 { status: 400 }
             );
         }
 
         return NextResponse.json({
-            authorizationUrl: data.data.authorization_url,
-            reference: data.data.reference,
-            accessCode: data.data.access_code,
+            authorizationUrl: paystackResponse.data.authorization_url,
+            reference: paystackResponse.data.reference,
+            accessCode: paystackResponse.data.access_code,
         });
     } catch (error: any) {
         console.error('Payment initialization error:', error);

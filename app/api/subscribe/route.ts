@@ -1,20 +1,33 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Subscriber from '@/models/Subscriber';
+import { checkRateLimit } from '@/lib/rate-limit';
+import { validateRequest, schemas } from '@/lib/validation';
+import { z } from 'zod';
+
+const subscribeSchema = z.object({
+    email: schemas.email
+}).strict();
 
 export async function POST(req: Request) {
     try {
-        const { email } = await req.json();
+        // 1. Rate Limiting (5 requests per 15 minutes)
+        const rateLimitResponse = await checkRateLimit(req, {
+            endpoint: 'subscribe',
+            limit: 5,
+            windowMs: 15 * 60 * 1000
+        });
+        if (rateLimitResponse) return rateLimitResponse;
 
-        if (!email) {
-            return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+        // 2. Input Validation & Sanitization
+        const body = await req.json();
+        const { success, data, errorResponse } = await validateRequest(subscribeSchema, body);
+        
+        if (!success) {
+            return NextResponse.json(errorResponse, { status: 400 });
         }
 
-        // Basic email validation
-        const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-        if (!emailRegex.test(email)) {
-            return NextResponse.json({ error: 'Invalid email format' }, { status: 400 });
-        }
+        const { email } = data as { email: string };
 
         await connectDB();
 

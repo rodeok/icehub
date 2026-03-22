@@ -27,7 +27,7 @@ const courses = [
     {
         title: "Mobile-App Development",
         description: "Drive growth through effective online marketing and ads.",
-        image: "/images/digital.jpg",
+        image: "/images/mobile.jpg",
         link: "/courses/mobile-dev"
     },
     {
