@@ -7,40 +7,40 @@ import { z } from 'zod';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sponsorSchema = z.object({
-    name: schemas.name,
-    email: schemas.email,
-    phone: schemas.phone,
-    hasCandidate: z.boolean().optional(),
-    specificCourse: z.boolean().optional(),
-    message: z.string().max(1000).optional(),
+  name: schemas.name,
+  email: schemas.email,
+  phone: schemas.phone,
+  hasCandidate: z.string().optional(),
+  specificCourse: z.string().optional(),
+  message: z.string().max(1000).optional(),
 }).strict();
 
 export async function POST(req: NextRequest) {
-    try {
-        // 1. Rate Limiting (5 requests per 60 minutes)
-        const rateLimitResponse = await checkRateLimit(req, {
-            endpoint: 'sponsor',
-            limit: 5,
-            windowMs: 60 * 60 * 1000
-        });
-        if (rateLimitResponse) return rateLimitResponse;
+  try {
+    // 1. Rate Limiting (5 requests per 60 minutes)
+    const rateLimitResponse = await checkRateLimit(req, {
+      endpoint: 'sponsor',
+      limit: 5,
+      windowMs: 60 * 60 * 1000
+    });
+    if (rateLimitResponse) return rateLimitResponse;
 
-        // 2. Input Validation & Sanitization
-        const body = await req.json();
-        const { success, data: validatedData, errorResponse } = await validateRequest(sponsorSchema, body);
+    // 2. Input Validation & Sanitization
+    const body = await req.json();
+    const { success, data: validatedData, errorResponse } = await validateRequest(sponsorSchema, body);
 
-        if (!success) {
-            return NextResponse.json(errorResponse, { status: 400 });
-        }
+    if (!success) {
+      return NextResponse.json(errorResponse, { status: 400 });
+    }
 
-        const { name, email, phone, hasCandidate, specificCourse, message } = validatedData as any;
+    const { name, email, phone, hasCandidate, specificCourse, message } = validatedData as any;
 
-        const { data, error } = await resend.emails.send({
-            from: 'Sponsorship Inquiry <blog@icehub-ng.com>',
-            to: ['contact@icehub-ng.com'], // Or the desired company email
-            replyTo: email,
-            subject: `New Scholarship Sponsorship  from ${name}`,
-            html: `
+    const { data, error } = await resend.emails.send({
+      from: 'Sponsorship Inquiry <sponsor@icehub-ng.com>',
+      to: ['contact@icehub-ng.com'], // Or the desired company email
+      replyTo: email,
+      subject: `New Scholarship Sponsorship  from ${name}`,
+      html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
           <h2 style="color: #1a73e8; margin-top: 0;">New Sponsorship Inquiry</h2>
           <p>You have received a new inquiry to sponsor a student with a full scholarship.</p>
@@ -63,16 +63,16 @@ export async function POST(req: NextRequest) {
           <p style="margin-top: 20px; font-size: 12px; color: #666;">This message was sent from the sponsor page on your website.</p>
         </div>
       `,
-        });
+    });
 
-        if (error) {
-            console.error("Resend API Error:", error);
-            return NextResponse.json({ error: error.message }, { status: 400 });
-        }
-
-        return NextResponse.json({ success: true, data });
-    } catch (error: any) {
-        console.error("Sponsor API Error:", error.message);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      console.error("Resend API Error:", error);
+      return NextResponse.json({ error: error.message }, { status: 400 });
     }
+
+    return NextResponse.json({ success: true, data });
+  } catch (error: any) {
+    console.error("Sponsor API Error:", error.message);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 }

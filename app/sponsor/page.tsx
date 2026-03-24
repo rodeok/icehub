@@ -45,7 +45,11 @@ export default function SponsorPage() {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || 'Failed to send message');
+                let errorMessage = data.error || 'Failed to send message';
+                if (data.details && data.details.length > 0) {
+                    errorMessage = data.details.map((d: any) => d.message).join(', ');
+                }
+                throw new Error(errorMessage);
             }
 
             setSubmitStatus({ type: 'success', message: 'Message sent successfully! We will get back to you soon.' });
