@@ -6,7 +6,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { addDays, format } from "date-fns";
 import { Plan } from "./WorkSpacePlan";
-import { usePaystackPayment } from "react-paystack";
+import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 
 interface BookingModalProps {
     plan: Plan;
@@ -102,48 +102,60 @@ export default function BookingModal({ plan, onClose, onSuccess }: BookingModalP
         return `Duration: ${startStr} - ${endStr}`;
     };
 
-    // Parse price string to number for Paystack (remove non-numeric chars)
+    // Parse price string to number for Flutterwave
     const getNumericPrice = (priceString: string) => {
-        return parseInt(priceString.replace(/[^0-9]/g, ''), 10) * 100; // Convert to kobo
+        return parseInt(priceString.replace(/[^0-9]/g, ''), 10); // Flutterwave uses standard units
     };
 
     const config = {
-        reference: (new Date()).getTime().toString(),
-        email: userData.email,
+        public_key: process.env.NEXT_PUBLIC_FLW_PUBLIC_KEY || '',
+        tx_ref: (new Date()).getTime().toString(),
         amount: getNumericPrice(currentPrice),
-        publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
+        currency: 'NGN',
+        payment_options: 'card,mobilemoney,ussd',
+        customer: {
+            email: userData.email,
+            phone_number: userData.phone,
+            name: userData.name,
+        },
+        customizations: {
+            title: 'ICEHub Workspace Booking',
+            description: `Payment for ${plan.title} (${activeTab})`,
+            logo: 'https://icehub.ng/logo.png',
+        },
     };
 
-    const initializePayment = usePaystackPayment(config);
-
-    const onSuccessPayment = (reference: any) => {
-        // Pass all necessary data for receipt
-        const completeUserData = {
-            ...userData,
-            planTitle: plan.title,
-            selectedPrice: currentPrice,
-            timeSlot: selectedTimeSlot,
-        };
-        onSuccess(reference.reference, completeUserData);
-        setLoading(false);
-    };
-
-    const onClosePayment = () => {
-        setLoading(false);
-        alert("Payment cancelled.");
-    };
+    const handleFlutterPayment = useFlutterwave(config);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        if (!process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY) {
-            alert("Paystack public key is missing!");
+        if (!process.env.NEXT_PUBLIC_FLW_PUBLIC_KEY) {
+            alert("Flutterwave public key is missing!");
             setLoading(false);
             return;
         }
-        initializePayment({
-            onSuccess: onSuccessPayment,
-            onClose: onClosePayment,
+
+        handleFlutterPayment({
+            callback: (response) => {
+                console.log(response);
+                if (response.status === "successful") {
+                    const completeUserData = {
+                        ...userData,
+                        planTitle: plan.title,
+                        selectedPrice: currentPrice,
+                        timeSlot: selectedTimeSlot,
+                    };
+                    onSuccess(response.tx_ref, completeUserData);
+                } else {
+                    alert("Payment was not successful. Please try again.");
+                }
+                setLoading(false);
+                closePaymentModal();
+            },
+            onClose: () => {
+                setLoading(false);
+            },
         });
     };
 
@@ -349,7 +361,7 @@ export default function BookingModal({ plan, onClose, onSuccess }: BookingModalP
                             </button>
 
                             <p className="text-center text-xs text-gray-400 mt-4">
-                                Secured by <span className="font-bold text-gray-500">Paystack</span>
+                                Secured by <span className="font-bold text-gray-500">Flutterwave</span>
                             </p>
                         </form>
                     </div>

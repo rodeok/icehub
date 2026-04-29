@@ -12,7 +12,7 @@ import {
     Info,
     Loader2
 } from "lucide-react";
-import { usePaystackPayment } from "react-paystack";
+import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 import { jsPDF } from "jspdf";
 
 interface Program {
@@ -73,11 +73,24 @@ export default function EnrollmentView() {
     const amountToPay = program ? (paymentPlan === "full" ? program.price : 60000) : 0;
 
     const config = {
-        reference: (new Date()).getTime().toString(),
-        email: formData.email,
-        amount: amountToPay * 100, // Paystack amount is in kobo
-        publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "",
+        public_key: process.env.NEXT_PUBLIC_FLW_PUBLIC_KEY || "",
+        tx_ref: (new Date()).getTime().toString(),
+        amount: amountToPay,
+        currency: 'NGN',
+        payment_options: 'card,mobilemoney,ussd',
+        customer: {
+            email: formData.email,
+            phone_number: formData.phone,
+            name: formData.fullName,
+        },
+        customizations: {
+            title: 'ICEHub Enrollment',
+            description: `Payment for ${program?.name}`,
+            logo: 'https://icehub.ng/logo.png',
+        },
     };
+
+    const handleFlutterPayment = useFlutterwave(config);
 
     const generateReceipt = (ref: string, courseName: string, amount: number) => {
         console.log("Generating receipt for ref:", ref);
@@ -142,14 +155,14 @@ export default function EnrollmentView() {
         }
     };
 
-    const handleSuccess = (reference: any) => {
-        console.log("Payment successful, starting verification...", reference);
+    const handleSuccess = (response: any) => {
+        console.log("Payment successful, starting verification...", response);
         // Call backend to verify and record enrollment
         fetch("/api/payments/verify", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                reference: reference.reference,
+                transactionId: response.transaction_id.toString(),
                 programId: program?._id,
                 fullName: formData.fullName,
                 email: formData.email,
@@ -161,13 +174,18 @@ export default function EnrollmentView() {
             .then(data => {
                 if (data.message) {
                     console.log("Verification successful, generating receipt...");
-                    setLastRef(reference.reference);
+                    setLastRef(response.tx_ref);
                     setIsSuccess(true);
 
                     // Trigger download immediately
                     if (program) {
-                        generateReceipt(reference.reference, program.name, amountToPay);
+                        generateReceipt(response.tx_ref, program.name, amountToPay);
                     }
+
+                    // Automatic redirect to dashboard payment page after 3 seconds
+                    setTimeout(() => {
+                        router.push("/dashboard/payment");
+                    }, 3000);
                 } else {
                     alert(data.error || "Payment verification failed");
                 }
@@ -175,14 +193,11 @@ export default function EnrollmentView() {
             .catch(err => {
                 console.error("Verification error:", err);
                 alert("An error occurred during verification");
+            })
+            .finally(() => {
+                closePaymentModal();
             });
     };
-
-    const handleClose = () => {
-        console.log("Paystack payment closed");
-    };
-
-    const initializePayment = usePaystackPayment(config);
 
     const handleEnrollment = (e?: React.FormEvent) => {
         if (e) e.preventDefault();
@@ -192,14 +207,18 @@ export default function EnrollmentView() {
             return;
         }
 
-        if (!config.publicKey) {
-            alert("Paystack public key is not configured.");
+        if (!config.public_key) {
+            alert("Flutterwave public key is not configured.");
             return;
         }
 
-        console.log("Initializing Paystack payment...");
-        // @ts-ignore
-        initializePayment(handleSuccess, handleClose);
+        console.log("Initializing Flutterwave payment...");
+        handleFlutterPayment({
+            callback: handleSuccess,
+            onClose: () => {
+                console.log("Flutterwave payment closed");
+            },
+        });
     };
 
     if (loading) {
@@ -234,10 +253,10 @@ export default function EnrollmentView() {
                         Re-download Receipt
                     </button>
                     <button
-                        onClick={() => router.push("/dashboard?enrolled=success")}
+                        onClick={() => router.push("/dashboard/payment")}
                         className="flex-1 bg-blue-600 text-white px-6 py-4 rounded-2xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200"
                     >
-                        Go to Dashboard
+                        Go to My Payments
                     </button>
                 </div>
             </div>
@@ -423,7 +442,7 @@ export default function EnrollmentView() {
 
                         <div className="space-y-3">
                             {[
-                                { id: "card", label: "Paystack (Card, Transfer, USSD)", sub: "Visa, Mastercard, Verve, Bank", icon: CreditCard },
+                                { id: "card", label: "Flutterwave (Card, Transfer, USSD)", sub: "Visa, Mastercard, Verve, Bank", icon: CreditCard },
                             ].map((method) => (
                                 <button
                                     type="button"
@@ -494,7 +513,7 @@ export default function EnrollmentView() {
                                     <span className="text-sm font-bold text-gray-900">Amount to Pay</span>
                                     <div className="text-right">
                                         <div className="text-2xl font-black text-blue-600">₦{amountToPay.toLocaleString()}</div>
-                                        <div className="text-[10px] text-gray-400 font-bold tracking-tight uppercase">secure payment via paystack</div>
+                                        <div className="text-[10px] text-gray-400 font-bold tracking-tight uppercase">secure payment via flutterwave</div>
                                     </div>
                                 </div>
                             </div>

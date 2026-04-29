@@ -119,14 +119,15 @@ export default function PaymentPage() {
     // Handle payment verification callback
     useEffect(() => {
         const verify = searchParams.get('verify');
-        const reference = searchParams.get('reference');
+        const transactionId = searchParams.get('transaction_id');
+        const status = searchParams.get('status');
 
-        if (verify === 'true' && reference && !verificationAttempted.current) {
-            verifyPayment(reference);
+        if (verify === 'true' && transactionId && status === 'successful' && !verificationAttempted.current) {
+            verifyPayment(transactionId);
         }
-    }, [searchParams]);
+    }, [searchParams, paymentData]);
 
-    const verifyPayment = async (reference: string) => {
+    const verifyPayment = async (transactionId: string) => {
         if (verificationAttempted.current) return;
         verificationAttempted.current = true;
 
@@ -136,10 +137,20 @@ export default function PaymentPage() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    reference,
+                    transactionId,
                     programId: paymentData?.unpaidPrograms[0]?._id,
                 }),
             });
+
+            const contentType = res.headers.get("content-type");
+            let data;
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                data = await res.json();
+            } else {
+                const text = await res.text();
+                console.error("Non-JSON verification response:", text);
+                throw new Error("Verification server returned an unexpected response.");
+            }
 
             if (res.ok) {
                 // Refresh payment data
@@ -147,7 +158,6 @@ export default function PaymentPage() {
                 router.replace('/dashboard/payment');
                 alert('Payment successful! Your account has been updated.');
             } else {
-                const data = await res.json();
                 throw new Error(data.error || 'Verification failed');
             }
         } catch (err: any) {
@@ -184,19 +194,27 @@ export default function PaymentPage() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    programId: paymentData?.unpaidPrograms[0]?._id || null,
+                    programId: paymentData?.unpaidPrograms[0]?._id || undefined,
                     customAmount: paymentAmount,
                     paymentType: selectedPaymentOption,
                 }),
             });
 
-            const data = await res.json();
+            const contentType = res.headers.get("content-type");
+            let data;
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                data = await res.json();
+            } else {
+                const text = await res.text();
+                console.error("Non-JSON response:", text);
+                throw new Error("Server returned an unexpected response. Please try again.");
+            }
 
             if (!res.ok) {
                 throw new Error(data.error || 'Failed to initialize payment');
             }
 
-            // Redirect to Paystack payment page
+            // Redirect to Flutterwave payment page
             window.location.href = data.authorizationUrl;
         } catch (err: any) {
             console.error('Payment initialization error:', err);

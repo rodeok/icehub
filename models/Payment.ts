@@ -9,7 +9,7 @@ export interface IPayment extends Document {
     currency: string;
     status: 'pending' | 'success' | 'failed';
     paymentMethod: string;
-    paystackResponse: any;
+    flutterwaveResponse: any;
     metadata: any;
     createdAt: Date;
     updatedAt: Date;
@@ -48,9 +48,9 @@ const PaymentSchema: Schema = new Schema(
         },
         paymentMethod: {
             type: String,
-            default: 'paystack',
+            default: 'flutterwave',
         },
-        paystackResponse: {
+        flutterwaveResponse: {
             type: Schema.Types.Mixed,
         },
         metadata: {

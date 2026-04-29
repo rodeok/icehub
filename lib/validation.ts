@@ -62,13 +62,14 @@ export const bookingSchema = z.object({
 }).strict();
 
 export const paymentInitializeSchema = z.object({
-  programId: schemas.objectId.optional(),
+  programId: schemas.objectId.nullable().optional(),
   customAmount: z.number().positive().optional(),
-  paymentType: z.enum(['full', 'part']).optional(),
+  paymentType: z.enum(['full', 'part', 'initial', 'balance']).optional(),
 }).strict();
 
 export const paymentVerifySchema = z.object({
-  reference: z.string().min(1).max(255),
+  reference: z.string().min(1).max(255).optional(),
+  transactionId: z.string().min(1).max(255).optional(),
   programId: schemas.objectId.optional(),
   fullName: schemas.name.optional(),
   email: schemas.email.optional(),

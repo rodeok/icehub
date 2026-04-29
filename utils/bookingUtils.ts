@@ -163,9 +163,9 @@ export function getDaysBetween(startDate: Date, endDate: Date): number {
 }
 
 /**
- * Parse price string and return numeric value in kobo (for Paystack)
+ * Parse price string and return numeric value in standard currency units (for Flutterwave)
  */
-export function parsePriceToKobo(priceString: string): number {
+export function parsePriceForFlutterwave(priceString: string): number {
     const numericValue = parseInt(priceString.replace(/[^0-9]/g, ''));
-    return isNaN(numericValue) ? 0 : numericValue * 100; // Convert to kobo
+    return isNaN(numericValue) ? 0 : numericValue;
 }

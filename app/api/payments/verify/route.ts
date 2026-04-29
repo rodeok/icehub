@@ -11,7 +11,10 @@ import { validateRequest, paymentVerifySchema } from '@/lib/validation';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
+    console.log('>>> [API/PAYMENTS/VERIFY] Request started');
     try {
+        const body = await req.json();
+        console.log('>>> [API/PAYMENTS/VERIFY] Request body:', body);
         // 1. Rate Limiting (20 requests per 10 minutes)
         const rateLimitResponse = await checkRateLimit(req, {
             endpoint: 'payment-verify',
@@ -21,7 +24,6 @@ export async function POST(req: NextRequest) {
         if (rateLimitResponse) return rateLimitResponse;
 
         // 2. Input Validation & Sanitization
-        const body = await req.json();
         const { success, data, errorResponse } = await validateRequest(paymentVerifySchema, body);
 
         if (!success) {
@@ -45,13 +47,24 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        // Verify payment with Paystack
-        const paystackSecretKey = process.env.PAYSTACK_SECRET_KEY;
+        // Verify payment with Flutterwave
+        const flwSecretKey = process.env.FLW_SECRET_KEY;
 
-        if (!paystackSecretKey) {
+        if (!flwSecretKey) {
             return NextResponse.json(
-                { error: 'Paystack configuration missing' },
+                { error: 'Flutterwave configuration missing' },
                 { status: 500 }
+            );
+        }
+
+        // We might get transaction_id from the client (after redirect)
+        // reference here is tx_ref
+        const transactionId = (data as any).transactionId; 
+
+        if (!transactionId) {
+             return NextResponse.json(
+                { error: 'Transaction ID is required for verification' },
+                { status: 400 }
             );
         }
 
@@ -60,35 +73,30 @@ export async function POST(req: NextRequest) {
         while (retries > 0) {
             try {
                 verifyResponse = await fetch(
-                    `https://api.paystack.co/transaction/verify/${reference}`,
+                    `https://api.flutterwave.com/v3/transactions/${transactionId}/verify`,
                     {
                         headers: {
-                            Authorization: `Bearer ${paystackSecretKey}`,
+                            Authorization: `Bearer ${flwSecretKey}`,
                         },
-                        // Increase timeout to 15s if possible, Next.js fetch supports signal
                         signal: AbortSignal.timeout(15000)
                     }
                 );
-                // If fetch succeeds but status is not ok (e.g. 5xx), maybe we should retry? 
-                // However, Paystack API usually returns 200 with status field in body for success/failure of transaction.
-                // Network errors (like timeout) will be caught below.
                 break;
             } catch (error) {
                 retries--;
-                console.warn(`Paystack verification attempt failed. Retries left: ${retries}. Error:`, error);
+                console.warn(`Flutterwave verification attempt failed. Retries left: ${retries}. Error:`, error);
                 if (retries === 0) throw error;
-                // Wait 1 second before retrying
                 await new Promise(resolve => setTimeout(resolve, 1000));
             }
         }
 
         if (!verifyResponse) {
-            throw new Error('Failed to establish connection to Paystack verification service');
+            throw new Error('Failed to establish connection to Flutterwave verification service');
         }
 
         const verifyData = await verifyResponse.json();
 
-        if (!verifyData.status || verifyData.data.status !== 'success') {
+        if (verifyData.status !== 'success' || verifyData.data.status !== 'successful') {
             return NextResponse.json(
                 { error: 'Payment verification failed' },
                 { status: 400 }
@@ -96,12 +104,12 @@ export async function POST(req: NextRequest) {
         }
 
         // Check if payment already recorded
-        const existingPayment = await Payment.findOne({ reference });
+        const existingPayment = await Payment.findOne({ reference: verifyData.data.tx_ref });
         if (existingPayment) {
             // Re-run the user update logic idempotently just in case the previous attempt 
             // recorded the payment but failed to update the user record.
-            const finalUserId = session?.user?.id || existingPayment.userId || verifyData.data.metadata?.userId;
-            const finalProgramId = programId || existingPayment.programId || verifyData.data.metadata?.programId;
+            const finalUserId = session?.user?.id || existingPayment.userId || verifyData.data.meta?.userId;
+            const finalProgramId = programId || existingPayment.programId || verifyData.data.meta?.programId;
 
             if (finalUserId && finalProgramId) {
                 await User.findByIdAndUpdate(finalUserId, {
@@ -136,16 +144,16 @@ export async function POST(req: NextRequest) {
 
         // Create payment record
         const payment = await Payment.create({
-            userId: session?.user?.id || verifyData.data.metadata?.userId || undefined,
-            programId: programId || verifyData.data.metadata?.programId || undefined,
-            reference,
-            amount: verifyData.data.amount / 100, // Paystack returns amount in kobo
+            userId: session?.user?.id || verifyData.data.meta?.userId || undefined,
+            programId: programId || verifyData.data.meta?.programId || undefined,
+            reference: verifyData.data.tx_ref,
+            amount: verifyData.data.amount, // Flutterwave returns standard amount
             currency: verifyData.data.currency,
             status: 'success',
-            paymentMethod: 'paystack',
-            paystackResponse: verifyData.data,
+            paymentMethod: 'flutterwave',
+            flutterwaveResponse: verifyData.data,
             metadata: {
-                ...verifyData.data.metadata,
+                ...verifyData.data.meta,
                 fullName: userName,
                 email: userEmail,
                 phone,
@@ -154,8 +162,8 @@ export async function POST(req: NextRequest) {
         });
 
         // Determine which programId and userId to use for user record updates
-        const finalUserId = session?.user?.id || verifyData.data.metadata?.userId;
-        const finalProgramId = programId || verifyData.data.metadata?.programId;
+        const finalUserId = session?.user?.id || verifyData.data.meta?.userId;
+        const finalProgramId = programId || verifyData.data.meta?.programId;
 
         // Update user's enrolled programs and program count
         if (finalUserId && finalProgramId) {
@@ -173,7 +181,7 @@ export async function POST(req: NextRequest) {
 
         // Send confirmation email via Resend
         try {
-            const amountPaid = verifyData.data.amount / 100;
+            const amountPaid = verifyData.data.amount;
             const isFullPayment = program && amountPaid >= program.price;
             const paymentStatusText = isFullPayment ? 'Full Payment' : 'Part Payment';
 
@@ -192,7 +200,7 @@ export async function POST(req: NextRequest) {
                     <table style="width: 100%; text-align: left;">
                         <tr><th>Course:</th><td>${program.name}</td></tr>
                         <tr><th>Amount Paid:</th><td>₦${amountPaid.toLocaleString()}</td></tr>
-                        <tr><th>Reference:</th><td>${reference}</td></tr>
+                        <tr><th>Reference:</th><td>${verifyData.data.tx_ref}</td></tr>
                         <tr><th>Learning Mode:</th><td>${learningMode || 'To be confirmed'}</td></tr>
                         <tr><th>Payment Status:</th><td><strong>${paymentStatusText}</strong></td></tr>
                     </table>
@@ -209,7 +217,7 @@ export async function POST(req: NextRequest) {
                     <h3>Payment Summary</h3>
                     <table style="width: 100%; text-align: left;">
                         <tr><th>Amount Paid:</th><td>₦${amountPaid.toLocaleString()}</td></tr>
-                        <tr><th>Reference:</th><td>${reference}</td></tr>
+                        <tr><th>Reference:</th><td>${verifyData.data.tx_ref}</td></tr>
                         <tr><th>Status:</th><td>Success</td></tr>
                     </table>
                     <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />

@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'paystack.com',
+        hostname: 'flutterwave.com',
       }
     ],
   },

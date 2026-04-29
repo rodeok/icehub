@@ -259,8 +259,8 @@ export default function StandalonePaymentPage() {
                         )}
                     </button>
 
-                    <div className="mt-8 pt-8 border-t border-gray-100 flex items-center justify-center gap-6 grayscale opacity-50">
-                        <Image src="/images/paystack.png" alt="Paystack" width={100} height={30} className="object-contain" />
+                    <div className="mt-8 pt-8 border-t border-gray-100 flex items-center justify-center gap-6">
+                        <span className="text-xl font-black text-blue-600 opacity-50">Flutterwave</span>
                     </div>
                 </div>
             </div>
